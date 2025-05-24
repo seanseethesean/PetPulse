@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
+/* import Navbar from './Components/Navbar';
+import Home from './pages/Home';*/
 import Login from './pages/Login';
 
 function App() {
-    return (
+    /* return (
       <Router>
         <div className="App">
           <Navbar />
@@ -18,7 +18,13 @@ function App() {
           </div>
         </div>
       </Router>
-    );
+    ); */ 
+
+    return (
+        <div>
+            <Login/>
+        </div>
+    )
   }
 
 export default App;
