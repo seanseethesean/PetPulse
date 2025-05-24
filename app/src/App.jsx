@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-/* import Navbar from './Components/Navbar';
-import Home from './pages/Home';*/
+/* import Navbar from './Components/Navbar';*/
+import Home from './pages/Home';
 import Login from './pages/Login';
 
 function App() {
     /* return (
       <Router>
         <div className="App">
-          <Navbar />
+             <Navbar />
           <div className="content">
             <Routes>
               <Route path="/" element={<Login />} />
@@ -18,13 +18,13 @@ function App() {
           </div>
         </div>
       </Router>
-    ); */ 
+    ); */
 
     return (
         <div>
-            <Login/>
+            <Home />
         </div>
     )
-  }
+}
 
 export default App;
