@@ -1,15 +1,19 @@
+import '../assets/Navbar.css';
+import petpulse_icon from '../assets/images/Petpulse.png';
+
+
 const Navbar = () => {
     return (
-      <nav className = "navbar">
-        <h1> PetPulse </h1>
-        <div className= "links">
-          <a href="/"> Home </a>
-          <a href="/create" style = {{
-            color: "white",
-            backgroundColor: '#f1356d',
-            borderRadius: '8px'
-          }}> Pets </a>
-        </div>
+      <nav className = "navbar"> 
+        <img src={petpulse_icon} alt="" className='logo'/>
+        <ul className="navbar-menu">
+          <li>Home</li>
+          <li>Calendar</li>
+          <li>Task Checklist</li>
+          <li>Pet Journal</li>
+          <li>Expense Tracker</li>
+          <li><button className='petBtn'>Pet Profile</button></li>
+        </ul>
       </nav>
     );
   }
