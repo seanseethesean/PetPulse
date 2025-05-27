@@ -48,14 +48,14 @@
 }
 
 /* Inputs container */
-.inputs {
+.petmgm-inputs {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 /* Individual input row */
-.input {
+.petmgm-input {
   display: flex;
   align-items: center;
   background-color: #a8a8a8;
@@ -66,14 +66,14 @@
 }
 
 /* Input icons */
-.input img {
+.petmgm-input img {
   width: 20px;
   height: 20px;
   margin-right: 12px;
 }
 
 /* Text and date inputs */
-.input input {
+.petmgm-input input {
   flex: 1;
   border: none;
   outline: none;
@@ -82,12 +82,12 @@
 }
 
 /* Placeholder style */
-.input input::placeholder {
+.petmgm-input input::placeholder {
   color: #333;
 }
 
 /* Upload input tweak (if you keep type="uploadimg", which is invalid HTML) */
-.input input[type="uploadimg"] {
+.petmgm-input input[type="uploadimg"] {
   cursor: pointer;
   font-style: italic;
   color: #3271db;

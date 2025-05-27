@@ -5,7 +5,7 @@ import petpulse_icon from '../assets/images/Petpulse.png';
 const Navbar = () => {
     return (
       <nav>
-        <div className = "container"> </div>
+        <div className = "navbar-container"> </div>
         <img src={petpulse_icon} alt="" className='pplogo'/>
         <ul className="navbar-menu">
           <li>Home</li>

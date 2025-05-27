@@ -64,21 +64,21 @@ const Login = () => {
   };
 
   return (
-    <div className='petpulse'> <img src={petpulse_icon} alt='petpulse_logo' className="logo" />
-      <div className='container'>
+    <div className='petpulse'> <img src={petpulse_icon} alt='petpulse_logo' className="petpulse-logo" />
+      <div className='login-container'>
 
         <div className='header'>
           <div className='text'> {action} </div>
           <div className='underline'></div>
         </div>
 
-        <div className='inputs'>
-          {action !== "Login" && <div className='input'>
+        <div className='login-inputs'>
+          {action !== "Login" && <div className='login-input'>
             <img src={user_icon} alt='' />
             <input type='text' placeholder='Username' />
           </div>}
 
-          <div className='input'>
+          <div className='login-input'>
             <img src={email_icon} alt='' />
             <input type='email'
               placeholder='Email'
@@ -86,7 +86,7 @@ const Login = () => {
             />
           </div>
 
-          <div className='input'>
+          <div className='login-input'>
             <img src={password_icon} alt='' />
             <input type='password'
               placeholder='Password'

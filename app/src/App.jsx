@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import PetMgm from './Components/PetMgm';
+import PetMgm from './components/PetMgm';
 import Login from './pages/Login';
 
 function App() {
@@ -21,6 +21,10 @@ function App() {
         </div>
       </Router>
     );
+
+    // return (
+    //     <PetMgm />
+    // )
 }
 
 export default App;

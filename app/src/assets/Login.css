@@ -5,13 +5,13 @@
   padding-top: 20px;   
 }
 
-.logo {
+.petpulse-logo {
   width: 200px;
   height: auto;
   margin-bottom: -170px;    
 }
 
-.container{
+.login-container{
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -43,14 +43,14 @@
   border-radius: 9px;
 }
 
-.inputs{
+.login-inputs{
   margin-top: 55px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.input{
+.login-input{
   display: flex;
   align-items: center;
   margin: auto;
@@ -61,11 +61,11 @@
   margin-bottom: 5px;
 }
 
-.input img{
+.login-input img{
   margin: 0px 30px;
 }
 
-.input input{
+.login-input input{
   height: 50px;
   width: 400px;
   background: transparent;

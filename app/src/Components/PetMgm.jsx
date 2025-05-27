@@ -30,23 +30,23 @@ const PetMgm = () => {
         <div className='newpet'>
           <button className="add-pet-button">Add New Pet</button>
 
-          <div className="inputs">
+          <div className="petmgm-inputs">
             <div className="input">
               <img src={pet_icon} alt="" />
               <input type="text" placeholder="pet name" />
             </div>
 
-            <div className="input">
+            <div className="petmgm-input">
               <img src={animaltype_icon} alt="" />
               <input type="text" placeholder="animal type" />
             </div>
 
-            <div className="input">
+            <div className="petmgm-input">
               <img src={pet_icon} alt="" />
               <input type="text" placeholder="breed" />
             </div>
 
-            <div className="input">
+            <div className="petmgm-input">
               <label htmlFor="dob">Date of Birth</label>
               <input type="date" placeholder="" />
             </div>
