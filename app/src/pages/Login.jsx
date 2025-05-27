@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import '../assets/Login.css';
 import { auth } from "../firebase.jsx"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom'; 
 
 import user_icon from '../assets/images/person.png';
 import email_icon from '../assets/images/email.png';
@@ -13,21 +14,24 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => { //asynchronous, so can use await
     try {
       if (action === "Sign Up") {
-        await createUserWithEmailAndPassword(auth, email, password);
-        console.log("User created successfully");
+        await createUserWithEmailAndPassword(auth, email, password); // await pauses the function until Firebase call is done
+        console.log("User created successfully"); //shows this message in inspect element
+        navigate('/home');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        console.log("User signed in successfully");
+        console.log("User signed in successfully"); 
+        navigate('/home');
       }
     } catch (error) {
       console.error("Full error:", error); // Keep this for debugging
 
       if (error.code === 'auth/email-already-in-use') {
-        setError("This email is already registered. Try logging in instead.");
+        setError("This email is already registered. Try logging in instead."); //literally appears on user's screen
       } else if (error.code === 'auth/weak-password') {
         setError("Password is too weak. Please choose a stronger password.");
       } else if (error.code === 'auth/user-not-found') {
@@ -46,12 +50,13 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async () => { 
     setError(""); // Clear previous errors
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       console.log("Google sign-in successful:", result.user);
+      navigate('/home');
     } catch (error) {
       console.error("Google sign-in error:", error);
       setError("Google sign-in failed. Please try again.");
@@ -91,7 +96,7 @@ const Login = () => {
 
           <div className="submit-button-container">
             <button className="submit-button" onClick={handleSubmit}>Submit</button>
-          </div>
+          </div> {/* settle routing */}
 
         </div>
 
@@ -105,18 +110,6 @@ const Login = () => {
             {error}
           </div>
         )}
-
-        {/* {action === "Login" ? (
-          <button className="google-button">
-            <img src="/google-icon.png" alt="Google" className="google-icon" />
-            Sign in with Google
-          </button>
-        ) : (
-          <button className="google-button">
-            <img src="/google-icon.png" alt="Google" className="google-icon" />
-            Register with Google
-          </button>
-        )} */}
 
         {/* Add Google Sign-In Button */}
         <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
@@ -140,7 +133,7 @@ const Login = () => {
         </div>
 
         {action === "Login" ? <div className='forgot-password'> Lost Password? <span>Click Here!</span> </div>
-          : <div></div>}
+          : <div></div>}  {/* settle routing */}
 
         <div className='submit-container'>
           <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div>
