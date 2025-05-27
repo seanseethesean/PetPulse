@@ -64,4 +64,4 @@ const PetMgm = () => {
   );
 };
 
-export default PetMgm
+export default PetMgm;

@@ -15,16 +15,13 @@ function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/petmgmt" element={<PetMgm />} />
+              <Route path="/petmgm" element={<PetMgm />} />
             </Routes>
           </div>
         </div>
       </Router>
     );
 
-    // return (
-    //     <PetMgm />
-    // )
 }
 
 export default App;
