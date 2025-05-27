@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './Components/Navbar';
 import Home from './pages/Home';
-//import Login from './pages/Login';
+import PetMgm from './Components/PetMgm';
+import Login from './pages/Login';
 
 function App() {
     // return (
@@ -28,7 +29,9 @@ function App() {
 
     return (
         <div>
-             <Navbar />
+          <Navbar />
+          <Home />
+          {/* <PetMgm /> */}
         </div>
     )
 }
