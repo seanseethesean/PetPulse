@@ -48,3 +48,19 @@
     outline: 0;
     align-items: middle;
 }
+
+/* This was in your Index.css, fix this part */
+/* *{ 
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #3B3B98;
+  }
+  a{
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+    cursor: pointer;
+  }   */
