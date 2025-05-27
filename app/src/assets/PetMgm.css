@@ -1,0 +1,94 @@
+.profile {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px;
+  background-color: #7390c7;
+  min-height: 100vh;
+}
+
+.select-pet,
+.newpet {
+  background-color: #FFF8F0;
+  padding: 30px;
+  border-radius: 16px;
+  width: 500px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* the bg container colour  */
+.newpet { 
+  background-color: #FFF8F0;
+  padding: 30px;
+  border-radius: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: white;
+  margin: 0 auto;
+}
+
+.add-pet-button {
+  background-color: #db327b;
+  color: white;
+  padding: 12px 32px;
+  font-size: 30px;
+  font-weight: bold;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: background-color 0.3s ease;
+}
+
+.add-pet-button:hover {
+  background-color: #255ec2;
+}
+
+/* Inputs container */
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual input row */
+.input {
+  display: flex;
+  align-items: center;
+  background-color: #a8a8a8;
+  padding: 8px 12px;
+  border-radius: 20px;
+  max-height: 50px;
+  max-width: 300px;
+}
+
+/* Input icons */
+.input img {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+/* Text and date inputs */
+.input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #333;
+}
+
+/* Placeholder style */
+.input input::placeholder {
+  color: #333;
+}
+
+/* Upload input tweak (if you keep type="uploadimg", which is invalid HTML) */
+.input input[type="uploadimg"] {
+  cursor: pointer;
+  font-style: italic;
+  color: #3271db;
+}

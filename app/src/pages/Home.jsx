@@ -1,17 +1,30 @@
-import '../assets/Home.css'
+import "../assets/Home.css"
+import Navbar from "../Components/Navbar"
 
 const Home = () => {
-  
-    const handleClick = () => {
-      console.log("Hello");
-    }
-  
-    return ( 
-      <div className="home" style = {{marginLeft: '100px'}}>
-        <h2> Homepage </h2>
-        <button onClick = {handleClick}> Click here </button>
+  //   const handleClick = () => {
+  //     console.log("Hello");
+  //   }
+
+  //   return (
+  //     <div className="home" style = {{marginLeft: '100px'}}>
+  //       <h2> Homepage </h2>
+  //       <button onClick = {handleClick}> Click here </button>
+  //     </div>
+  //   );
+  // }
+
+  return (
+    <div className="home container">
+      <div className="home-text">
+        <h1>Welcome back, Whisky!</h1>
+        <h2>Revolutionizing pet care for you</h2>
+        <p>Here, we are determined to help you stay organized, connected, and confident 
+          in giving your pets the love and attention they deserve</p>
+        <button className='startBtn'>Get Started!</button>
       </div>
-    );
-  }
-   
-  export default Home;
+    </div>
+  )
+}
+
+export default Home

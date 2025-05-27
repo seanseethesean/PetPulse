@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 /* base styles */
-* {
+/* * {
   margin: 0;
   font-family: "Quicksand";
   color: #333;
@@ -32,4 +32,19 @@
   max-width: 600px;
   margin: 40px auto;
   padding: 20px;
+} */
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: #3B3B98;
+}
+a{
+  text-decoration: none;
+  color: inherit;
+  line-height: 1;
+  cursor: pointer;
 }
