@@ -31,7 +31,7 @@ const PetMgm = () => {
           <button className="add-pet-button">Add New Pet</button>
 
           <div className="petmgm-inputs">
-            <div className="input">
+            <div className="petmgm-input">
               <img src={pet_icon} alt="" />
               <input type="text" placeholder="pet name" />
             </div>
