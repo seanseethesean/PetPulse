@@ -26,7 +26,6 @@
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   text-align: center;
-  color: white;
   margin: 0 auto;
 }
 
@@ -52,6 +51,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  align-items: center;
 }
 
 /* Individual input row */
@@ -67,8 +67,8 @@
 
 /* Input icons */
 .petmgm-input img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   margin-right: 12px;
 }
 
@@ -79,6 +79,7 @@
   outline: none;
   background: transparent;
   color: #333;
+  font-size: 17.5px;
 }
 
 /* Placeholder style */
@@ -86,8 +87,8 @@
   color: #333;
 }
 
-/* Upload input tweak (if you keep type="uploadimg", which is invalid HTML) */
-.petmgm-input input[type="uploadimg"] {
+/* Upload input tweak (if you keep type="uploading", which is invalid HTML) */
+.petmgm-input input[type="uploading"] {
   cursor: pointer;
   font-style: italic;
   color: #3271db;
