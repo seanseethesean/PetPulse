@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import PetMgm from './components/PetMgm';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
     return (
@@ -14,9 +15,11 @@ function App() {
           <div className="content">
             <Routes>
               <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/home" element={<Home />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/petmgm" element={<PetMgm />} />
-            </Routes>
+             </Routes>
           </div>
         </div>
       </Router>
