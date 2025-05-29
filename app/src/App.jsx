@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import PetMgm from './components/PetMgm';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
+import TaskChecklist from './pages/TaskChecklist';
 
 function App() {
     return (

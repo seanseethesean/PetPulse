@@ -15,7 +15,7 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
 
   const handleResetPassword = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // needed so browser won't perform full page refresh and lose all react states
 
     if (!email) {
       setError('Please enter your email address');
@@ -72,28 +72,21 @@ const ForgotPassword = () => {
               placeholder='Enter your email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-            />
+              disabled={isLoading} />
           </div>
 
           {error && (
-            <div className="error-message">
-              {error}
-            </div>
+            <div className="error-message"> {error} </div>
           )}
 
           {message && (
-            <div className="success-message">
-              {message}
-            </div>
+            <div className="success-message"> {message} </div>
           )}
 
           <div className="button-container">
-            <button
-              type="submit"
+            <button type="submit"
               className="reset-button"
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               {isLoading ? 'Sending...' : 'Send Reset Email'}
             </button>
           </div>
