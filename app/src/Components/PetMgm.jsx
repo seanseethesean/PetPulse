@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import "../assets/PetMgm.css"
+import Navbar from "../components/Navbar"
 
 import pet_icon from '../assets/images/petname.png';
 import dob_icon from '../assets/images/dob.png';
@@ -13,6 +14,7 @@ const PetMgm = () => {
   
   return (
       <div className='profile'> 
+        <div> <Navbar></Navbar></div>
         <div className='select-pet'>
           <label htmlFor="petDropdown">Select Pet: </label>
           <select
