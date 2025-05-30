@@ -77,10 +77,10 @@ const Login = () => {
         </div>
 
         <div className='login-inputs'>
-          {action !== "Login" && <div className='login-input'>
+          {/* {action !== "Login" && <div className='login-input'>
             <img src={user_icon} alt='' />
             <input type='text' placeholder='Username' /> </div>
-          }
+          } */}
 
           <div className='login-input'>
             <img src={email_icon} alt='' />
