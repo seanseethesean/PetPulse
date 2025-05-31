@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
+import { useNavigate } from 'react-router-dom';
 // import Navbar from "../components/Navbar"
 
-import { getAuth } from "firebase/auth";
-import { query, where } from "firebase/firestore";
+// import { getAuth } from "firebase/auth";
+// import { query, where } from "firebase/firestore";
 import { db, storage } from '../firebase/firebase.js';
 import { collection, addDoc, getDocs } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
@@ -17,6 +18,7 @@ const PetMgm = () => {
   // const [action, setAction] = useState("New Pet")
   // const [selectedPet, setSelectedPet] = useState("");
   // const petList = ["Bella", "Whisky", "Tiger", "Tofu"];
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     petName: "",
     animalType: "",
@@ -28,6 +30,7 @@ const PetMgm = () => {
   const [imageFile, setImageFile] = useState(null)
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -47,6 +50,24 @@ const PetMgm = () => {
   }
 
   const handleSubmit = async () => {
+    // if (!formData.petName || !formData.animalType) {
+    //   alert("Please fill in all required fields before submitting.");
+    //   return;
+    // }
+
+    const newErrors = {};
+
+    if (!formData.petName) newErrors.petName = "required";
+    if (!formData.animalType) newErrors.animalType = "required";
+    if (!formData.breed) newErrors.breed = "required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({}); 
+
     try {
       let imageURL = ""
       if (imageFile) {
@@ -59,7 +80,7 @@ const PetMgm = () => {
       await addDoc(collection(db, "pets"), petData)
       alert("Pet added!")
 
-      // Reset
+      // reset to allow adding of new pet
       setFormData({
         petName: "",
         animalType: "",
@@ -69,7 +90,7 @@ const PetMgm = () => {
       })
       setImageFile(null)
 
-      // Reload pet list
+      // reloads the pet list
       const querySnapshot = await getDocs(collection(db, "pets"))
       const pets = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -83,13 +104,19 @@ const PetMgm = () => {
 
   return (
     <div className="profile">
-      {/* <div> <Navbar></Navbar></div> */}
       <div className="select-pet">
         <label htmlFor="petDropdown">Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
-          onChange={(e) => setSelectedPet(e.target.value)}>
+          onChange={(e) => {
+            const selected = e.target.value;
+            setSelectedPet(selected);
+            if (selected) {
+              navigate("/home"); 
+            }
+          }}
+      >
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
@@ -115,6 +142,7 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="pet name"
             />
+            {errors.petName && <p className="error-text">{errors.petName}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -126,6 +154,7 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="animal type"
             />
+            {errors.animalType && <p className="error-text">{errors.animalType}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -137,6 +166,7 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="breed"
               />
+              {errors.breed && <p className="error-text">{errors.breed}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -150,17 +180,16 @@ const PetMgm = () => {
 
           </div>
 
-          <div className="blank">
+          {/* need to pay to use firebase storage */}
+          {/* <div className="blank">
             <p>Upload an image of your pet!</p>
-            {/* <label htmlFor="petImage"></label>
-            <input type="file" id="petImage" accept="image/*" /> */}
             <input
               type="file"
               id="petImage"
               accept="image/*"
               onChange={(e) => setImageFile(e.target.files[0])}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

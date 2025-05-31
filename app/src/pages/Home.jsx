@@ -29,7 +29,7 @@ const Home = () => {
         <h2>Revolutionizing pet care for you</h2>
         <p>Here, we are determined to help you stay organized, connected, and confident 
           in giving your pets the love and attention they deserve</p>
-        <button onClick={goToPetMgm} className='startBtn'>Get Started!</button>
+        {/* <button onClick={goToPetMgm} className='startBtn'>Get Started!</button> */}
         {/* <button onClick={goToPetMgm}> This button goes to pet management </button> */}
       </div>
     </div>
