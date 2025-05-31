@@ -55,4 +55,5 @@ nav ul li {
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    max-height: 400px;
   }

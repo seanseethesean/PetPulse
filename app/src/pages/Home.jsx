@@ -25,7 +25,7 @@ const Home = () => {
     <div className="home container">
       <div className="home-text">
         <div> <Navbar></Navbar></div>
-        <h1>Welcome back, Whisky!</h1>
+        <h1>Welcome back, "petname - i need to route it"!</h1>
         <h2>Revolutionizing pet care for you</h2>
         <p>Here, we are determined to help you stay organized, connected, and confident 
           in giving your pets the love and attention they deserve</p>
