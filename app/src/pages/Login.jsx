@@ -4,7 +4,7 @@ import { auth } from '../firebase/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-import user_icon from '../assets/images/person.png';
+// import user_icon from '../assets/images/person.png';
 import email_icon from '../assets/images/email.png';
 import password_icon from '../assets/images/password.png';
 import petpulse_icon from '../assets/images/Petpulse.png';
@@ -21,11 +21,11 @@ const Login = () => {
       if (action === "Sign Up") {
         await createUserWithEmailAndPassword(auth, email, password); // await pauses the function until Firebase call is done
         console.log("User created successfully"); //shows this message in inspect element
-        navigate('/home');
+        navigate('/petmgm');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         console.log("User signed in successfully");
-        navigate('/home');
+        navigate('/petmgm');
       }
     } catch (error) {
       console.error("Full error:", error); // Keep this for debugging
@@ -56,7 +56,7 @@ const Login = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       console.log("Google sign-in successful:", result.user);
-      navigate('/home');
+      navigate('/petmgm');
     } catch (error) {
       console.error("Google sign-in error:", error);
       setError("Google sign-in failed. Please try again.");

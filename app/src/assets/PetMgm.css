@@ -1,10 +1,11 @@
+/* bg colour */
 .profile {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   gap: 40px;
   padding: 40px;
-  background-color: #7390c7;
+  background-color: #5f88d9; 
   min-height: 100vh;
 }
 
@@ -91,5 +92,11 @@
 .petmgm-input input[type="uploading"] {
   cursor: pointer;
   font-style: italic;
-  color: #3271db;
+  color: #1759cc;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
 }
