@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom"
 // import Navbar from "../components/Navbar"
 
 // import { getAuth } from "firebase/auth";
 // import { query, where } from "firebase/firestore";
-import { db, storage } from '../firebase/firebase.js';
+import { db, storage } from "../firebase/firebase.js"
 import { collection, addDoc, getDocs } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
@@ -18,7 +18,7 @@ const PetMgm = () => {
   // const [action, setAction] = useState("New Pet")
   // const [selectedPet, setSelectedPet] = useState("");
   // const petList = ["Bella", "Whisky", "Tiger", "Tofu"];
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     petName: "",
     animalType: "",
@@ -30,7 +30,7 @@ const PetMgm = () => {
   const [imageFile, setImageFile] = useState(null)
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -55,18 +55,18 @@ const PetMgm = () => {
     //   return;
     // }
 
-    const newErrors = {};
+    const newErrors = {}
 
-    if (!formData.petName) newErrors.petName = "required";
-    if (!formData.animalType) newErrors.animalType = "required";
-    if (!formData.breed) newErrors.breed = "required";
+    if (!formData.petName) newErrors.petName = "required"
+    if (!formData.animalType) newErrors.animalType = "required"
+    if (!formData.breed) newErrors.breed = "required"
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      setErrors(newErrors)
+      return
     }
-    
-    setErrors({}); 
+
+    setErrors({})
 
     try {
       let imageURL = ""
@@ -110,13 +110,14 @@ const PetMgm = () => {
           id="petDropdown"
           value={selectedPet}
           onChange={(e) => {
-            const selected = e.target.value;
-            setSelectedPet(selected);
+            const selected = e.target.value
+            setSelectedPet(selected)
             if (selected) {
-              navigate("/home"); 
+              console.log("Saving to localStorage:", selected)
+              localStorage.setItem("selectedPetName", selected) 
+              navigate("/home")
             }
-          }}
-      >
+          }}>
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
@@ -130,7 +131,9 @@ const PetMgm = () => {
       </div>
 
       <div className="newpet">
-        <button className="add-pet-button" onClick={handleSubmit}>Add New Pet</button>
+        <button className="add-pet-button" onClick={handleSubmit}>
+          Add New Pet
+        </button>
 
         <div className="petmgm-inputs">
           <div className="petmgm-input">
@@ -154,7 +157,9 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="animal type"
             />
-            {errors.animalType && <p className="error-text">{errors.animalType}</p>}
+            {errors.animalType && (
+              <p className="error-text">{errors.animalType}</p>
+            )}
           </div>
 
           <div className="petmgm-input">
@@ -165,8 +170,8 @@ const PetMgm = () => {
               value={formData.breed}
               onChange={handleChange}
               placeholder="breed"
-              />
-              {errors.breed && <p className="error-text">{errors.breed}</p>}
+            />
+            {errors.breed && <p className="error-text">{errors.breed}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -177,7 +182,6 @@ const PetMgm = () => {
               value={formData.dob}
               onChange={handleChange}
             />
-
           </div>
 
           {/* need to pay to use firebase storage */}
