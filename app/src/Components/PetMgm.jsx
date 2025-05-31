@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
 // import Navbar from "../components/Navbar"
 
+import { getAuth } from "firebase/auth";
+import { query, where } from "firebase/firestore";
 import { db, storage } from "../firebase"
 import { collection, addDoc, getDocs } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
