@@ -1,6 +1,8 @@
 import express from "express";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase.js";
+import { createPetSchema } from "../types/pets.js";
+import { validateRequestData } from "../request-validation.js";
 
 const router = express.Router();
 
@@ -20,6 +22,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const petData = req.body;
+    await validateRequestData(petData, createPetSchema);
     const petsCollection = collection(db, "Pets");
     const docRef = await addDoc(petsCollection, petData);
     res.status(201).json({ success: true, message: "Pet added!", id: docRef.id });
