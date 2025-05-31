@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
 import { useNavigate } from "react-router-dom"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/firebase";
 // import Navbar from "../components/Navbar"
 
 import pet_icon from "../assets/images/petname.png"
@@ -93,13 +95,11 @@ const PetMgm = () => {
       })
       setImageFile(null)
 
-      // reloads the pet list
-      const querySnapshot = await getDocs(collection(db, "pets"))
-      const pets = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setPetList(pets)
+      // reloads the pet list from your backend API
+      const res = await fetch(`${API}/api/pets`)
+      const data = await res.json()
+      if (data.success) setPetList(data.pets)
+
     } catch (err) {
       console.error("Error adding pet:", err)
     }
@@ -117,7 +117,7 @@ const PetMgm = () => {
             setSelectedPet(selected)
             if (selected) {
               console.log("Saving to localStorage:", selected)
-              localStorage.setItem("selectedPetName", selected) 
+              localStorage.setItem("selectedPetName", selected)
               navigate("/home")
             }
           }}>
