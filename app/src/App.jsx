@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import PetMgm from './components/PetMgm';
+import PetMgm from './pages/PetMgm';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import TaskChecklist from './pages/TaskChecklist';

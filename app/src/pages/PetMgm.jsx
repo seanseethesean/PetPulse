@@ -4,7 +4,7 @@ import "../assets/PetMgm.css"
 
 import { getAuth } from "firebase/auth";
 import { query, where } from "firebase/firestore";
-import { db, storage } from "../firebase"
+import { db, storage } from "./app/src/firebase/firebase.js"
 import { collection, addDoc, getDocs } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
