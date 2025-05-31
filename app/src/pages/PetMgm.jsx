@@ -3,12 +3,6 @@ import "../assets/PetMgm.css"
 import { useNavigate } from 'react-router-dom';
 // import Navbar from "../components/Navbar"
 
-// import { getAuth } from "firebase/auth";
-// import { query, where } from "firebase/firestore";
-import { db, storage } from '../firebase/firebase.js';
-import { collection, addDoc, getDocs } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-
 import pet_icon from "../assets/images/petname.png"
 // import dob_icon from "../assets/images/dob.png"
 import animaltype_icon from "../assets/images/animaltype.png"
@@ -31,18 +25,20 @@ const PetMgm = () => {
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchPets = async () => {
-      const querySnapshot = await getDocs(collection(db, "pets"))
-      const pets = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setPetList(pets)
-    }
-    fetchPets()
-  }, [])
+      try {
+        const res = await fetch(`${API}/api/pets`);
+        const data = await res.json();
+        if (data.success) setPetList(data.pets);
+      } catch (err) {
+        console.error("Failed to fetch pets:", err);
+      }
+    };
+    fetchPets();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -65,8 +61,8 @@ const PetMgm = () => {
       setErrors(newErrors);
       return;
     }
-    
-    setErrors({}); 
+
+    setErrors({});
 
     try {
       let imageURL = ""
@@ -77,7 +73,14 @@ const PetMgm = () => {
       }
 
       const petData = { ...formData, imageURL }
-      await addDoc(collection(db, "pets"), petData)
+      await fetch(`${API}/api/pets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(petData)
+      });
+
       alert("Pet added!")
 
       // reset to allow adding of new pet
@@ -113,10 +116,10 @@ const PetMgm = () => {
             const selected = e.target.value;
             setSelectedPet(selected);
             if (selected) {
-              navigate("/home"); 
+              navigate("/home");
             }
           }}
-      >
+        >
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
@@ -165,8 +168,8 @@ const PetMgm = () => {
               value={formData.breed}
               onChange={handleChange}
               placeholder="breed"
-              />
-              {errors.breed && <p className="error-text">{errors.breed}</p>}
+            />
+            {errors.breed && <p className="error-text">{errors.breed}</p>}
           </div>
 
           <div className="petmgm-input">
