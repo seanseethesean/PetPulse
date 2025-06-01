@@ -11,13 +11,12 @@ import animaltype_icon from "../assets/images/animaltype.png"
 const PetMgm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    petName: "",
+    name: "",
     animalType: "",
     breed: "",
-    dob: ""
+    birthday: ""
   })
 
-  const [imageFile, setImageFile] = useState(null)
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
@@ -42,7 +41,7 @@ const PetMgm = () => {
   const handleSubmit = async () => {
     const newErrors = {};
 
-    if (!formData.petName) newErrors.petName = "required";
+    if (!formData.name) newErrors.name = "required";
     if (!formData.animalType) newErrors.animalType = "required";
     if (!formData.breed) newErrors.breed = "required";
 
@@ -61,12 +60,11 @@ const PetMgm = () => {
 
       // reset to allow adding of new pet
       setFormData({
-        petName: "",
+        name: "",
         animalType: "",
         breed: "",
-        dob: ""
+        birthday: ""
       })
-      setImageFile(null)
 
       // reloads the pet list
       const querySnapshot = await getDocs(collection(db, "Pets"))
@@ -99,8 +97,8 @@ const PetMgm = () => {
             <option disabled>No pets yet</option>
           ) : (
             petList.map((pet) => (
-              <option key={pet.id} value={pet.petName}>
-                {pet.petName}
+              <option key={pet.id} value={pet.name}>
+                {pet.name}
               </option>
             ))
           )}
@@ -115,12 +113,12 @@ const PetMgm = () => {
             <img src={pet_icon} alt="" />
             <input
               type="text"
-              name="petName"
-              value={formData.petName}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               placeholder="pet name"
             />
-            {errors.petName && <p className="error-text">{errors.petName}</p>}
+            {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -148,11 +146,11 @@ const PetMgm = () => {
           </div>
 
           <div className="petmgm-input">
-            <label htmlFor="dob">Date of Birth</label>
+            <label htmlFor="birthday">Date of Birth</label>
             <input
               type="date"
-              name="dob"
-              value={formData.dob}
+              name="birthday"
+              value={formData.birthday}
               onChange={handleChange}
             />
 
