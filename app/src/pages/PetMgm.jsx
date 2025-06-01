@@ -109,7 +109,7 @@ const PetMgm = () => {
   return (
     <div className="profile">
       <div className="select-pet">
-        <label htmlForm="petDropdown">Select Pet: </label>
+        <label htmlFor="petDropdown">Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
