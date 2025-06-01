@@ -27,7 +27,7 @@ const PetMgm = () => {
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
-  const API = import.meta.env.VITE_API_URL;
+  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -40,7 +40,7 @@ const PetMgm = () => {
       }
     };
     fetchPets();
-  }, []);
+  }, [API]);
 
   const handleChange = (e) => {
     const { name, value } = e.target

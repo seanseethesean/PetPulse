@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import petRoutes from "./routes/pet.routes.js";
+import dotenv from "dotenv";
+dotenv.config(); // Load environment variables from .env file
 
 const app = express();
 const PORT = process.env.PORT || 5001;
