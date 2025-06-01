@@ -145,7 +145,7 @@ const PetMgm = () => {
             <img src={pet_icon} alt="" />
             <input
               type="text"
-              name="petName"
+              name="name"
               value={formData.name}
               onChange={handleChange}
               placeholder="pet name"
@@ -183,7 +183,7 @@ const PetMgm = () => {
             <label htmlFor="dob">Date of Birth</label>
             <input
               type="date"
-              name="dob"
+              name="birthday"
               value={formData.birthday}
               onChange={handleChange}
             />
