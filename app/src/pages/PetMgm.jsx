@@ -40,7 +40,7 @@ const PetMgm = () => {
       }
     };
     fetchPets();
-  }, [API]);
+  }, );
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -109,7 +109,7 @@ const PetMgm = () => {
   return (
     <div className="profile">
       <div className="select-pet">
-        <label htmlFor="petDropdown">Select Pet: </label>
+        <label htmlForm="petDropdown">Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
