@@ -23,15 +23,20 @@ const PetMgm = () => {
 
   useEffect(() => {
     const fetchPets = async () => {
-      const querySnapshot = await getDocs(collection(db, "Pets"))
-      const pets = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setPetList(pets)
-    }
-    fetchPets()
-  }, [])
+      try {
+        const response = await fetch("/api/pets");
+        const data = await response.json();
+        if (data.success) {
+          setPetList(data.pets);
+        } else {
+          console.error("Failed to fetch pets:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching pets:", err);
+      }
+    };
+    fetchPets();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target
