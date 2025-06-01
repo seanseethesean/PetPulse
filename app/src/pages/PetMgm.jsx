@@ -1,46 +1,38 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
-import { useNavigate } from "react-router-dom"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase/firebase";
-// import Navbar from "../components/Navbar"
+import { useNavigate } from 'react-router-dom';
+import { db, storage } from '../firebase/firebase.js';
+import { collection, addDoc, getDocs } from "firebase/firestore"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 import pet_icon from "../assets/images/petname.png"
-// import dob_icon from "../assets/images/dob.png"
 import animaltype_icon from "../assets/images/animaltype.png"
-// import upload_icon from "../assets/images/upload.png"
 
 const PetMgm = () => {
-  // const [action, setAction] = useState("New Pet")
-  // const [selectedPet, setSelectedPet] = useState("");
-  // const petList = ["Bella", "Whisky", "Tiger", "Tofu"];
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",           // <-- changed from petName
+    petName: "",
     animalType: "",
     breed: "",
-    birthday: "",       // <-- changed from dob
-    imageURL: ""
+    dob: ""
   })
 
   const [imageFile, setImageFile] = useState(null)
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
-  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchPets = async () => {
-      try {
-        const res = await fetch(`${API}/api/pets`);
-        const data = await res.json();
-        if (data.success) setPetList(data.pets);
-      } catch (err) {
-        console.error("Failed to fetch pets:", err);
-      }
-    };
-    fetchPets();
-  }, );
+      const querySnapshot = await getDocs(collection(db, "pets"))
+      const pets = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setPetList(pets)
+    }
+    fetchPets()
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -53,19 +45,18 @@ const PetMgm = () => {
     //   return;
     // }
 
-    const newErrors = {}
+    const newErrors = {};
 
-    if (!formData.name) newErrors.name = "required"
-    if (!formData.animalType) newErrors.animalType = "required"
-    if (!formData.breed) newErrors.breed = "required"
-    if (!formData.birthday) newErrors.birthday = "required"  // CHANGED
+    if (!formData.petName) newErrors.petName = "required";
+    if (!formData.animalType) newErrors.animalType = "required";
+    if (!formData.breed) newErrors.breed = "required";
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
+      setErrors(newErrors);
+      return;
     }
-
-    setErrors({});
+    
+    setErrors({}); 
 
     try {
       let imageURL = ""
@@ -76,31 +67,25 @@ const PetMgm = () => {
       }
 
       const petData = { ...formData, imageURL }
-      await fetch(`${API}/api/pets`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(petData)
-      });
-
+      await addDoc(collection(db, "pets"), petData)
       alert("Pet added!")
 
       // reset to allow adding of new pet
       setFormData({
-        name: "",
+        petName: "",
         animalType: "",
         breed: "",
-        birthday: "",
-        imageURL: ""
+        dob: ""
       })
       setImageFile(null)
 
-      // reloads the pet list from your backend API
-      const res = await fetch(`${API}/api/pets`)
-      const data = await res.json()
-      if (data.success) setPetList(data.pets)
-
+      // reloads the pet list
+      const querySnapshot = await getDocs(collection(db, "pets"))
+      const pets = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setPetList(pets)
     } catch (err) {
       console.error("Error adding pet:", err)
     }
@@ -114,21 +99,19 @@ const PetMgm = () => {
           id="petDropdown"
           value={selectedPet}
           onChange={(e) => {
-            const selected = e.target.value
-            setSelectedPet(selected)
+            const selected = e.target.value;
+            setSelectedPet(selected);
             if (selected) {
-              console.log("Saving to localStorage:", selected)
-              localStorage.setItem("selectedPetName", selected)
-              navigate("/home")
+              navigate("/home"); 
             }
-          }}>
-
+          }}
+      >
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
             petList.map((pet) => (
-              <option key={pet.id} value={pet.name}>
-                {pet.name}
+              <option key={pet.id} value={pet.petName}>
+                {pet.petName}
               </option>
             ))
           )}
@@ -136,21 +119,19 @@ const PetMgm = () => {
       </div>
 
       <div className="newpet">
-        <button className="add-pet-button" onClick={handleSubmit}>
-          Add New Pet
-        </button>
+        <button className="add-pet-button" onClick={handleSubmit}>Add New Pet</button>
 
         <div className="petmgm-inputs">
           <div className="petmgm-input">
             <img src={pet_icon} alt="" />
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="petName"
+              value={formData.petName}
               onChange={handleChange}
               placeholder="pet name"
             />
-            {errors.name && <p className="error-text">{errors.name}</p>}
+            {errors.petName && <p className="error-text">{errors.petName}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -162,9 +143,7 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="animal type"
             />
-            {errors.animalType && (
-              <p className="error-text">{errors.animalType}</p>
-            )}
+            {errors.animalType && <p className="error-text">{errors.animalType}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -175,30 +154,20 @@ const PetMgm = () => {
               value={formData.breed}
               onChange={handleChange}
               placeholder="breed"
-            />
-            {errors.breed && <p className="error-text">{errors.breed}</p>}
+              />
+              {errors.breed && <p className="error-text">{errors.breed}</p>}
           </div>
 
           <div className="petmgm-input">
             <label htmlFor="dob">Date of Birth</label>
             <input
               type="date"
-              name="birthday"
-              value={formData.birthday}
+              name="dob"
+              value={formData.dob}
               onChange={handleChange}
             />
-          </div>
 
-          {/* need to pay to use firebase storage */}
-          {/* <div className="blank">
-            <p>Upload an image of your pet!</p>
-            <input
-              type="file"
-              id="petImage"
-              accept="image/*"
-              onChange={(e) => setImageFile(e.target.files[0])}
-            />
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
