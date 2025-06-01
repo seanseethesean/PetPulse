@@ -24,7 +24,7 @@ const PetMgm = () => {
 
   useEffect(() => {
     const fetchPets = async () => {
-      const querySnapshot = await getDocs(collection(db, "pets"))
+      const querySnapshot = await getDocs(collection(db, "Pets"))
       const pets = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
@@ -40,11 +40,6 @@ const PetMgm = () => {
   }
 
   const handleSubmit = async () => {
-    // if (!formData.petName || !formData.animalType) {
-    //   alert("Please fill in all required fields before submitting.");
-    //   return;
-    // }
-
     const newErrors = {};
 
     if (!formData.petName) newErrors.petName = "required";
@@ -59,15 +54,9 @@ const PetMgm = () => {
     setErrors({}); 
 
     try {
-      let imageURL = ""
-      if (imageFile) {
-        const imageRef = ref(storage, `pets/${Date.now()}_${imageFile.name}`)
-        await uploadBytes(imageRef, imageFile)
-        imageURL = await getDownloadURL(imageRef)
-      }
 
-      const petData = { ...formData, imageURL }
-      await addDoc(collection(db, "pets"), petData)
+      const petData = { ...formData}
+      await addDoc(collection(db, "Pets"), petData)
       alert("Pet added!")
 
       // reset to allow adding of new pet
@@ -80,7 +69,7 @@ const PetMgm = () => {
       setImageFile(null)
 
       // reloads the pet list
-      const querySnapshot = await getDocs(collection(db, "pets"))
+      const querySnapshot = await getDocs(collection(db, "Pets"))
       const pets = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
