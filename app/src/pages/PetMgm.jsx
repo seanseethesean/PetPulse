@@ -24,7 +24,7 @@ const PetMgm = () => {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch("/api/pets");
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
         const data = await response.json();
         if (data.success) {
           setPetList(data.pets);
@@ -54,34 +54,41 @@ const PetMgm = () => {
       setErrors(newErrors);
       return;
     }
+
+    setErrors({});
     
-    setErrors({}); 
-
     try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      const petData = { ...formData}
-      await addDoc(collection(db, "Pets"), petData)
-      alert("Pet added!")
+      const result = await response.json();
+      if (result.success) {
+        alert("Pet added!");
+        setFormData({
+          name: "",
+          animalType: "",
+          breed: "",
+          birthday: ""
+        });
 
-      // reset to allow adding of new pet
-      setFormData({
-        name: "",
-        animalType: "",
-        breed: "",
-        birthday: ""
-      })
-
-      // reloads the pet list
-      const querySnapshot = await getDocs(collection(db, "Pets"))
-      const pets = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setPetList(pets)
+        // re-fetch pets
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const data = await res.json();
+        if (data.success) {
+          setPetList(data.pets);
+        }
+      } else {
+        console.error("Failed to add pet:", result.error);
+      }
     } catch (err) {
-      console.error("Error adding pet:", err)
+      console.error("Error submitting pet:", err);
     }
-  }
+  };
 
   return (
     <div className="profile">
@@ -95,10 +102,10 @@ const PetMgm = () => {
             setSelectedPet(selected);
             if (selected) {
               localStorage.setItem("selectedPetName", selected); // ✅ Save it
-              navigate("/home"); 
+              navigate("/home");
             }
           }}
-      >
+        >
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
@@ -147,8 +154,8 @@ const PetMgm = () => {
               value={formData.breed}
               onChange={handleChange}
               placeholder="breed"
-              />
-              {errors.breed && <p className="error-text">{errors.breed}</p>}
+            />
+            {errors.breed && <p className="error-text">{errors.breed}</p>}
           </div>
 
           <div className="petmgm-input">
