@@ -40,7 +40,7 @@ const PetMgm = () => {
       }
     };
     fetchPets();
-  }, [API]);
+  }, );
 
   const handleChange = (e) => {
     const { name, value } = e.target
