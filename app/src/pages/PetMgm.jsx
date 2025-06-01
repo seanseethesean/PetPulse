@@ -16,10 +16,10 @@ const PetMgm = () => {
   // const petList = ["Bella", "Whisky", "Tiger", "Tofu"];
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    petName: "",
+    name: "",           // <-- changed from petName
     animalType: "",
     breed: "",
-    dob: "",
+    birthday: "",       // <-- changed from dob
     imageURL: ""
   })
 
@@ -55,9 +55,10 @@ const PetMgm = () => {
 
     const newErrors = {}
 
-    if (!formData.petName) newErrors.petName = "required"
+    if (!formData.name) newErrors.name = "required"
     if (!formData.animalType) newErrors.animalType = "required"
     if (!formData.breed) newErrors.breed = "required"
+    if (!formData.birthday) newErrors.birthday = "required"  // CHANGED
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -87,10 +88,10 @@ const PetMgm = () => {
 
       // reset to allow adding of new pet
       setFormData({
-        petName: "",
+        name: "",
         animalType: "",
         breed: "",
-        dob: "",
+        birthday: "",
         imageURL: ""
       })
       setImageFile(null)
@@ -126,8 +127,8 @@ const PetMgm = () => {
             <option disabled>No pets yet</option>
           ) : (
             petList.map((pet) => (
-              <option key={pet.id} value={pet.petName}>
-                {pet.petName}
+              <option key={pet.id} value={pet.name}>
+                {pet.name}
               </option>
             ))
           )}
@@ -145,11 +146,11 @@ const PetMgm = () => {
             <input
               type="text"
               name="petName"
-              value={formData.petName}
+              value={formData.name}
               onChange={handleChange}
               placeholder="pet name"
             />
-            {errors.petName && <p className="error-text">{errors.petName}</p>}
+            {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
 
           <div className="petmgm-input">
@@ -183,7 +184,7 @@ const PetMgm = () => {
             <input
               type="date"
               name="dob"
-              value={formData.dob}
+              value={formData.birthday}
               onChange={handleChange}
             />
           </div>
