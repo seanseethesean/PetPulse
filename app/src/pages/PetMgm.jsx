@@ -101,7 +101,7 @@ const PetMgm = () => {
             const selected = e.target.value;
             setSelectedPet(selected);
             if (selected) {
-              localStorage.setItem("selectedPetName", selected); // ✅ Save it
+              localStorage.setItem("selectedPetName", selected);
               navigate("/home");
             }
           }}
