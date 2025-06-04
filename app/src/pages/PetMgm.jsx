@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import "../assets/PetMgm.css"
+import { useEffect, useState } from "react";
+import "../assets/PetMgm.css";
 import { useNavigate } from 'react-router-dom';
 
-import pet_icon from "../assets/images/petname.png"
-import animaltype_icon from "../assets/images/animaltype.png"
+import pet_icon from "../assets/images/petname.png";
+import animaltype_icon from "../assets/images/animaltype.png";
 
 const PetMgm = () => {
   const navigate = useNavigate();
@@ -37,8 +37,8 @@ const PetMgm = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const handleSubmit = async () => {
@@ -91,7 +91,7 @@ const PetMgm = () => {
   return (
     <div className="profile">
       <div className="select-pet">
-        <label htmlFor="petDropdown">Select Pet: </label>
+        <label htmlFor="petDropdown"> Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
