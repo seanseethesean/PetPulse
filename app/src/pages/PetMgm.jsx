@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
 import { useNavigate } from 'react-router-dom';
-import { db, storage } from '../firebase/firebase.js';
-import { collection, addDoc, getDocs } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 import pet_icon from "../assets/images/petname.png"
 import animaltype_icon from "../assets/images/animaltype.png"
@@ -20,11 +17,12 @@ const PetMgm = () => {
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
+  const URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const response = await fetch(`${URL}/api/pets`);
         const data = await response.json();
         if (data.success) {
           setPetList(data.pets);
@@ -58,7 +56,7 @@ const PetMgm = () => {
     setErrors({});
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`, {
+      const response = await fetch(`${URL}/api/pets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +75,7 @@ const PetMgm = () => {
         });
 
         // re-fetch pets
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const res = await fetch(`${URL}/api/pets`);
         const data = await res.json();
         if (data.success) {
           setPetList(data.pets);
