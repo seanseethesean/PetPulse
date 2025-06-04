@@ -29,10 +29,21 @@ const TaskChecklist = () => {
   });
   const [task, setTasks] = useState([]);
   const [pets, setPets] = useState([]);
+  const currentDate = Date.now();
+
+  const getDateNavigation = () => {
+    const dates = [];
+    for (let i = -2; i <= 4; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  }
 
 
-  const completedTasks = 1 //tasks.filter(task => task,completed).length;
-  const totalTasks = 2 // tasks.length;
+  const completedTasks = 2 //tasks.filter(task => task,completed).length;
+  const totalTasks = 3 // tasks.length;
   return (
     <div className="task-checklist">
       <div className="taskheader">
@@ -78,9 +89,21 @@ const TaskChecklist = () => {
           </div>
         </div>
 
+        <div className="date-navigation">
+          {getDateNavigation().map((date, index) => (
+            <button
+              key={index}
+              className={`date-button ${date.toDateString() === date.toDateString() ? 'active' : ''}`}
+              onClick={() => setDate(date)}
+            >
+              <span className="date-day">{date.getDate()}</span>
+              <span className="date-weekday">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+            </button>
+          ))}
+
+        </div>
+
       </div>
-
-
     </div>
 
   );
