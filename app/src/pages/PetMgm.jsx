@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
-import { useNavigate } from 'react-router-dom';
-import { db, storage } from '../firebase/firebase.js';
-import { collection, addDoc, getDocs } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { useNavigate } from "react-router-dom"
+import { getAuth } from "firebase/auth"
+// import { db, storage } from '../firebase/firebase.js';
+// import { collection, addDoc, getDocs } from "firebase/firestore"
+// import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 import pet_icon from "../assets/images/petname.png"
 import animaltype_icon from "../assets/images/animaltype.png"
 
 const PetMgm = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: "",
     animalType: "",
@@ -19,24 +20,24 @@ const PetMgm = () => {
 
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     const fetchPets = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
-        const data = await response.json();
-        if (data.success) {
-          setPetList(data.pets);
-        } else {
-          console.error("Failed to fetch pets:", data.error);
-        }
-      } catch (err) {
-        console.error("Error fetching pets:", err);
+      const auth = getAuth()
+      const user = auth.currentUser
+      if (!user) return
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`
+      )
+      const data = await res.json()
+      if (data.success) {
+        setPetList(data.pets)
       }
     };
     fetchPets();
-  }, []);
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -44,51 +45,60 @@ const PetMgm = () => {
   }
 
   const handleSubmit = async () => {
-    const newErrors = {};
+    const newErrors = {}
 
-    if (!formData.name) newErrors.name = "required";
-    if (!formData.animalType) newErrors.animalType = "required";
-    if (!formData.breed) newErrors.breed = "required";
+    if (!formData.name) newErrors.name = "required"
+    if (!formData.animalType) newErrors.animalType = "required"
+    if (!formData.breed) newErrors.breed = "required"
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      setErrors(newErrors)
+      return
     }
 
-    setErrors({});
-    
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const auth = getAuth()
+    const user = auth.currentUser
+  
+    const petData = {
+      ...formData,
+      userId: user.uid,
+    }
 
-      const result = await response.json();
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/Pets`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(petData)
+        }
+      );
+
+      const result = await response.json()
       if (result.success) {
-        alert("Pet added!");
+        alert("Pet added!")
         setFormData({
           name: "",
           animalType: "",
           breed: "",
           birthday: ""
-        });
+        })
 
         // re-fetch pets
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`); // ensures that pets unqiue to user is fetched
         const data = await res.json();
         if (data.success) {
-          setPetList(data.pets);
+          setPetList(data.pets)
         }
       } else {
-        console.error("Failed to add pet:", result.error);
+        console.error("Failed to add pet:", result.error)
       }
     } catch (err) {
-      console.error("Error submitting pet:", err);
+      console.error("Error submitting pet:", err)
     }
-  };
+  }
 
   return (
     <div className="profile">
@@ -98,14 +108,13 @@ const PetMgm = () => {
           id="petDropdown"
           value={selectedPet}
           onChange={(e) => {
-            const selected = e.target.value;
-            setSelectedPet(selected);
+            const selected = e.target.value
+            setSelectedPet(selected)
             if (selected) {
-              localStorage.setItem("selectedPetName", selected); // ✅ Save it
-              navigate("/home");
+              localStorage.setItem("selectedPetName", selected) // Save it
+              navigate("/home")
             }
-          }}
-        >
+          }}>
           {petList.length === 0 ? (
             <option disabled>No pets yet</option>
           ) : (
@@ -119,7 +128,9 @@ const PetMgm = () => {
       </div>
 
       <div className="newpet">
-        <button className="add-pet-button" onClick={handleSubmit}>Add New Pet</button>
+        <button className="add-pet-button" onClick={handleSubmit}>
+          Add New Pet
+        </button>
 
         <div className="petmgm-inputs">
           <div className="petmgm-input">
@@ -143,7 +154,9 @@ const PetMgm = () => {
               onChange={handleChange}
               placeholder="animal type"
             />
-            {errors.animalType && <p className="error-text">{errors.animalType}</p>}
+            {errors.animalType && (
+              <p className="error-text">{errors.animalType}</p>
+            )}
           </div>
 
           <div className="petmgm-input">
@@ -166,7 +179,6 @@ const PetMgm = () => {
               value={formData.birthday}
               onChange={handleChange}
             />
-
           </div>
         </div>
       </div>
