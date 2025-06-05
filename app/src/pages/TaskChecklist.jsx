@@ -1,6 +1,4 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
 import '../assets/TaskChecklist.css';
 import Navbar from '../components/Navbar';
 
@@ -9,7 +7,7 @@ const TaskIcons = {
   walk: '🚶',
   medication: '💊',
   hydration: '💧',
-  grooming: '✄',
+  grooming: '✂️',
   playtime: '🎾',
   training: '🎓',
   vet: '🏥',
@@ -17,8 +15,14 @@ const TaskIcons = {
 };
 
 const TaskChecklist = () => {
-  const navigate = useNavigate();
-  const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [tasks, setTasks] = useState([]);
+  const [pets, setPets] = useState([
+    { id: 1, name: 'Buddy', type: 'Dog', color: '#FF6B6B' },
+    { id: 2, name: 'Whiskers', type: 'Cat', color: '#4ECDC4' },
+    { id: 3, name: 'Charlie', type: 'Bird', color: '#45B7D1' }
+  ]);
+  const [showAddTask, setShowAddTask] = useState(false);
   const [newTask, setNewTask] = useState({
     title: '',
     type: 'feeding',
@@ -27,31 +31,125 @@ const TaskChecklist = () => {
     recurring: 'daily',
     notes: ''
   });
-  const [task, setTasks] = useState([]);
-  const [pets, setPets] = useState([]);
-  const currentDate = Date.now();
+
+  // change to tasks from database
+  const sampleTasks = [
+    {
+      id: 1,
+      title: 'Morning Feed',
+      type: 'feeding',
+      petId: 1,
+      time: '08:00',
+      completed: false,
+      recurring: 'daily',
+      notes: '1 cup of kibble'
+    },
+    {
+      id: 2,
+      title: 'Walk in Park',
+      type: 'walk',
+      petId: 1,
+      time: '09:30',
+      completed: true,
+      recurring: 'daily',
+      notes: '30 minutes'
+    },
+    {
+      id: 3,
+      title: 'Heart Medication',
+      type: 'medication',
+      petId: 2,
+      time: '12:00',
+      completed: false,
+      recurring: 'daily',
+      notes: 'Half tablet with food'
+    },
+    {
+      id: 4,
+      title: 'Fresh Water',
+      type: 'hydration',
+      petId: 2,
+      time: '14:00',
+      completed: false,
+      recurring: 'daily',
+      notes: 'Clean and refill bowl'
+    }
+  ];
+
+  useEffect(() => {
+    setTasks(sampleTasks); // load or filter tasks
+  }, [selectedDate]); //re-run this code whenever selectedDate changes
+
+  const toggleTaskCompletion = (taskId) => {
+    setTasks(tasks.map(task => 
+      task.id === taskId 
+        ? { ...task, completed: !task.completed }
+        : task
+    ));
+  };
+
+  const addNewTask = () => {
+    if (!newTask.title || !newTask.petId) return;
+
+    const task = {
+      id: Date.now(),
+      ...newTask,
+      completed: false,
+      petId: parseInt(newTask.petId)
+    };
+
+    setTasks([...tasks, task]);
+    setNewTask({
+      title: '',
+      type: 'feeding',
+      petId: '',
+      time: '',
+      recurring: 'daily',
+      notes: ''
+    });
+    setShowAddTask(false);
+  };
+
+  const getPetById = (petId) => pets.find(pet => pet.id === petId);
+
+  const formatDate = (date) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+  };
 
   const getDateNavigation = () => {
     const dates = [];
-    for (let i = -2; i <= 4; i++) {
+    for (let i = 0; i <= 7; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
       dates.push(date);
     }
     return dates;
-  }
+  };
 
+  const completedTasks = tasks.filter(task => task.completed).length;
+  const totalTasks = tasks.length;
 
-  const completedTasks = 2 //tasks.filter(task => task,completed).length;
-  const totalTasks = 3 // tasks.length;
   return (
     <div className="task-checklist">
-      <div className="taskheader">
-        <div> <Navbar> </Navbar> </div>
+      <div className="task-header">
+      <Navbar />
         <h1>Task Checklist</h1>
-
         <div className="progress-summary">
-          <div className="progressCircle">
+          <div className="progress-circle">
             <svg width="60" height="60">
               <circle
                 cx="30"
@@ -72,40 +170,200 @@ const TaskChecklist = () => {
                 strokeDashoffset="0"
                 transform="rotate(-90 30 30)"
               />
-              <text
-                x="30"
-                y="35"
-                textAnchor="middle"
-                fontSize="14"
-                fill="#111"
-              >
-                {completedTasks}/{totalTasks}
-              </text>
             </svg>
-            <div className="progress-info">
-              <p>{completedTasks} completed</p>
-              <p>{totalTasks - completedTasks} remaining</p>
+            <span className="progress-text">{completedTasks}/{totalTasks}</span>
+          </div>
+          <div className="progress-info">
+            <p>{completedTasks} completed</p>
+            <p>{totalTasks - completedTasks} remaining</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="date-navigation">
+        {getDateNavigation().map((date, index) => (
+          <button
+            key={index}
+            className={`date-button ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''}`}
+            onClick={() => setSelectedDate(date)}
+          >
+            <span className="date-day">{date.getDate()}</span>
+            <span className="date-weekday">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="selected-date">
+        <h2>{formatDate(selectedDate)}</h2>
+        <p>{selectedDate.toLocaleDateString('en-US', { 
+          weekday: 'long',
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</p>
+      </div>
+
+      <div className="tasks-container">
+        {tasks.length === 0 ? (
+          <div className="no-tasks">
+            <p>No tasks scheduled for this day</p>
+            <button className="add-task-btn" onClick={() => setShowAddTask(true)}>
+              Add Your First Task
+            </button>
+          </div>
+        ) : (
+          <>
+            {tasks.map(task => {
+              const pet = getPetById(task.petId);
+              return (
+                <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
+                  <button 
+                    className="task-checkbox"
+                    onClick={() => toggleTaskCompletion(task.id)}
+                  >
+                    {task.completed && <span className="checkmark">✓</span>}
+                  </button>
+                  
+                  <div className="task-content">
+                    <div className="task-main">
+                      <div className="task-icon">{TaskIcons[task.type]}</div>
+                      <div className="task-info">
+                        <h3>{task.title}</h3>
+                        <div className="task-meta">
+                          <span className="task-pet" style={{ color: pet?.color }}>
+                            {pet?.name}
+                          </span>
+                          {task.time && <span className="task-time">{task.time}</span>}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {task.notes && (
+                      <div className="task-notes">
+                        <p>{task.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </div>
+
+      <button 
+        className="floating-add-btn"
+        onClick={() => setShowAddTask(true)}
+      >
+        +
+      </button>
+
+      {showAddTask && (
+        <div className="modal-overlay">
+          <div className="add-task-modal">
+            <div className="modal-header">
+              <h3>Add New Task</h3>
+              <button 
+                className="close-btn"
+                onClick={() => setShowAddTask(false)}
+              >
+                
+              </button>
+            </div>
+
+            <div className="modal-content">
+              <div className="form-group">
+                <label>Task Name</label>
+                <input
+                  type="text"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                  placeholder="Enter task name"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Task Type</label>
+                <select
+                  value={newTask.type}
+                  onChange={(e) => setNewTask({...newTask, type: e.target.value})}
+                >
+                  <option value="feeding">Feeding</option>
+                  <option value="walk">Walk</option>
+                  <option value="medication">Medication</option>
+                  <option value="hydration">Hydration</option>
+                  <option value="grooming">Grooming</option>
+                  <option value="playtime">Playtime</option>
+                  <option value="training">Training</option>
+                  <option value="vet">Vet Visit</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Pet</label>
+                <select
+                  value={newTask.petId}
+                  onChange={(e) => setNewTask({...newTask, petId: e.target.value})}
+                >
+                  <option value="">Select a pet</option>
+                  {pets.map(pet => (
+                    <option key={pet.id} value={pet.id}>{pet.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Time</label>
+                <input
+                  type="time"
+                  value={newTask.time}
+                  onChange={(e) => setNewTask({...newTask, time: e.target.value})}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Recurring</label>
+                <select
+                  value={newTask.recurring}
+                  onChange={(e) => setNewTask({...newTask, recurring: e.target.value})}
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="once">One Time</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Notes</label>
+                <textarea
+                  value={newTask.notes}
+                  onChange={(e) => setNewTask({...newTask, notes: e.target.value})}
+                  placeholder="Add any notes or instructions"
+                  rows="3"
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button 
+                  className="cancel-btn"
+                  onClick={() => setShowAddTask(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="save-btn"
+                  onClick={addNewTask}
+                >
+                  Add Task
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="date-navigation">
-          {getDateNavigation().map((date, index) => (
-            <button
-              key={index}
-              className={`date-button ${date.toDateString() === date.toDateString() ? 'active' : ''}`}
-              onClick={() => setDate(date)}
-            >
-              <span className="date-day">{date.getDate()}</span>
-              <span className="date-weekday">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-            </button>
-          ))}
-
-        </div>
-
-      </div>
+      )}
     </div>
-
   );
 };
 
