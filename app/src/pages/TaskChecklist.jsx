@@ -23,6 +23,7 @@ const TaskChecklist = () => {
     { id: 3, name: 'Charlie', type: 'Bird', color: '#45B7D1' }
   ]);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [newTask, setNewTask] = useState({
     title: '',
     type: 'feeding',
@@ -61,8 +62,8 @@ const TaskChecklist = () => {
   }, [selectedDate]); //re-run this code whenever selectedDate changes
 
   const toggleTaskCompletion = (taskId) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
+    setTasks(tasks.map(task =>
+      task.id === taskId
         ? { ...task, completed: !task.completed }
         : task
     ));
@@ -95,16 +96,16 @@ const TaskChecklist = () => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
       return 'Today';
     } else if (date.toDateString() === tomorrow.toDateString()) {
       return 'Tomorrow';
     } else {
-      return date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        month: 'short', 
-        day: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric'
       });
     }
   };
@@ -125,7 +126,7 @@ const TaskChecklist = () => {
   return (
     <div className="task-checklist">
       <div className="task-header">
-      <Navbar />
+        <Navbar />
         <h1>Task Checklist</h1>
         <div className="progress-summary">
           <div className="progress-circle">
@@ -161,11 +162,9 @@ const TaskChecklist = () => {
 
       <div className="date-navigation">
         {getDateNavigation().map((date, index) => (
-          <button
-            key={index}
+          <button key={index}
             className={`date-button ${selectedDate.toDateString() === date.toDateString() ? 'active' : ''}`}
-            onClick={() => setSelectedDate(date)}
-          >
+            onClick={() => setSelectedDate(date)}>
             <span className="date-day">{date.getDate()}</span>
             <span className="date-weekday">{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
           </button>
@@ -174,11 +173,11 @@ const TaskChecklist = () => {
 
       <div className="selected-date">
         <h2>{formatDate(selectedDate)}</h2>
-        <p>{selectedDate.toLocaleDateString('en-US', { 
+        <p>{selectedDate.toLocaleDateString('en-US', {
           weekday: 'long',
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
         })}</p>
       </div>
 
@@ -201,44 +200,48 @@ const TaskChecklist = () => {
               const pet = getPetById(task.petId);
               return (
                 <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-                  <button 
-                    className="task-checkbox"
-                    onClick={() => toggleTaskCompletion(task.id)}
-                  >
+                  <button className="task-checkbox"
+                    onClick={() => toggleTaskCompletion(task.id)}>
                     {task.completed && <span className="checkmark">✓</span>}
                   </button>
-                  
+
                   <div className="task-content">
                     <div className="task-main">
                       <div className="task-icon">{TaskIcons[task.type]}</div>
                       <div className="task-info">
                         <h3>{task.title}</h3>
                         <div className="task-meta">
-                          <span className="task-pet" style={{color: pet?.color}}>
+                          <span className="task-pet" style={{ color: pet?.color }}>
                             {pet?.name}
                           </span>
                           {task.time && <span className="task-time">{task.time}</span>}
                         </div>
                       </div>
                     </div>
-                    
+
                     {task.notes && ( // boolean to check if task.notes is empty
                       <div className="task-notes">
                         <p>{task.notes}</p>
                       </div>
                     )}
                   </div>
+
+                  <button className="task-delete" onClick={() => {
+                    setTasks(tasks.filter(t => t.id !== task.id));}}>Delete</button>
+
                 </div>
               );
+
             })}
           </>
         )}
       </div>
 
+      {/* Add new task page */}
       {showAddTask && (
         <div className="modal-overlay"> {/* Modal creates a mode to temporarily block interaction with the rest of the interface */}
           <div className="add-task-modal">
-            
+
             <div className="modal-header">
               <h3>Add New Task</h3>
               <button className="close-btn"
@@ -251,14 +254,14 @@ const TaskChecklist = () => {
                 <label>Task Name</label>
                 <input type="text"
                   value={newTask.title}
-                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  placeholder="Enter task name"/>
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="Enter task name" />
               </div>
 
               <div className="form-group">
                 <label>Task Type</label>
                 <select value={newTask.type}
-                  onChange={(e) => setNewTask({...newTask, type: e.target.value})}>
+                  onChange={(e) => setNewTask({ ...newTask, type: e.target.value })}>
                   <option value="feeding">Feeding</option>
                   <option value="walk">Walk</option>
                   <option value="medication">Medication</option>
@@ -274,7 +277,7 @@ const TaskChecklist = () => {
               <div className="form-group">
                 <label>Pet</label>
                 <select value={newTask.petId}
-                  onChange={(e) => setNewTask({...newTask, petId: e.target.value})}>
+                  onChange={(e) => setNewTask({ ...newTask, petId: e.target.value })}>
                   <option value="">Select a pet</option>
                   {pets.map(pet => (
                     <option key={pet.id} value={pet.id}>{pet.name}</option>
@@ -286,13 +289,13 @@ const TaskChecklist = () => {
                 <label>Time</label>
                 <input type="time"
                   value={newTask.time}
-                  onChange={(e) => setNewTask({...newTask, time: e.target.value})}/>
+                  onChange={(e) => setNewTask({ ...newTask, time: e.target.value })} />
               </div>
 
               <div className="form-group">
                 <label>Recurring</label>
                 <select value={newTask.recurring}
-                  onChange={(e) => setNewTask({...newTask, recurring: e.target.value})}>
+                  onChange={(e) => setNewTask({ ...newTask, recurring: e.target.value })}>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
@@ -304,7 +307,7 @@ const TaskChecklist = () => {
                 <label>Notes</label>
                 <textarea
                   value={newTask.notes}
-                  onChange={(e) => setNewTask({...newTask, notes: e.target.value})}
+                  onChange={(e) => setNewTask({ ...newTask, notes: e.target.value })}
                   placeholder="Add any notes or instructions"
                   rows="3"
                 />
