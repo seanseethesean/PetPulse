@@ -33,7 +33,7 @@ const TaskChecklist = () => {
   });
 
   // change to tasks from database
-  const sampleTasks = [
+  const sampleTasks = [ // key value pairs
     {
       id: 1,
       title: 'Morning Feed',
@@ -53,26 +53,6 @@ const TaskChecklist = () => {
       completed: true,
       recurring: 'daily',
       notes: '30 minutes'
-    },
-    {
-      id: 3,
-      title: 'Heart Medication',
-      type: 'medication',
-      petId: 2,
-      time: '12:00',
-      completed: false,
-      recurring: 'daily',
-      notes: 'Half tablet with food'
-    },
-    {
-      id: 4,
-      title: 'Fresh Water',
-      type: 'hydration',
-      petId: 2,
-      time: '14:00',
-      completed: false,
-      recurring: 'daily',
-      notes: 'Clean and refill bowl'
     }
   ];
 
@@ -90,7 +70,6 @@ const TaskChecklist = () => {
 
   const addNewTask = () => {
     if (!newTask.title || !newTask.petId) return;
-
     const task = {
       id: Date.now(),
       ...newTask,
@@ -132,7 +111,7 @@ const TaskChecklist = () => {
 
   const getDateNavigation = () => {
     const dates = [];
-    for (let i = 0; i <= 7; i++) {
+    for (let i = 0; i <= 7; i++) { // the day to the next week
       const date = new Date();
       date.setDate(date.getDate() + i);
       dates.push(date);
@@ -203,6 +182,11 @@ const TaskChecklist = () => {
         })}</p>
       </div>
 
+      <button className="floating-add-btn"
+        onClick={() => setShowAddTask(true)}>
+        Add Task
+      </button>
+
       <div className="tasks-container">
         {tasks.length === 0 ? (
           <div className="no-tasks">
@@ -230,7 +214,7 @@ const TaskChecklist = () => {
                       <div className="task-info">
                         <h3>{task.title}</h3>
                         <div className="task-meta">
-                          <span className="task-pet" style={{ color: pet?.color }}>
+                          <span className="task-pet" style={{color: pet?.color}}>
                             {pet?.name}
                           </span>
                           {task.time && <span className="task-time">{task.time}</span>}
@@ -238,7 +222,7 @@ const TaskChecklist = () => {
                       </div>
                     </div>
                     
-                    {task.notes && (
+                    {task.notes && ( // boolean to check if task.notes is empty
                       <div className="task-notes">
                         <p>{task.notes}</p>
                       </div>
@@ -251,43 +235,30 @@ const TaskChecklist = () => {
         )}
       </div>
 
-      <button 
-        className="floating-add-btn"
-        onClick={() => setShowAddTask(true)}
-      >
-        +
-      </button>
-
       {showAddTask && (
-        <div className="modal-overlay">
+        <div className="modal-overlay"> {/* Modal creates a mode to temporarily block interaction with the rest of the interface */}
           <div className="add-task-modal">
+            
             <div className="modal-header">
               <h3>Add New Task</h3>
-              <button 
-                className="close-btn"
-                onClick={() => setShowAddTask(false)}
-              >
-                
+              <button className="close-btn"
+                onClick={() => setShowAddTask(false)}>
               </button>
             </div>
 
             <div className="modal-content">
               <div className="form-group">
                 <label>Task Name</label>
-                <input
-                  type="text"
+                <input type="text"
                   value={newTask.title}
                   onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                  placeholder="Enter task name"
-                />
+                  placeholder="Enter task name"/>
               </div>
 
               <div className="form-group">
                 <label>Task Type</label>
-                <select
-                  value={newTask.type}
-                  onChange={(e) => setNewTask({...newTask, type: e.target.value})}
-                >
+                <select value={newTask.type}
+                  onChange={(e) => setNewTask({...newTask, type: e.target.value})}>
                   <option value="feeding">Feeding</option>
                   <option value="walk">Walk</option>
                   <option value="medication">Medication</option>
@@ -302,10 +273,8 @@ const TaskChecklist = () => {
 
               <div className="form-group">
                 <label>Pet</label>
-                <select
-                  value={newTask.petId}
-                  onChange={(e) => setNewTask({...newTask, petId: e.target.value})}
-                >
+                <select value={newTask.petId}
+                  onChange={(e) => setNewTask({...newTask, petId: e.target.value})}>
                   <option value="">Select a pet</option>
                   {pets.map(pet => (
                     <option key={pet.id} value={pet.id}>{pet.name}</option>
@@ -315,23 +284,19 @@ const TaskChecklist = () => {
 
               <div className="form-group">
                 <label>Time</label>
-                <input
-                  type="time"
+                <input type="time"
                   value={newTask.time}
-                  onChange={(e) => setNewTask({...newTask, time: e.target.value})}
-                />
+                  onChange={(e) => setNewTask({...newTask, time: e.target.value})}/>
               </div>
 
               <div className="form-group">
                 <label>Recurring</label>
-                <select
-                  value={newTask.recurring}
-                  onChange={(e) => setNewTask({...newTask, recurring: e.target.value})}
-                >
+                <select value={newTask.recurring}
+                  onChange={(e) => setNewTask({...newTask, recurring: e.target.value})}>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
-                  <option value="once">One Time</option>
+                  <option value=" once">One Time</option>
                 </select>
               </div>
 
@@ -346,16 +311,12 @@ const TaskChecklist = () => {
               </div>
 
               <div className="modal-actions">
-                <button 
-                  className="cancel-btn"
-                  onClick={() => setShowAddTask(false)}
-                >
+                <button className="cancel-btn"
+                  onClick={() => setShowAddTask(false)}>
                   Cancel
                 </button>
-                <button 
-                  className="save-btn"
-                  onClick={addNewTask}
-                >
+                <button className="save-btn"
+                  onClick={addNewTask}>
                   Add Task
                 </button>
               </div>
