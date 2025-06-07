@@ -16,7 +16,6 @@ const TaskIcons = {
 };
 
 const TaskChecklist = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [pets, setPets] = useState([
     { id: 1, name: 'Buddy', type: 'Dog', color: '#FF6B6B' },
     { id: 2, name: 'Whiskers', type: 'Cat', color: '#4ECDC4' },
@@ -50,13 +49,13 @@ const TaskChecklist = () => {
   // Calendar
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const generateCalendarDays = (year, month) => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startDayOfWeek = firstDay.getDay();
-
     const days = [];
 
     // Add empty cells for days before the first day of the month
@@ -412,14 +411,14 @@ const TaskChecklist = () => {
 
               <div className="calendar-days">
                 {generateCalendarDays(calendarDate.getFullYear(), calendarDate.getMonth()).map((date, index) => (
-                  <button key={index}
-                    className={`calendar-day ${date ?
+                  <button key={index}  // one button per cell
+                    className={`calendar-day ${date ? // Check if date is not null
                       (date.toDateString() === selectedDate.toDateString() ? 'selected' :
                         date.toDateString() === new Date().toDateString() ? 'today' : '')
                       : 'empty'
                       }`}
-                    onClick={() => date && selectCalendarDate(date)}
-                    disabled={!date}>
+                    onClick={() => date && selectCalendarDate(date)} // Only allow selection if date is not null
+                    disabled={!date}> {/* Disable button if date is null */}
                     {date ? date.getDate() : ''}
                   </button>
                 ))}
