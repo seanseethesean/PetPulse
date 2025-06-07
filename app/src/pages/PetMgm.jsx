@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react"
-import "../assets/PetMgm.css"
+import { useEffect, useState } from "react";
+import "../assets/PetMgm.css";
 import { useNavigate } from 'react-router-dom';
-import { db, storage } from '../firebase/firebase.js';
-import { collection, addDoc, getDocs } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
-import pet_icon from "../assets/images/petname.png"
-import animaltype_icon from "../assets/images/animaltype.png"
+import pet_icon from "../assets/images/petname.png";
+import animaltype_icon from "../assets/images/animaltype.png";
 
 const PetMgm = () => {
   const navigate = useNavigate();
@@ -20,11 +17,12 @@ const PetMgm = () => {
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({});
+  const URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const response = await fetch(`${URL}/api/pets`);
         const data = await response.json();
         if (data.success) {
           setPetList(data.pets);
@@ -39,8 +37,8 @@ const PetMgm = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const handleSubmit = async () => {
@@ -58,7 +56,7 @@ const PetMgm = () => {
     setErrors({});
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`, {
+      const response = await fetch(`${URL}/api/pets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +75,7 @@ const PetMgm = () => {
         });
 
         // re-fetch pets
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets`);
+        const res = await fetch(`${URL}/api/pets`);
         const data = await res.json();
         if (data.success) {
           setPetList(data.pets);
@@ -93,7 +91,7 @@ const PetMgm = () => {
   return (
     <div className="profile">
       <div className="select-pet">
-        <label htmlFor="petDropdown">Select Pet: </label>
+        <label htmlFor="petDropdown"> Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
@@ -101,7 +99,7 @@ const PetMgm = () => {
             const selected = e.target.value;
             setSelectedPet(selected);
             if (selected) {
-              localStorage.setItem("selectedPetName", selected); // ✅ Save it
+              localStorage.setItem("selectedPetName", selected);
               navigate("/home");
             }
           }}

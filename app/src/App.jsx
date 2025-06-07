@@ -15,11 +15,13 @@ function App() {
             {/* <Navbar /> */}
           <div className="content">
             <Routes>
-              <Route path="/" element={<Login />} />
+              {/* <Route path="/" element={<Login />} /> */}
+              <Route path="/" element={<TaskChecklist />} />
               <Route path="/login" element={<Login />} />
               <Route path="/home" element={<Home />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/petmgm" element={<PetMgm />} />
+              <Route path="/task-checklist" element={<TaskChecklist />} />
              </Routes>
           </div>
         </div>
