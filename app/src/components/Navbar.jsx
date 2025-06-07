@@ -12,7 +12,7 @@ const Navbar = () => {
         <ul className="navbar-menu">
           <li>Home</li>
           <li>Calendar</li>
-          <li>Task Checklist</li>
+          <button onClick={() => navigate("/Task-Checklist")}>Task Checklist</button>
           <li>Pet Journal</li>
           <li>Expense Tracker</li>
         </ul>
