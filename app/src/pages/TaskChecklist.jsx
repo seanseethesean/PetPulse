@@ -11,27 +11,17 @@ const TaskIcons = {
   playtime: '🎾',
   training: '🎓',
   vet: '🏥',
-  custom: '📝'
+  custom: '📝',
+  calendar: '📅'
 };
 
 const TaskChecklist = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [tasks, setTasks] = useState([]);
   const [pets, setPets] = useState([
     { id: 1, name: 'Buddy', type: 'Dog', color: '#FF6B6B' },
     { id: 2, name: 'Whiskers', type: 'Cat', color: '#4ECDC4' },
     { id: 3, name: 'Charlie', type: 'Bird', color: '#45B7D1' }
   ]);
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [newTask, setNewTask] = useState({
-    title: '',
-    type: 'feeding',
-    petId: '',
-    time: '',
-    recurring: 'daily',
-    notes: ''
-  });
 
   // change to tasks from database
   const sampleTasks = [ // key value pairs
@@ -57,6 +47,54 @@ const TaskChecklist = () => {
     }
   ];
 
+  // Calendar
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(new Date());
+
+  const generateCalendarDays = (year, month) => {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
+
+    const days = [];
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startDayOfWeek; i++) {
+      days.push(null);
+    }
+
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(new Date(year, month, day));
+    }
+
+    return days;
+  };
+
+  const navigateCalendar = (direction) => {
+    const newDate = new Date(calendarDate);
+    newDate.setMonth(newDate.getMonth() + direction);
+    setCalendarDate(newDate);
+  };
+
+  const selectCalendarDate = (date) => {
+    setSelectedDate(date);
+    setShowCalendar(false);
+  };
+
+  // Tasks
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState({
+    title: '',
+    type: 'feeding',
+    petId: '',
+    time: '',
+    recurring: 'daily',
+    notes: ''
+  });
+  
   useEffect(() => {
     setTasks(sampleTasks); // load or filter tasks
   }, [selectedDate]); //re-run this code whenever selectedDate changes
@@ -90,8 +128,12 @@ const TaskChecklist = () => {
     setShowAddTask(false);
   };
 
+  const completedTasks = tasks.filter(task => task.completed).length;
+  const totalTasks = tasks.length;
+
   const getPetById = (petId) => pets.find(pet => pet.id === petId);
 
+  // Date
   const formatDate = (date) => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -119,9 +161,6 @@ const TaskChecklist = () => {
     }
     return dates;
   };
-
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const totalTasks = tasks.length;
 
   return (
     <div className="task-checklist">
@@ -172,13 +211,23 @@ const TaskChecklist = () => {
       </div>
 
       <div className="selected-date">
-        <h2>{formatDate(selectedDate)}</h2>
-        <p>{selectedDate.toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        })}</p>
+        <div className="selected-date-header">
+          <div>
+            <h2>{formatDate(selectedDate)}</h2>
+            <p>{selectedDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}</p>
+          </div>
+          <button
+            className="calendar-icon-btn"
+            onClick={() => setShowCalendar(true)}
+            title="Open Calendar">
+            📅
+          </button>
+        </div>
       </div>
 
       <button className="floating-add-btn"
@@ -227,7 +276,8 @@ const TaskChecklist = () => {
                   </div>
 
                   <button className="task-delete" onClick={() => {
-                    setTasks(tasks.filter(t => t.id !== task.id));}}>Delete</button>
+                    setTasks(tasks.filter(t => t.id !== task.id));
+                  }}>Delete</button>
 
                 </div>
               );
@@ -237,7 +287,7 @@ const TaskChecklist = () => {
         )}
       </div>
 
-      {/* Add new task page */}
+      {/* New Task modal */}
       {showAddTask && (
         <div className="modal-overlay"> {/* Modal creates a mode to temporarily block interaction with the rest of the interface */}
           <div className="add-task-modal">
@@ -327,6 +377,58 @@ const TaskChecklist = () => {
           </div>
         </div>
       )}
+
+      {/* Calendar modal */}
+      {showCalendar && (
+        <div className="modal-overlay">
+          <div className="calendar-modal">
+            <button className="calendar-close-btn"
+              onClick={() => setShowCalendar(false)}>
+              ×
+            </button>
+            <div className="calendar-header">
+              <button className="calendar-nav-btn"
+                onClick={() => navigateCalendar(-1)}>
+                ←
+              </button>
+              <h3>
+                {calendarDate.toLocaleDateString('en-US', {
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </h3>
+              <button className="calendar-nav-btn"
+                onClick={() => navigateCalendar(1)}>
+                →
+              </button>
+            </div>
+
+            <div className="calendar-grid">
+              <div className="calendar-weekdays">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} className="calendar-weekday">{day}</div>
+                ))}
+              </div>
+
+              <div className="calendar-days">
+                {generateCalendarDays(calendarDate.getFullYear(), calendarDate.getMonth()).map((date, index) => (
+                  <button key={index}
+                    className={`calendar-day ${date ?
+                      (date.toDateString() === selectedDate.toDateString() ? 'selected' :
+                        date.toDateString() === new Date().toDateString() ? 'today' : '')
+                      : 'empty'
+                      }`}
+                    onClick={() => date && selectCalendarDate(date)}
+                    disabled={!date}>
+                    {date ? date.getDate() : ''}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
