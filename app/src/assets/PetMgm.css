@@ -1,102 +1,312 @@
-/* bg colour */
-.profile {
+/* Pet Management Container */
+.pet-management-container {
   display: flex;
+<<<<<<< Updated upstream
   justify-content: center;
   align-items: flex-start;
   gap: 40px;
   padding: 40px;
-  background-color: #5f88d9; 
+  background-color: white; 
+=======
+>>>>>>> Stashed changes
   min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  gap: 20px;
 }
 
-.select-pet,
-.newpet {
-  background-color: #FFF8F0;
-  padding: 30px;
-  border-radius: 16px;
-  width: 500px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* Left Panel - Pets List */
+.pets-list-panel {
+  flex: 2;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* the bg container colour  */
-.newpet { 
-  background-color: #FFF8F0;
-  padding: 30px;
-  border-radius: 40px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.pets-list-panel h2 {
+  color: #4a5568;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 600;
   text-align: center;
-  margin: 0 auto;
 }
 
-.add-pet-button {
-  background-color: #db327b;
-  color: white;
-  padding: 12px 32px;
-  font-size: 30px;
-  font-weight: bold;
+.no-pets {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+.pets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Pet Cards */
+.pet-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.pet-info h3 {
+  color: #2d3748;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.pet-info p {
+  color: #4a5568;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.pet-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.pet-actions button {
+  padding: 8px 16px;
   border: none;
-  border-radius: 40px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-bottom: 30px;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.add-pet-button:hover {
-  background-color: #255ec2;
+.select-btn {
+  background: #667eea;
+  color: white;
 }
 
-/* Inputs container */
+.select-btn:hover {
+  background: #5a67d8;
+  transform: translateY(-1px);
+}
+
+.edit-btn {
+  background: #38b2ac;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #319795;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: #e53e3e;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #c53030;
+  transform: translateY(-1px);
+}
+
+/* Edit Form */
+.pet-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-input {
+  padding: 10px;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.save-btn {
+  background: #48bb78;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.save-btn:hover {
+  background: #38a169;
+}
+
+.cancel-btn {
+  background: #a0aec0;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancel-btn:hover {
+  background: #718096;
+}
+
+/* Right Panel - Add Pet */
+.add-pet-panel {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  height: fit-content;
+}
+
+.add-pet-panel h2 {
+  color: #4a5568;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Form Inputs */
 .petmgm-inputs {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  align-items: center;
+  margin-bottom: 25px;
 }
 
-/* Individual input row */
 .petmgm-input {
+  position: relative;
   display: flex;
-  align-items: center;
-  background-color: #a8a8a8;
-  padding: 8px 12px;
-  border-radius: 20px;
-  max-height: 50px;
-  max-width: 300px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* Input icons */
 .petmgm-input img {
-  width: 30px;
-  height: 30px;
-  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 
-/* Text and date inputs */
 .petmgm-input input {
-  flex: 1;
-  border: none;
+  padding: 12px 12px 12px 45px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.petmgm-input input:focus {
   outline: none;
-  background: transparent;
-  color: #333;
-  font-size: 17.5px;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* Placeholder style */
-.petmgm-input input::placeholder {
-  color: #333;
+.petmgm-input label {
+  color: #4a5568;
+  font-weight: 500;
+  margin-bottom: 5px;
 }
 
-/* Upload input tweak (if you keep type="uploading", which is invalid HTML) */
-.petmgm-input input[type="uploading"] {
-  cursor: pointer;
-  font-style: italic;
-  color: #1759cc;
+.petmgm-input input[type="date"] {
+  padding-left: 12px;
 }
 
 .error-text {
-  color: red;
-  font-size: 12px;
-  margin-top: 4px;
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Add Pet Button */
+.add-pet-button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.add-pet-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.add-pet-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pet-management-container {
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .pets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pet-actions {
+    justify-content: center;
+  }
+  
+  .pet-actions button {
+    flex: 1;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pets-list-panel,
+  .add-pet-panel {
+    padding: 15px;
+  }
+  
+  .pets-list-panel h2,
+  .add-pet-panel h2 {
+    font-size: 1.5rem;
+  }
 }

@@ -17,7 +17,11 @@ app.get("/", (req, res) => {
 });
   
 // Use the pet routes
-app.use("/api/pets", petRoutes);  // ⬅️ prefix all routes inside with /api/pets
+<<<<<<< Updated upstream
+app.use("/api/Pets", petRoutes);  // ⬅️ prefix all routes inside with /api/pets
+=======
+app.use("/api/pets", petRoutes);  // prefix all routes inside with /api/pets
+>>>>>>> Stashed changes
 
 // Start the server
 app.listen(PORT, () => {
