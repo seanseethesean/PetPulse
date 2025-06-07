@@ -21,11 +21,11 @@ const Login = () => {
       if (action === "Sign Up") {
         await createUserWithEmailAndPassword(auth, email, password); // await pauses the function until Firebase call is done
         console.log("User created successfully"); //shows this message in inspect element
-        navigate('/petmgm');
+        navigate('/home');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         console.log("User signed in successfully");
-        navigate('/petmgm');
+        navigate('/home');
       }
     } catch (error) {
       console.error("Full error:", error); // Keep this for debugging
@@ -56,7 +56,7 @@ const Login = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       console.log("Google sign-in successful:", result.user);
-      navigate('/petmgm');
+      navigate('/home');
     } catch (error) {
       console.error("Google sign-in error:", error);
       setError("Google sign-in failed. Please try again.");
@@ -77,10 +77,6 @@ const Login = () => {
         </div>
 
         <div className='login-inputs'>
-          {/* {action !== "Login" && <div className='login-input'>
-            <img src={user_icon} alt='' />
-            <input type='text' placeholder='Username' /> </div>
-          } */}
 
           <div className='login-input'>
             <img src={email_icon} alt='' />

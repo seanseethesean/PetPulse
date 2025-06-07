@@ -12,11 +12,9 @@ function App() {
     return (
       <Router>
         <div className="App">
-            {/* <Navbar /> */}
           <div className="content">
             <Routes>
-              {/* <Route path="/" element={<Login />} /> */}
-              <Route path="/" element={<TaskChecklist />} />
+              <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/home" element={<Home />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
