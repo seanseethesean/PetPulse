@@ -10,6 +10,10 @@ import {
   where
 } from "firebase/firestore";
 
+<<<<<<< Updated upstream
+=======
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+>>>>>>> Stashed changes
 import { db, storage } from "firebase.js";
 
 
@@ -41,13 +45,26 @@ export const fetchUserPets = async (uid) => {
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// Optional: observe user auth and refetch pets
-export const observePetsByAuth = (setPetList) => {
-  const auth = getAuth();
-  return auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      const pets = await fetchUserPets(user.uid);
-      setPetList(pets);
-    }
-  });
+// Udpate pet data
+export const updatePet = async (petId, data) => {
+  try {
+    const petRef = doc(db, "pets", petId);
+    await updateDoc(petRef, data);
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating pet:", error);
+    return { success: false, error };
+  }
 };
+
+// Delete pet from database
+export const deletePet = async (petId) => {
+  try {
+    const petRef = doc(db, "pets", petId);
+    await deleteDoc(petRef);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting pet:", error);
+    return { success: false, error };
+  }
+}
