@@ -35,8 +35,8 @@ const PetMgm = () => {
       if (data.success) {
         setPetList(data.pets)
       }
-    };
-    fetchPets();
+    }
+    fetchPets()
   }, [])
 
   const handleChange = (e) => {
@@ -45,6 +45,10 @@ const PetMgm = () => {
   }
 
   const handleSubmit = async () => {
+    //debug
+    console.log("🔔 Add New Pet button clicked")
+    //debug
+
     const newErrors = {}
 
     if (!formData.name) newErrors.name = "required"
@@ -58,11 +62,17 @@ const PetMgm = () => {
 
     const auth = getAuth()
     const user = auth.currentUser
-  
+
     const petData = {
       ...formData,
-      userId: user.uid,
+      userId: user.uid
     }
+
+    //start of debug
+    console.log("🟢 [PetMgm] About to POST petData:", petData)
+    const postUrl = `${process.env.REACT_APP_API_URL}/api/Pets`
+    console.log("🟢 [PetMgm] POST URL =", postUrl)
+    //end of debug
 
     try {
       const response = await fetch(
@@ -74,7 +84,7 @@ const PetMgm = () => {
           },
           body: JSON.stringify(petData)
         }
-      );
+      )
 
       const result = await response.json()
       if (result.success) {
@@ -87,8 +97,10 @@ const PetMgm = () => {
         })
 
         // re-fetch pets
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`); // ensures that pets unqiue to user is fetched
-        const data = await res.json();
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`
+        ) // ensures that pets unqiue to user is fetched
+        const data = await res.json()
         if (data.success) {
           setPetList(data.pets)
         }
@@ -128,8 +140,12 @@ const PetMgm = () => {
       </div>
 
       <div className="newpet">
-        <button className="add-pet-button" onClick={handleSubmit}>
+        {/* <button className="add-pet-button" onClick={handleSubmit}>
           Add New Pet
+        </button> */}
+        {/* debug */}
+        <button onClick={() => console.log("Inline click works!")}>
+          Test Click
         </button>
 
         <div className="petmgm-inputs">
