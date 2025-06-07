@@ -12,7 +12,6 @@ function App() {
     return (
       <Router>
         <div className="App">
-            {/* <Navbar /> */}
           <div className="content">
             <Routes>
               <Route path="/" element={<PetMgm />} />
@@ -20,6 +19,7 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/petmgm" element={<PetMgm />} />
+              <Route path="/task-checklist" element={<TaskChecklist />} />
              </Routes>
           </div>
         </div>

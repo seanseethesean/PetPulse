@@ -2,15 +2,9 @@ import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
 import { useNavigate } from "react-router-dom"
 import { getAuth } from "firebase/auth"
-<<<<<<< Updated upstream
-// import { db, storage } from '../firebase/firebase.js';
-// import { collection, addDoc, getDocs } from "firebase/firestore"
-// import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-=======
->>>>>>> Stashed changes
 
-import pet_icon from "../assets/images/petname.png"
-import animaltype_icon from "../assets/images/animaltype.png"
+import pet_icon from "../assets/images/petname.png";
+import animaltype_icon from "../assets/images/animaltype.png";
 
 const PetMgm = () => {
   const navigate = useNavigate()
@@ -24,56 +18,31 @@ const PetMgm = () => {
   const [petList, setPetList] = useState([])
   const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({})
-<<<<<<< Updated upstream
-=======
   const [editingPet, setEditing] = useState(null)
   const URL = process.env.REACT_APP_API_URL
   const auth = getAuth()
->>>>>>> Stashed changes
 
   useEffect(() => {
     const fetchPets = async () => {
-      const auth = getAuth()
-      const user = auth.currentUser
-<<<<<<< Updated upstream
-      if (!user) return
-
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`
-=======
-      if (!user) return // login authentication
-
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/pets?userId=${user.uid}`
->>>>>>> Stashed changes
-      )
-      const data = await res.json()
-      if (data.success) {
-        setPetList(data.pets)
+      try {
+        const response = await fetch(`${URL}/api/pets`);
+        const data = await response.json();
+        if (data.success) {
+          setPetList(data.pets);
+        } else {
+          console.error("Failed to fetch pets:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching pets:", err);
       }
     }
-<<<<<<< Updated upstream
     fetchPets()
-=======
-    fetchPets() // make it user return
->>>>>>> Stashed changes
   }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-<<<<<<< Updated upstream
-  }
 
-  const handleSubmit = async () => {
-    //debug
-    console.log("🔔 Add New Pet button clicked")
-    //debug
-
-    const newErrors = {}
-
-=======
-  }
 
   const handleEditChange = (e, petId) => {
     const { name, value } = e.target
@@ -85,7 +54,6 @@ const PetMgm = () => {
   const handleSubmit = async () => {
     const newErrors = {}
 
->>>>>>> Stashed changes
     if (!formData.name) newErrors.name = "required"
     if (!formData.animalType) newErrors.animalType = "required"
     if (!formData.breed) newErrors.breed = "required"
@@ -103,23 +71,12 @@ const PetMgm = () => {
       userId: user.uid
     }
 
-<<<<<<< Updated upstream
-    //start of debug
-    console.log("🟢 [PetMgm] About to POST petData:", petData)
-    const postUrl = `${process.env.REACT_APP_API_URL}/api/Pets`
-    console.log("🟢 [PetMgm] POST URL =", postUrl)
-    //end of debug
-
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/Pets`,
-=======
     const postUrl = `${process.env.REACT_APP_API_URL}/api/pets`
 
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/api/pets`,
->>>>>>> Stashed changes
         {
           method: "POST",
           headers: {
@@ -128,8 +85,9 @@ const PetMgm = () => {
           body: JSON.stringify(petData)
         }
       )
-
+      
       const result = await response.json()
+
       if (result.success) {
         alert("Pet added!")
         setFormData({
@@ -141,14 +99,10 @@ const PetMgm = () => {
 
         // re-fetch pets
         const res = await fetch(
-<<<<<<< Updated upstream
-          `${process.env.REACT_APP_API_URL}/api/Pets?userId=${user.uid}`
-        ) // ensures that pets unqiue to user is fetched
-=======
           `${process.env.REACT_APP_API_URL}/api/pets?userId=${user.uid}`
         )
->>>>>>> Stashed changes
-        const data = await res.json()
+        const data = await res.json();
+        
         if (data.success) {
           setPetList(data.pets)
         }
@@ -159,12 +113,11 @@ const PetMgm = () => {
       console.error("Error submitting pet:", err)
     }
   }
-<<<<<<< Updated upstream
 
   return (
     <div className="profile">
       <div className="select-pet">
-        <label htmlFor="petDropdown">Select Pet: </label>
+        <label htmlFor="petDropdown"> Select Pet: </label>
         <select
           id="petDropdown"
           value={selectedPet}
@@ -196,7 +149,6 @@ const PetMgm = () => {
         <button onClick={() => console.log("Inline click works!")}>
           Test Click
         </button>
-=======
 
   const handleEditPet = async (petId) => {
     const pet = petList.find((p) => p.id === petId)
@@ -333,8 +285,6 @@ const PetMgm = () => {
       {/* Right Panel - Add New Pet */}
       <div className="add-pet-panel">
         <h2>Add New Pet</h2>
->>>>>>> Stashed changes
-
         <div className="petmgm-inputs">
           <div className="petmgm-input">
             <img src={pet_icon} alt="" />
