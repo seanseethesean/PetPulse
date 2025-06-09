@@ -1,5 +1,5 @@
 import express from "express";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
 import { createPetSchema } from "../types/pets.js";
 import { validateRequestData } from "../request-validation.js";
@@ -10,22 +10,20 @@ const router = express.Router();
 
 // GET /api/pets
 router.get("/", async (req, res) => {
- const { userId } = req.query;
+  const userId = req.query.userId;
    if (!userId) {
      return res.status(400).json({ success: false, error: "Missing userId" });
    }
 
 
  try {
-   const { userId } = req.query
-
-
    if (!userId) {
      throw Error("no userId bro")
    }
    const petsCollection = collection(db, "Pets");
-   const snapshot = await getDocs(petsCollection); // filter documents by UID!!!!!!!
-   const pets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+   const filterByUser = query(petsCollection, where("userId", "==", userId))
+   const unqiuePets = await getDocs(filterByUser); // filter documents by UID!!!!!!!
+   const pets = unqiuePets.docs.map(doc => ({ id: doc.id, ...doc.data() }));
    res.status(200).json({ success: true, pets });
  } catch (error) {
    console.error("Error fetching pets:", error);
