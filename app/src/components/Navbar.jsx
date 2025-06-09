@@ -15,14 +15,14 @@ const Navbar = () => {
          <button onClick={() => navigate("/Home")}>
            Home
          </button>
-         <button onClick={() => navigate("/Calendar")}>Calendar</button>
-         <button onClick={() => navigate("/Task-Checklist")}>
+         <button onClick={() => navigate("/calendar")}>Calendar</button>
+         <button onClick={() => navigate("/task-checklist")}>
            Task Checklist
          </button>
-         <button onClick={() => navigate("/Journal")}>
+         <button onClick={() => navigate("/journal")}>
            Pet Journal
          </button>
-         <button onClick={() => navigate("/Expense-Tracker")}>
+         <button onClick={() => navigate("/expense-tracker")}>
            Expense Tracker
          </button>
        </ul>
