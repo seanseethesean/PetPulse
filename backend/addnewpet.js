@@ -74,5 +74,3 @@ export const deletePet = async (petId) => {
    return { success: false, error };
  }
 }
-
-
