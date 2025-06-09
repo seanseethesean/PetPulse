@@ -7,6 +7,7 @@ import PetMgm from './pages/PetMgm';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import TaskChecklist from './pages/TaskChecklist';
+import ExpenseTracker from './pages/ExpenseTracker';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/petmgm" element={<PetMgm />} />
               <Route path="/task-checklist" element={<TaskChecklist />} />
+              <Route path="/expense-tracker" element={<ExpenseTracker />} />
              </Routes>
           </div>
         </div>

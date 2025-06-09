@@ -14,7 +14,7 @@ const Navbar = () => {
           <li>Calendar</li>
           <button onClick={() => navigate("/Task-Checklist")}>Task Checklist</button>
           <li>Pet Journal</li>
-          <li>Expense Tracker</li>
+          <button className="btn" onClick={() => navigate("/expense-tracker")}>Expense tracker</button>
         </ul>
         <button className="btn" onClick={() => navigate("/petmgm")}>Pet Profile</button>
       </div>
