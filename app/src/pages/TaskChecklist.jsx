@@ -93,7 +93,7 @@ const TaskChecklist = () => {
     recurring: 'daily',
     notes: ''
   });
-  
+
   useEffect(() => {
     setTasks(sampleTasks); // load or filter tasks
   }, [selectedDate]); //re-run this code whenever selectedDate changes

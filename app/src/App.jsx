@@ -19,9 +19,9 @@ function App() {
              <Route path="/home" element={<Home />} />
              <Route path="/forgot-password" element={<ForgotPassword />} />
              <Route path="/task-checklist" element={<TaskChecklist />} />
-             {/* <Route path="/Journal" element={<Journal />} />
-             <Route path="/Calendar" element={<Calendar />} /> */}
-             <Route path="/Expense-Tracker" element={<ExpenseTracker />} />
+             {/* <Route path="/journal" element={<Journal />} />
+             <Route path="/calendar" element={<Calendar />} /> */}
+             <Route path="/expense-tracker" element={<ExpenseTracker />} />
              <Route path="/petmgm" element={<PetMgm />} />
             </Routes>
          </div>

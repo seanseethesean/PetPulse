@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { Plus, DollarSign, Filter, Calendar, Trash2, PawPrint } from 'lucide-react';
+import Navbar from "../components/Navbar";
 import '../assets/ExpenseTracker.css';
 
 const ExpenseTracker = () => {
@@ -7,7 +8,7 @@ const ExpenseTracker = () => {
 
   return (
     <div className="expense-tracker">
-
+      <Navbar />
       <div className="expense-tracker-container">
 
         {/* Header */}
