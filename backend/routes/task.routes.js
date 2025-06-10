@@ -1,5 +1,5 @@
 import express from "express";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebase.js";
 import { validateRequestData } from "../request-validation.js";
 import { createTaskSchema } from "../types/tasks.js";
@@ -10,7 +10,7 @@ const router = express.Router();
 // GET /api/tasks
 router.get("/", async (req, res) => {
   try {
-    const { date } = req.query;
+    const { date, userId } = req.query;
     
     if (!date) {
       return res.status(400).json({ 
@@ -18,11 +18,18 @@ router.get("/", async (req, res) => {
       });
     }
 
-    // Create query to get tasks for specific date
+    if (!userId) {
+      return res.status(400).json({ 
+        error: "UserId parameter is required" 
+      });
+    }
+
+    // Create query to get tasks for specific date and user
     const tasksRef = collection(db, "tasks");
     const q = query(
       tasksRef, 
       where("date", "==", date),
+      where("userId", "==", userId),
       orderBy("time", "asc")
     );
     const querySnapshot = await getDocs(q);
@@ -41,11 +48,12 @@ router.get("/", async (req, res) => {
 });
 
 // POST /api/tasks  create new task
-router.post("/", validateRequestData(createTaskSchema), async (req, res) => {
+router.post("/", async (req, res) => {
   try {
+    const validated = await validateRequestData(req.body, createTaskSchema);
     const taskData = {
-      ...req.body,
-      completed: req.body.completed || false,
+      ...validated,
+      completed: validated.completed || false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -65,11 +73,12 @@ router.post("/", validateRequestData(createTaskSchema), async (req, res) => {
 });
 
 // PUT /api/tasks/:id  update task
-router.put("/:id", validateRequestData(updateTaskSchema), async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
+    const validated = await validateRequestData(req.body, updateTaskSchema);
     const { id } = req.params;
     const updateData = {
-      ...req.body,
+      ...validated,
       updatedAt: new Date().toISOString()
     };
 

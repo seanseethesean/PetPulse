@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/TaskChecklist.css';
 import Navbar from '../components/Navbar';
+import taskService from '../utils/tasks';
+import { getAuth } from 'firebase/auth';
 
 const TaskIcons = {
   feeding: '🍽️',
@@ -16,40 +18,180 @@ const TaskIcons = {
 };
 
 const TaskChecklist = () => {
-  const [pets, setPets] = useState([
-    { id: 1, name: 'Buddy', type: 'Dog', color: '#FF6B6B' },
-    { id: 2, name: 'Whiskers', type: 'Cat', color: '#4ECDC4' },
-    { id: 3, name: 'Charlie', type: 'Bird', color: '#45B7D1' }
-  ]);
+  const [pets, setPets] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedPetFilter, setSelectedPetFilter] = useState('all');
 
-  // change to tasks from database
-  const sampleTasks = [ // key value pairs
-    {
-      id: 1,
-      title: 'Morning Feed',
-      type: 'feeding',
-      petId: 1,
-      time: '08:00',
-      completed: false,
-      recurring: 'daily',
-      notes: '1 cup of kibble'
-    },
-    {
-      id: 2,
-      title: 'Walk in Park',
-      type: 'walk',
-      petId: 1,
-      time: '09:30',
-      completed: true,
-      recurring: 'daily',
-      notes: '30 minutes'
-    }
-  ];
-
-  // Calendar
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [newTask, setNewTask] = useState({
+    title: '',
+    type: 'feeding',
+    petId: '',
+    time: '',
+    recurring: 'daily',
+    notes: ''
+  });
+
+  const auth = getAuth();
+
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets?userId=${user.uid}`);
+        const data = await res.json();
+        if (data.success) {
+          setPets(data.pets);
+        } else {
+          setError(data.error || 'Failed to load pets');
+        }
+      } catch (err) {
+        console.error('Failed to fetch pets:', err);
+        setError('Failed to load pets');
+      }
+    };
+    fetchPets();
+  }, []);
+
+  useEffect(() => {
+    loadTasks();
+  }, [selectedDate]);
+
+  // Filter tasks when tasks or pet filter changes
+  useEffect(() => {
+    if (selectedPetFilter === 'all') {
+      setFilteredTasks(tasks);
+    } else {
+      setFilteredTasks(tasks.filter(task => task.petId === selectedPetFilter));
+    }
+  }, [tasks, selectedPetFilter]);
+
+  const loadTasks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const user = auth.currentUser;
+      if (!user) return;
+      const tasksData = await taskService.getTasksByDate(selectedDate, user.uid);
+      setTasks(tasksData);
+    } catch (err) {
+      setError(err.message);
+      console.error('Failed to load tasks:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTaskCompletion = async (taskId) => {
+    try {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const updatedTasks = tasks.map(t =>
+        t.id === taskId ? { ...t, completed: !t.completed } : t
+      );
+      setTasks(updatedTasks);
+      await taskService.toggleTaskCompletion(taskId, !task.completed);
+    } catch (err) {
+      setError('Failed to update task: ' + err.message);
+    }
+  };
+
+  // Helper function to generate recurring task dates
+  const generateRecurringDates = (startDate, recurring, count = 30) => {
+    const dates = [];
+    const current = new Date(startDate);
+    
+    for (let i = 0; i < count; i++) {
+      dates.push(new Date(current));
+      
+      switch (recurring) {
+        case 'daily':
+          current.setDate(current.getDate() + 1);
+          break;
+        case 'weekly':
+          current.setDate(current.getDate() + 7);
+          break;
+        case 'monthly':
+          current.setMonth(current.getMonth() + 1);
+          break;
+        default:
+          return [startDate]; // For 'once'
+      }
+    }
+    
+    return dates;
+  };
+
+  const addNewTask = async () => {
+    if (!newTask.title || !newTask.petId) {
+      setError('Please fill in task name and select a pet');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const user = auth.currentUser;
+      if (!user) {
+        setError('User not authenticated');
+        return;
+      }
+
+      // Generate dates for recurring tasks
+      const dates = newTask.recurring === 'once' 
+        ? [selectedDate] 
+        : generateRecurringDates(selectedDate, newTask.recurring);
+
+      // Create tasks for all dates
+      const taskPromises = dates.map(date => {
+        const taskData = {
+          ...newTask,
+          petId: newTask.petId.toString(),
+          date: taskService.formatDateForAPI(date),
+          userId: user.uid,
+          completed: false,
+          isRecurring: newTask.recurring !== 'once',
+          recurringType: newTask.recurring
+        };
+        return taskService.createTask(taskData);
+      });
+
+      await Promise.all(taskPromises);
+      await loadTasks();
+      
+      setNewTask({
+        title: '',
+        type: 'feeding',
+        petId: '',
+        time: '',
+        recurring: 'daily',
+        notes: ''
+      });
+      setShowAddTask(false);
+      setError(null);
+    } catch (err) {
+      setError('Failed to create task: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTask = async (taskId) => {
+    try {
+      await taskService.deleteTask(taskId);
+      setTasks(tasks.filter(t => t.id !== taskId));
+    } catch (err) {
+      setError('Failed to delete task: ' + err.message);
+    }
+  };
 
   const generateCalendarDays = (year, month) => {
     const firstDay = new Date(year, month, 1);
@@ -58,12 +200,10 @@ const TaskChecklist = () => {
     const startDayOfWeek = firstDay.getDay();
     const days = [];
 
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < startDayOfWeek; i++) {
       days.push(null);
     }
 
-    // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
@@ -82,57 +222,11 @@ const TaskChecklist = () => {
     setShowCalendar(false);
   };
 
-  // Tasks
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({
-    title: '',
-    type: 'feeding',
-    petId: '',
-    time: '',
-    recurring: 'daily',
-    notes: ''
-  });
+  const completedTasks = filteredTasks.filter(task => task.completed).length;
+  const totalTasks = filteredTasks.length;
 
-  useEffect(() => {
-    setTasks(sampleTasks); // load or filter tasks
-  }, [selectedDate]); //re-run this code whenever selectedDate changes
+  const getPetById = (petId) => pets.find(pet => pet.id.toString() === petId.toString());
 
-  const toggleTaskCompletion = (taskId) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, completed: !task.completed }
-        : task
-    ));
-  };
-
-  const addNewTask = () => {
-    if (!newTask.title || !newTask.petId) return;
-    const task = {
-      id: Date.now(),
-      ...newTask,
-      completed: false,
-      petId: parseInt(newTask.petId)
-    };
-
-    setTasks([...tasks, task]);
-    setNewTask({
-      title: '',
-      type: 'feeding',
-      petId: '',
-      time: '',
-      recurring: 'daily',
-      notes: ''
-    });
-    setShowAddTask(false);
-  };
-
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const totalTasks = tasks.length;
-
-  const getPetById = (petId) => pets.find(pet => pet.id === petId);
-
-  // Date
   const formatDate = (date) => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -153,7 +247,7 @@ const TaskChecklist = () => {
 
   const getDateNavigation = () => {
     const dates = [];
-    for (let i = 0; i <= 7; i++) { // the day to the next week
+    for (let i = 0; i <= 6; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
       dates.push(date);
@@ -184,7 +278,7 @@ const TaskChecklist = () => {
                 stroke="#10B981"
                 strokeWidth="5"
                 fill="none"
-                strokeDasharray={`${(completedTasks / totalTasks) * 157} 157`}
+                strokeDasharray={`${totalTasks > 0 ? (completedTasks / totalTasks) * 157 : 0} 157`}
                 strokeDashoffset="0"
                 transform="rotate(-90 30 30)"
               />
@@ -220,13 +314,30 @@ const TaskChecklist = () => {
               day: 'numeric'
             })}</p>
           </div>
-          <button
-            className="calendar-icon-btn"
+          <button className="calendar-icon-btn"
             onClick={() => setShowCalendar(true)}
             title="Open Calendar">
             📅
           </button>
         </div>
+      </div>
+
+      {/* Pet Filter */}
+      <div className="pet-filter">
+        <label htmlFor="pet-filter">Filter by Pet:</label>
+        <select 
+          id="pet-filter"
+          value={selectedPetFilter} 
+          onChange={(e) => setSelectedPetFilter(e.target.value)}
+          className="pet-filter-select"
+        >
+          <option value="all">All Pets</option>
+          {pets.map(pet => (
+            <option key={pet.id} value={pet.id.toString()}>
+              {pet.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <button className="floating-add-btn"
@@ -235,16 +346,21 @@ const TaskChecklist = () => {
       </button>
 
       <div className="tasks-container">
-        {tasks.length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <div className="no-tasks">
-            <p>No tasks scheduled for this day</p>
+            <p>
+              {selectedPetFilter === 'all' 
+                ? 'No tasks scheduled for this day' 
+                : `No tasks for ${getPetById(selectedPetFilter)?.name || 'selected pet'} on this day`
+              }
+            </p>
             <button className="add-task-btn" onClick={() => setShowAddTask(true)}>
               Add Your First Task
             </button>
           </div>
         ) : (
           <>
-            {tasks.map(task => {
+            {filteredTasks.map(task => {
               const pet = getPetById(task.petId);
               return (
                 <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
@@ -257,7 +373,14 @@ const TaskChecklist = () => {
                     <div className="task-main">
                       <div className="task-icon">{TaskIcons[task.type]}</div>
                       <div className="task-info">
-                        <h3>{task.title}</h3>
+                        <h3>
+                          {task.title}
+                          {task.isRecurring && (
+                            <span className="recurring-badge" title={`Recurring ${task.recurringType}`}>
+                              🔄
+                            </span>
+                          )}
+                        </h3>
                         <div className="task-meta">
                           <span className="task-pet" style={{ color: pet?.color }}>
                             {pet?.name}
@@ -267,34 +390,37 @@ const TaskChecklist = () => {
                       </div>
                     </div>
 
-                    {task.notes && ( // boolean to check if task.notes is empty
+                    {task.notes && (
                       <div className="task-notes">
                         <p>{task.notes}</p>
                       </div>
                     )}
                   </div>
 
-                  <button className="task-delete" onClick={() => {
-                    setTasks(tasks.filter(t => t.id !== task.id));
-                  }}>Delete</button>
-
+                  <button className="task-delete" onClick={() => deleteTask(task.id)}>Delete</button>
                 </div>
               );
-
             })}
           </>
         )}
       </div>
 
+      {/* Error Display */}
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
       {/* New Task modal */}
       {showAddTask && (
-        <div className="modal-overlay"> {/* Modal creates a mode to temporarily block interaction with the rest of the interface */}
+        <div className="modal-overlay">
           <div className="add-task-modal">
-
             <div className="modal-header">
               <h3>Add New Task</h3>
               <button className="close-btn"
                 onClick={() => setShowAddTask(false)}>
+                ×
               </button>
             </div>
 
@@ -345,11 +471,16 @@ const TaskChecklist = () => {
                 <label>Recurring</label>
                 <select value={newTask.recurring}
                   onChange={(e) => setNewTask({ ...newTask, recurring: e.target.value })}>
+                  <option value="once">One Time</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
-                  <option value=" once">One Time</option>
                 </select>
+                {newTask.recurring !== 'once' && (
+                  <small className="recurring-info">
+                    This will create tasks for the next 30 {newTask.recurring.replace('ly', '')} periods
+                  </small>
+                )}
               </div>
 
               <div className="form-group">
@@ -368,8 +499,9 @@ const TaskChecklist = () => {
                   Cancel
                 </button>
                 <button className="save-btn"
-                  onClick={addNewTask}>
-                  Add Task
+                  onClick={addNewTask}
+                  disabled={loading}>
+                  {loading ? 'Adding...' : 'Add Task'}
                 </button>
               </div>
             </div>
@@ -411,14 +543,14 @@ const TaskChecklist = () => {
 
               <div className="calendar-days">
                 {generateCalendarDays(calendarDate.getFullYear(), calendarDate.getMonth()).map((date, index) => (
-                  <button key={index}  // one button per cell
-                    className={`calendar-day ${date ? // Check if date is not null
+                  <button key={index}
+                    className={`calendar-day ${date ? 
                       (date.toDateString() === selectedDate.toDateString() ? 'selected' :
                         date.toDateString() === new Date().toDateString() ? 'today' : '')
                       : 'empty'
                       }`}
-                    onClick={() => date && selectCalendarDate(date)} // Only allow selection if date is not null
-                    disabled={!date}> {/* Disable button if date is null */}
+                    onClick={() => date && selectCalendarDate(date)}
+                    disabled={!date}>
                     {date ? date.getDate() : ''}
                   </button>
                 ))}
@@ -427,7 +559,6 @@ const TaskChecklist = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
