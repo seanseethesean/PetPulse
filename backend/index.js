@@ -16,7 +16,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send("Backend server is running!");
 });
-  
+
 // Routes
 app.use("/api/pets", petRoutes);  // prefix all routes inside with /api/pets
 app.use("/api/tasks", taskRoutes);
