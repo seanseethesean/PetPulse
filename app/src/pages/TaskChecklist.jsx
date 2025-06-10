@@ -106,7 +106,21 @@ const TaskChecklist = () => {
   };
 
   // Helper function to generate recurring task dates
-  const generateRecurringDates = (startDate, recurring, count = 30) => {
+  const generateRecurringDates = (startDate, recurring) => {
+    let count;
+    switch (recurring) {
+      case 'daily':
+        count = 30;  // 30 days
+        break;
+      case 'weekly':
+        count = 4;   // 4 weeks
+        break;
+      case 'monthly':
+        count = 12;  // 12 months
+        break;
+      default:
+        return [startDate];
+    }
     const dates = [];
     const current = new Date(startDate);
     
