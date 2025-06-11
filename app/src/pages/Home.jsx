@@ -25,13 +25,13 @@ const Home = () => {
       <div className="home-text">
         <div><Navbar></Navbar></div>
         {selectedPetName && (
-          <h1>Welcome back, {selectedPetName}!</h1>
+          <h1>{selectedPetName}'s day is about to get a whole lot better!</h1>
         )}
-        <h2>Revolutionizing pet care for you</h2>
+        {/* <h2>Revolutionizing pet care for you</h2>
         <p>
           Here, we are determined to help you stay organized, connected, and
           confident in giving your pets the love and attention they deserve
-        </p>
+        </p> */}
         {/* <button onClick={goToPetMgm} className='startBtn'>Get Started!</button> */}
         {/* <button onClick={goToPetMgm}> This button goes to pet management </button> */}
       </div>

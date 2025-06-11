@@ -14,7 +14,7 @@ nav {
    
    
    .pplogo{
-      width: 60px;
+      width: 75px;
       align-self: flex-start;
    }
    
@@ -22,9 +22,9 @@ nav {
    .btn{
       color: white;
       background: #f1356d;
-      font-size: 12px;
+      font-size: 15px;
       border-radius: 30px;
-      padding: 8px 10px;
+      padding: 10px 10px;
       cursor: pointer;
       border: 0;
       outline: 0;
@@ -38,6 +38,7 @@ nav {
       margin: 0;
       padding: 0;
       align-items: right;
+      gap: 32px;
    }
    
    
@@ -61,4 +62,26 @@ nav {
       justify-content: space-between;
       width: 100%;
       max-height: 400px;
+    }
+
+    nav button {
+      font-size: 15px;
+      color: #638bc7;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav button.active,
+    nav button:disabled {
+      color: #888;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .btn.active,
+    .btn:disabled {
+      color: #888;
+      cursor: not-allowed;
     }
