@@ -1,7 +1,7 @@
 .task-checklist {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px;
+    padding: 100px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     background-color: #f8f9fa;
     min-height: 100vh;
@@ -684,5 +684,102 @@
     
     .add-task-modal {
       border-radius: 16px;
+    }
+  }
+
+  /* Pet Filter Styles */
+.pet-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+  
+  .pet-filter label {
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+  }
+  
+  .pet-filter-select {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    color: #495057;
+    min-width: 150px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  
+  .pet-filter-select:focus {
+    outline: none;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  }
+  
+  /* Recurring Task Badge */
+  .recurring-badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 12px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+  
+  .task-item:hover .recurring-badge {
+    opacity: 1;
+  }
+  
+  /* Recurring Info Text */
+  .recurring-info {
+    display: block;
+    color: #6c757d;
+    font-size: 12px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  
+  /* Error Message Styles */
+  .error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 14px;
+  }
+  
+  /* Loading State for Add Button */
+  .save-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  /* Enhanced Modal Styles */
+  .form-group small {
+    display: block;
+    margin-top: 4px;
+    color: #6c757d;
+    font-size: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    .pet-filter {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    
+    .pet-filter-select {
+      min-width: unset;
+      width: 100%;
     }
   }
