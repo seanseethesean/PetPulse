@@ -3,8 +3,14 @@ import "../assets/PetMgm.css"
 import { useNavigate } from "react-router-dom"
 import { getAuth } from "firebase/auth"
 
-import pet_icon from "../assets/images/petname.png"
-import animaltype_icon from "../assets/images/animaltype.png"
+// import pet_icon from "../assets/images/petname.png"
+// import animaltype_icon from "../assets/images/animaltype.png"
+
+const addPetIcon = {
+  pet_icon: "🙈",
+  animaltype_icon: "🙉",
+  breed_icon: "🙊"
+};
 
 const PetMgm = () => {
   const navigate = useNavigate()
@@ -243,11 +249,11 @@ const PetMgm = () => {
 
       {/* Right Panel - Add New Pet */}
       <div className="add-pet-panel">
-        <h2>Add New Pet</h2>
+        <h2>🐾 Join the Family! 🐾</h2>
 
         <div className="petmgm-inputs">
           <div className="petmgm-input">
-            <img src={pet_icon} alt="" />
+            <span className="emoji-icon">{addPetIcon.pet_icon}</span>
             <input
               type="text"
               name="name"
@@ -259,7 +265,7 @@ const PetMgm = () => {
           </div>
 
           <div className="petmgm-input">
-            <img src={animaltype_icon} alt="" />
+            <span className="emoji-icon">{addPetIcon.animaltype_icon}</span>
             <input
               type="text"
               name="animalType"
@@ -273,7 +279,7 @@ const PetMgm = () => {
           </div>
 
           <div className="petmgm-input">
-            <img src={pet_icon} alt="" />
+            <span className="emoji-icon">{addPetIcon.breed_icon}</span>
             <input
               type="text"
               name="breed"
