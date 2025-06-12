@@ -1,4 +1,31 @@
 import 'dotenv/config';
+import admin from 'firebase-admin';
+
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      projectId: process.env.FIREBASE_PROJECT_ID,
+    });
+  }
+
+  else if (process.env.FIREBASE_PRIVATE_KEY) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      }),
+      projectId: process.env.FIREBASE_PROJECT_ID,
+    });
+  }
+
+  else {
+    admin.initializeApp({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+    });
+  }
+  
+  export default admin;
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
