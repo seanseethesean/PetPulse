@@ -4,7 +4,6 @@ import { auth } from '../firebase/firebase.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-// import user_icon from '../assets/images/person.png';
 import email_icon from '../assets/images/email.png';
 import password_icon from '../assets/images/password.png';
 import petpulse_icon from '../assets/images/Petpulse.png';
