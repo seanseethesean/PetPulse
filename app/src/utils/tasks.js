@@ -92,5 +92,5 @@ class TaskService {
   }
 }
 
-// Export a singleton instance
+// Export an instance
 export default new TaskService();
