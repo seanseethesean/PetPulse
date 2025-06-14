@@ -273,7 +273,7 @@ const TaskChecklist = () => {
     <div className="task-checklist">
       <div className="task-header">
         <Navbar />
-        <h1>Task Checklist</h1>
+        <h1>📋 Task Checklist</h1>
         <div className="progress-summary">
           <div className="progress-circle">
             <svg width="60" height="60">
@@ -339,12 +339,10 @@ const TaskChecklist = () => {
       {/* Pet Filter */}
       <div className="pet-filter">
         <label htmlFor="pet-filter">Filter by Pet:</label>
-        <select 
-          id="pet-filter"
+        <select id="pet-filter"
           value={selectedPetFilter} 
           onChange={(e) => setSelectedPetFilter(e.target.value)}
-          className="pet-filter-select"
-        >
+          className="pet-filter-select">
           <option value="all">All Pets</option>
           {pets.map(pet => (
             <option key={pet.id} value={pet.id.toString()}>

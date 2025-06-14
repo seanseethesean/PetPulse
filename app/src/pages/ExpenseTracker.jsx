@@ -5,6 +5,7 @@ import '../assets/ExpenseTracker.css';
 
 const ExpenseTracker = () => {
 
+  const [showAddExpense, setShowAddExpense] = useState(false);
 
   return (
     <div className="expense-tracker">
@@ -15,7 +16,7 @@ const ExpenseTracker = () => {
         <div className="expense-tracker-header">
           <div className="expense-header-title">
             <PawPrint className="paw-print-icon" />
-            <h1> Expense Tracker</h1>
+            <h1>Expense Tracker</h1>
           </div>
           <p className="expense-subtitle">Keep track of all your pet-related expenses</p>
         </div>
@@ -40,11 +41,99 @@ const ExpenseTracker = () => {
                 <option value="Bella">Bella</option>
               </select>
             </div>
-            <button className="add-expense">+ Add Expense</button>
+            <button className="add-expense" onClick={() => setShowAddExpense(true)}>Add Expense</button>
           </div>
         </div>
 
+        {/* Expense list */}
+        <div className="expense-list">
+          <h1 className="expense-list-header">Expenses by Category</h1>
+          <div className="expense-category">
+            <div className="expense-category-scroll-box">
+              <ul>
+                <li>
+                  <span>Food</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Grooming</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Vet</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Medicine</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Training</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Toys</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Accessories</span>
+                  <span>$50</span>
+                </li>
+                <li>
+                  <span>Others</span>
+                  <span>$50</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent expenses */}
+        <div className="recent-expenses">
+          <div className="recent-expenses-header">
+            <h1 className="recent-expense-header"> Recent expenses </h1>
+          </div>
+          <div className="recent-expenses-table-container">
+            <table className="expense-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Pet</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>01/01/2023</td>
+                  <td>Bella</td>
+                  <td>Food</td>
+                  <td>Dog food purchase</td>
+                  <td>$50.00</td>
+                  <td>
+                    <div className="expense-actions">
+                      <button className="edit-expense-button">Edit</button>
+                      <Trash2 className="delete-icon" />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
+
+      {showAddExpense && (
+        <div className="add-expense-modal">
+          <h3>Add new expense</h3>
+          <div className="add-expense-form">
+
+
+          </div>
+        </div>
+      )}
 
     </div>
   )
