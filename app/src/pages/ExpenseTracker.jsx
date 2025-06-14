@@ -126,11 +126,26 @@ const ExpenseTracker = () => {
       </div>
 
       {showAddExpense && (
-        <div className="add-expense-modal">
-          <h3>Add new expense</h3>
-          <div className="add-expense-form">
-
-
+        <div className="add-expense-overlay">
+          <div className="add-expense-modal">
+            <h3 className="add-expense-title">Add New Expense</h3>
+            <div className="add-expense-form">
+              {/* form fields go here */}
+              <input type="text" placeholder="Description" />
+              <input type="number" placeholder="Amount" />
+              <select name="category">
+                <option value="food">Food</option>
+                <option value="grooming">Grooming</option>
+                <option value="vet">Vet</option>
+                <option value="medicine">Medicine</option>
+                <option value="training">Training</option>
+                <option value="toys">Toys</option>
+                <option value="accessories">Accessories</option>
+                <option value="others">Others</option>
+              </select>
+              <button className="save-expense-button">Save</button>
+              <button className="close-expense-button" onClick={() => setShowAddExpense(false)}>Cancel</button>
+            </div>
           </div>
         </div>
       )}

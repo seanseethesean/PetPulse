@@ -268,3 +268,65 @@
   justify-content: flex-start;
   gap: 8px;
 }
+
+.add-expense-overlay {
+  position: fixed; /* this covers screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.add-expense-modal {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.add-expense-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #1f2937;
+  margin-top: 0px;
+}
+
+.add-expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.add-expense-form input,
+.add-expense-form select {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.save-expense-button {
+  background-color: #10b981;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.close-expense-button {
+  background-color: #ef4444;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
