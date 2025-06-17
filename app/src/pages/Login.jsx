@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import '../assets/Login.css';
-import { auth } from '../firebase/firebase.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase/firebase.js';
+import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import authService from '../utils/auth.js';
 
-// import user_icon from '../assets/images/person.png';
 import email_icon from '../assets/images/email.png';
 import password_icon from '../assets/images/password.png';
 import petpulse_icon from '../assets/images/Petpulse.png';
@@ -16,50 +16,29 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async () => { //asynchronous, so can use await
+  const handleSubmit = async () => {
+    setError("");
     try {
       if (action === "Sign Up") {
-        await createUserWithEmailAndPassword(auth, email, password); // await pauses the function until Firebase call is done
-        console.log("User created successfully"); //shows this message in inspect element
-        navigate('/petmgm');
+        await authService.signup(email, password);
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        console.log("User signed in successfully");
-        navigate('/petmgm');
+        await authService.login(email, password);
       }
+      navigate('/petmgm');
     } catch (error) {
-      console.error("Full error:", error); // Keep this for debugging
-
-      if (error.code === 'auth/email-already-in-use') {
-        setError("This email is already registered. Try logging in instead."); //literally appears on user's screen
-      } else if (error.code === 'auth/weak-password') {
-        setError("Password is too weak. Please choose a stronger password.");
-      } else if (error.code === 'auth/user-not-found') {
-        setError("No account found with this email. Please sign up first.");
-      } else if (error.code === 'auth/wrong-password') {
-        setError("Incorrect password. Please try again.");
-      } else if (error.code === 'auth/invalid-email') {
-        setError("Please enter a valid email address.");
-      } else if (error.code === 'auth/network-request-failed') {
-        setError("Network error. Please check your internet connection.");
-      } else if (error.message.includes('400') || error.message.includes('Bad Request')) {
-        setError("Invalid request. Please check your email and password format.");
-      } else {
-        setError(`Error: ${error.message}`);
-      }
+      setError(error.message);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setError(""); // Clear previous errors
+    setError("");
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      console.log("Google sign-in successful:", result.user);
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      await authService.verifyGoogleToken(idToken);
       navigate('/petmgm');
     } catch (error) {
-      console.error("Google sign-in error:", error);
-      setError("Google sign-in failed. Please try again.");
+      setError(error.message || "Google sign-in failed. Please try again.");
     }
   };
 
