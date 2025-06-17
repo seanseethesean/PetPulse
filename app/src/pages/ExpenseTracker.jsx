@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from "react"
-import { Plus, DollarSign, Filter, Calendar, Trash2, PawPrint } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from "react"
+import { DollarSign, Filter, Trash2, PawPrint } from 'lucide-react';
 import Navbar from "../components/Navbar";
 import '../assets/ExpenseTracker.css';
+import { getAuth } from "firebase/auth";
+import ExpenseService from "../utils/expenses";
 
 const categoryEmojis = {
   Food: '🍽️',
@@ -16,90 +18,206 @@ const categoryEmojis = {
 
 const ExpenseTracker = () => {
   const [showAddExpense, setShowAddExpense] = useState(false);
-  const [newExpense, setNewExpense] = useState({
-    description: '',
-    amount: '',
-    category: 'Food',
-    date: new Date().toISOString().split("T")[0]
-  });
   const [expenses, setExpenses] = useState([]);
   const [selectedPet, setSelectedPet] = useState('all');
   const [editingExpense, setEditingExpense] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [pets, setPets] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const auth = getAuth();
+  const [newExpense, setNewExpense] = useState({
+    description: '',
+    amount: '',
+    category: 'Food',
+    petId: '',
+    date: new Date().toISOString().split("T")[0]
+  });
 
-  //Fetch pets later
-  const pets = [
-    { id: 1, name: 'Bella' },
-    { id: 2, name: 'Max' },
-    { id: 3, name: 'Luna' }
-  ];
+  // Fetch pets first when component mounts
+  useEffect(() => {
+    const fetchPets = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        console.log("Fetching pets for user:", user.uid);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets?userId=${user.uid}`);
+        const data = await res.json();
+        console.log("Fetched pets:", data);
+        
+        if (data.success) {
+          setPets(data.pets);
+          // Set default pet for new expense form
+          if (data.pets.length > 0 && !newExpense.petId) {
+            setNewExpense(prev => ({ ...prev, petId: data.pets[0].id.toString() }));
+          }
+        } else {
+          setError(data.error || 'Failed to load pets');
+        }
+      } catch (err) {
+        console.error('Failed to fetch pets:', err);
+        setError('Failed to load pets');
+      }
+    };
 
-  const handleAddExpense = () => {
+    // Check if user is already authenticated
+    if (auth.currentUser) {
+      fetchPets();
+    }
+
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("Auth state changed, user logged in:", user.uid);
+        fetchPets();
+      } else {
+        console.log("User logged out");
+        setPets([]);
+        setExpenses([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch expenses when pets are loaded or selectedPet changes
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const user = auth.currentUser;
+        if (!user) {
+          console.log("No user found, waiting for auth...");
+          return;
+        }
+
+        console.log("Fetching expenses for user:", user.uid, "pet filter:", selectedPet);
+        
+        // Use 'all' instead of the pet name for the API call
+        const petFilter = selectedPet === 'all' ? 'all' : selectedPet;
+        const expenseData = await ExpenseService.getExpenses(user.uid, petFilter);
+        
+        console.log("Fetched expenses:", expenseData);
+        setExpenses(expenseData || []);
+      } catch (error) {
+        console.error("Failed to fetch expenses:", error);
+        setError("Failed to load expenses: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Only fetch expenses if we have a user and pets have been loaded
+    if (auth.currentUser && (pets.length > 0 || selectedPet === 'all')) {
+      fetchExpenses();
+    }
+  }, [selectedPet, pets]);
+
+  const handleAddExpense = async () => {
     if (!newExpense.description || !newExpense.amount) {
       alert('Please fill in all required fields');
       return;
     }
 
-    const expense = {
-      ...newExpense,
-      amount: parseFloat(newExpense.amount), // Convert to number
-      date: new Date(newExpense.date).toLocaleDateString(), // Format date properly
-      pet: selectedPet === 'all' ? 'Bella' : selectedPet, // Use selected pet
-      id: Date.now(),
-      createdAt: Date.now()
-    };
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
 
-    setExpenses([expense, ...expenses]); // Add to beginning of array
+      const selectedPetData = pets.find(p => p.id.toString() === newExpense.petId);
+      
+      if (!selectedPetData) {
+        alert('Please select a valid pet');
+        return;
+      }
 
-    // Reset form
-    setNewExpense({
-      description: '',
-      amount: '',
-      category: 'Food',
-      date: new Date().toISOString().split("T")[0]
-    });
-    setShowAddExpense(false);
+      const payload = {
+        ...newExpense,
+        amount: parseFloat(newExpense.amount),
+        userId: user.uid,
+        petId: selectedPetData.id.toString(),
+        petName: selectedPetData.name,
+      };
+
+      const created = await ExpenseService.createExpense(payload);
+      setExpenses([created, ...expenses]);
+
+      setNewExpense({
+        description: '',
+        amount: '',
+        category: 'Food',
+        petId: newExpense.petId,
+        date: new Date().toISOString().split("T")[0]
+      });
+      setShowAddExpense(false);
+    } catch (err) {
+      console.error("Error adding expense:", err);
+      alert("Failed to add expense");
+    }
   };
 
-  const handleDeleteExpense = (expenseId) => {
-    if (window.confirm('Are you sure you want to delete this expense?')) {
+  const handleDeleteExpense = async (expenseId) => {
+    if (!window.confirm('Are you sure you want to delete this expense?')) return;
+
+    try {
+      await ExpenseService.deleteExpense(expenseId);
       setExpenses(expenses.filter(exp => exp.id !== expenseId));
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+      alert("Failed to delete expense");
     }
   };
 
   const handleEditExpense = (expense) => {
     setEditingExpense({
       ...expense,
-      date: new Date(expense.createdAt || Date.now()).toISOString().split("T")[0]
+      date: new Date(expense.date || expense.createdAt).toISOString().split("T")[0],
+      petId: expense.petId || ''
     });
     setShowEditModal(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingExpense.description || !editingExpense.amount) {
       alert('Please fill in all required fields');
       return;
     }
 
-    setExpenses(expenses.map(exp =>
-      exp.id === editingExpense.id
-        ? {
-          ...editingExpense,
-          amount: parseFloat(editingExpense.amount),
-          date: new Date().toLocaleDateString()
-        }
-        : exp
-    ));
+    try {
+      const selectedPetData = pets.find(p => p.id.toString() === editingExpense.petId);
+      
+      if (!selectedPetData) {
+        alert('Please select a valid pet');
+        return;
+      }
 
-    setShowEditModal(false);
-    setEditingExpense(null);
+      const updated = {
+        ...editingExpense,
+        amount: parseFloat(editingExpense.amount),
+        petName: selectedPetData.name, // Update pet name in case it changed
+        updatedAt: new Date().toISOString()
+      };
+
+      await ExpenseService.updateExpense(editingExpense.id, updated);
+
+      setExpenses(expenses.map(exp =>
+        exp.id === editingExpense.id ? { ...exp, ...updated } : exp
+      ));
+
+      setShowEditModal(false);
+      setEditingExpense(null);
+    } catch (err) {
+      console.error("Error updating expense:", err);
+      alert("Failed to update expense");
+    }
   };
 
   const { totalExpenses, categoryTotals, filteredExpenses } = useMemo(() => {
     // Filter expenses by selected pet
     const filtered = selectedPet === 'all'
       ? expenses
-      : expenses.filter(exp => exp.pet === selectedPet);
+      : expenses.filter(exp => exp.petName === selectedPet);
 
     // Calculate total
     const total = filtered.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
@@ -220,8 +338,8 @@ const ExpenseTracker = () => {
               <tbody>
                 {recentExpenses.length > 0 ? recentExpenses.map((exp) => (
                   <tr key={exp.id}>
-                    <td>{exp.date}</td>
-                    <td>{exp.pet}</td>
+                    <td>{new Date(exp.date).toLocaleDateString()}</td>
+                    <td>{exp.petName}</td>
                     <td className="expense-category-cell">{exp.category}</td>
                     <td>{exp.description}</td>
                     <td className="amount-cell">{formatCurrency(exp.amount)}</td>
@@ -256,6 +374,15 @@ const ExpenseTracker = () => {
           <div className="add-expense-modal">
             <h3 className="add-expense-title">Add New Expense</h3>
             <div className="add-expense-form">
+              <select className="expense-form-select"
+                value={newExpense.petId}
+                onChange={(e) => setNewExpense({ ...newExpense, petId: e.target.value })}
+              >
+                <option value="">Select Pet *</option>
+                {pets.map((pet) => (
+                  <option key={pet.id} value={pet.id.toString()}>{pet.name}</option>
+                ))}
+              </select>
               <input className="expense-form-input"
                 type="text"
                 placeholder="Description *"
@@ -280,7 +407,7 @@ const ExpenseTracker = () => {
                 <option value="Training">Training</option>
                 <option value="Toys">Toys</option>
                 <option value="Accessories">Accessories</option>
-                <option value="Others">Others</option>
+                <option value="Others">Others</option>/
               </select>
               <input className="expense-form-input"
                 type="date"

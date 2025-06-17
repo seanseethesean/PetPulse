@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/TaskChecklist.css';
 import Navbar from '../components/Navbar';
-import taskService from '../utils/tasks';
+import TaskService from '../utils/tasks';
 import { getAuth } from 'firebase/auth';
 
 const TaskIcons = {
@@ -80,7 +80,7 @@ const TaskChecklist = () => {
       setError(null);
       const user = auth.currentUser;
       if (!user) return;
-      const tasksData = await taskService.getTasksByDate(selectedDate, user.uid);
+      const tasksData = await TaskService.getTasksByDate(selectedDate, user.uid);
       setTasks(tasksData);
     } catch (err) {
       setError(err.message);
@@ -99,7 +99,7 @@ const TaskChecklist = () => {
         t.id === taskId ? { ...t, completed: !t.completed } : t
       );
       setTasks(updatedTasks);
-      await taskService.toggleTaskCompletion(taskId, !task.completed);
+      await TaskService.toggleTaskCompletion(taskId, !task.completed);
     } catch (err) {
       setError('Failed to update task: ' + err.message);
     }
@@ -169,13 +169,13 @@ const TaskChecklist = () => {
         const taskData = {
           ...newTask,
           petId: newTask.petId.toString(),
-          date: taskService.formatDateForAPI(date),
+          date: TaskService.formatDateForAPI(date),
           userId: user.uid,
           completed: false,
           isRecurring: newTask.recurring !== 'once',
           recurringType: newTask.recurring
         };
-        return taskService.createTask(taskData);
+        return TaskService.createTask(taskData);
       });
 
       await Promise.all(taskPromises);
@@ -200,7 +200,7 @@ const TaskChecklist = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await taskService.deleteTask(taskId);
+      await TaskService.deleteTask(taskId);
       setTasks(tasks.filter(t => t.id !== taskId));
     } catch (err) {
       setError('Failed to delete task: ' + err.message);
