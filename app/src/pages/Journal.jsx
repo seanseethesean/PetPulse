@@ -85,7 +85,7 @@ const PetJournal = () => {
 
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/journal?userId=${user.uid}&petId=${selectedPet}`
+        `${process.env.REACT_APP_API_URL}/api/journal?userId=${user.uid}&petName=${selectedPet}`
       )
       const data = await res.json()
       if (data.success) {
@@ -112,7 +112,7 @@ const PetJournal = () => {
 
   const handleSubmitEntry = async () => {
     if (!newEntry.title.trim() || !newEntry.content.trim()) {
-      alert("Please fill in title and content")
+      alert("Please fill in title and mood")
       return
     }
 

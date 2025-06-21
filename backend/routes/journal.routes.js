@@ -9,9 +9,9 @@ const router = express.Router()
 // GET: Fetch all journal entries for a pet
 router.get("/", async (req, res) => {
     try {
-    const { userId, petId } = req.query
+    const { userId, petName } = req.query
   
-    if (!userId || !petId) {
+    if (!userId || !petName) {
       return res.status(400).json({ success: false, error: "Missing userId or petName" })
     }
   
@@ -31,15 +31,15 @@ router.get("/", async (req, res) => {
     //   res.status(500).json({ success: false, error: err.message })
     // }
 
-  // Create query to get expenses for specific user
+  // Create query to get entry for specific pet
       const journalRef = collection(db, "journal");
       let q;
       
-      if (petId && petId !== 'all') {
+      if (userId && petName !== 'all') {
         q = query(
           journalRef, 
           where("userId", "==", userId),
-          where("petId", "==", petId),
+          where("petName", "==", petName),
           orderBy("createdAt", "desc")
         );
       } else {

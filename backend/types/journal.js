@@ -11,14 +11,14 @@ const validCategories = [
 
   export const createJournalSchema = yup.object().shape({
     title: yup.string().required("Title is required"),
-    content: yup.string().required("Content is required"),
-    mood: yup.string().optional(),
+    content: yup.string().optional(),
+    mood: yup.string().required("Mood is required"),
     activities: yup.array().of(yup.string()).optional(),
     date: yup.string().required("Date is required"),
     petName: yup.string().required("Pet name is required"),
     userId: yup.string().required("User ID is required"),
     createdAt: yup.string().optional()
-  });
+  })
   
   export const updateJournalSchema = yup.object().shape({
     title: yup.string().optional(),
