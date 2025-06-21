@@ -43,14 +43,14 @@ router.post("/", async (req, res) => {
  }
   try {
    const petData = req.body;
-   console.log("Request Body:", petData); // Log the incoming data
+  //  console.log("Request Body:", petData); // Log the incoming data
    await validateRequestData(petData, createPetSchema);
    const petsCollection = collection(db, "Pets");
    const docId = doc(petsCollection).id
    const docRef = await addDoc(petsCollection, { ...petData, petId: docId }); // spread operator
    res.status(201).json({ success: true, message: "Pet added!", id: docRef.id });
  } catch (error) {
-   console.error("Error adding pet:", error);
+  //  console.error("Error adding pet:", error);
    res.status(500).json({ success: false, error: error.message });
  }
 });
