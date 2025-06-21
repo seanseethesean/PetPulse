@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.routes.js";
 import petRoutes from "./routes/pet.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/pets", petRoutes);  // prefix all routes inside with /api/pets
 app.use("/api/tasks", taskRoutes);
 app.use("/api/expenses", expenseRoutes);
