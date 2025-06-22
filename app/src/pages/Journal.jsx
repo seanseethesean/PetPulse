@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react"
-import "../assets/Journal.css"
-import { getAuth } from "firebase/auth"
-import Navbar from "../components/Navbar"
-
-const journal_icon = "✍️"
-const calendar_icon = "🗓️"
+import { useEffect, useState } from "react";
+import "../assets/Journal.css";
+import { getAuth } from "firebase/auth";
+import JournalService from "../utils/journal";
+import Navbar from "../components/Navbar";
 
 const PetJournal = () => {
   const [selectedPet, setSelectedPet] = useState("")
@@ -84,10 +82,7 @@ const PetJournal = () => {
     if (!user || !selectedPet) return
 
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/journal?userId=${user.uid}&petName=${selectedPet}`
-      )
-      const data = await res.json()
+      const data = await JournalService.getEntries(user.uid, selectedPet)
       if (data.success) {
         setJournalEntries(data.entries || [])
       }
@@ -128,21 +123,10 @@ const PetJournal = () => {
     
 
     try {
-      const url = editingEntry
-        ? `${process.env.REACT_APP_API_URL}/api/journal/${editingEntry.id}`
-        : `${process.env.REACT_APP_API_URL}/api/journal`
+      const result = editingEntry
+      ? await JournalService.updateEntry(editingEntry.id, entryData)
+      : await JournalService.createEntry(entryData)
 
-      const method = editingEntry ? "PUT" : "POST"
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(entryData)
-      })
-
-      const result = await response.json()
       if (result.success) {
         alert(editingEntry ? "Entry updated!" : "Entry added!")
         setNewEntry({
@@ -179,12 +163,7 @@ const PetJournal = () => {
     if (!window.confirm("Are you sure you want to delete this entry?")) return
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/journal/${entryId}`,
-        { method: "DELETE" }
-      )
-
-      const result = await response.json()
+      const result = await JournalService.deleteEntry(entryId)
       if (result.success) {
         alert("Entry deleted!")
         fetchJournalEntries()
