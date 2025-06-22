@@ -13,10 +13,10 @@ const Navbar = () => {
 
         <ul className="navbar-menu">
           <button
-            onClick={() => navigate("/Calendar")}
-            className={location.pathname === "/Calendar" ? "active" : ""}
-            disabled={location.pathname === "/Calendar"}>
-            Calendar
+            onClick={() => navigate("/Social-Page")}
+            className={location.pathname === "/Social-Page" ? "active" : ""}
+            disabled={location.pathname === "/Social-Page"}>
+            Social
           </button>
 
           <button

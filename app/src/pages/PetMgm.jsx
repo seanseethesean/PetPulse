@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import "../assets/PetMgm.css"
 import { useNavigate } from "react-router-dom"
 import { getAuth } from "firebase/auth"
+import PetService from "../utils/pet";
 
 // import pet_icon from "../assets/images/petname.png"
 // import animaltype_icon from "../assets/images/animaltype.png"
@@ -34,10 +35,7 @@ const PetMgm = () => {
       const user = auth.currentUser
       if (!user) return // login authentication
 
-      const res = await fetch(
-        `${URL}/api/pets?userId=${user.uid}`
-      )
-      const data = await res.json()
+      const data = await PetService.getPets(user.uid)
       if (data.success) {
         setPetList(data.pets)
       }
@@ -78,18 +76,7 @@ const PetMgm = () => {
     }
 
     try {
-      const response = await fetch(
-        `${URL}/api/pets`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(petData)
-        }
-      )
-
-      const result = await response.json()
+      const result = await PetService.createPet(petData)
       if (result.success) {
         alert("Pet added!")
         setFormData({
@@ -100,10 +87,7 @@ const PetMgm = () => {
         })
 
         // re-fetch pets
-        const res = await fetch(
-          `${URL}/api/pets?userId=${user.uid}`
-        )
-        const data = await res.json()
+        const data = await PetService.getPets(user.uid)
         if (data.success) {
           setPetList(data.pets)
         }
@@ -118,12 +102,8 @@ const PetMgm = () => {
   const handleEditPet = async (petId) => {
     const pet = petList.find((p) => p.id === petId)
     const user = auth.currentUser
-    const res = await fetch(`${URL}/api/pets/${petId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...pet, userId: user.uid })
-    })
-    const result = await res.json()
+   
+    const result = await PetService.updatePet(petId, { ...pet, userId: user.uid })
     if (result.success) {
       alert("Pet updated!")
       setEditing(null)
@@ -135,8 +115,7 @@ const PetMgm = () => {
   // DELETE PET VIA FETCH
   const handleDeletePet = async (petId) => {
     if (!window.confirm("Are you sure?")) return
-    const res = await fetch(`${URL}/api/pets/${petId}`, { method: "DELETE" })
-    const result = await res.json()
+    const result = await PetService.deletePet(petId)
     if (result.success) {
       alert("Pet deleted!")
       setPetList((pl) => pl.filter((p) => p.id !== petId))

@@ -8,6 +8,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import TaskChecklist from './pages/TaskChecklist';
 import ExpenseTracker from './pages/ExpenseTracker';
 import Journal from './pages/Journal';
+import SocialPage from './pages/SocialPage';
 
 function App() {
    return (
@@ -21,7 +22,7 @@ function App() {
              <Route path="/forgot-password" element={<ForgotPassword />} />
              <Route path="/task-checklist" element={<TaskChecklist />} />
              <Route path="/journal" element={<Journal />} />
-             {/* <Route path="/calendar" element={<Calendar />} /> */}
+             <Route path="/social-page" element={<SocialPage />} />
              <Route path="/expense-tracker" element={<ExpenseTracker />} />
              <Route path="/petmgm" element={<PetMgm />} />
             </Routes>
