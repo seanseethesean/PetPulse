@@ -6,21 +6,33 @@ import Navbar from "../components/Navbar";
 // Icons - you can replace with your actual icons
 const search_icon = "🔎"; 
 const user_icon = "👤";
-const chat_icon = "💬";
+const forum_icon = "💭";
 const follow_icon = "👋";
 
 const SocialPage = () => {
-  const [activeTab, setActiveTab] = useState("search") // search, following, followers, chat
+  const [activeTab, setActiveTab] = useState("search") // search, following, followers, forum
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [following, setFollowing] = useState([])
   const [followers, setFollowers] = useState([])
   const [currentUser, setCurrentUser] = useState(null)
-  const [chatUsers, setChatUsers] = useState([])
-  const [selectedChat, setSelectedChat] = useState(null)
-  const [messages, setMessages] = useState([])
-  const [newMessage, setNewMessage] = useState("")
+  const [forumPosts, setForumPosts] = useState([])
+  const [newPost, setNewPost] = useState("")
+  const [postTitle, setPostTitle] = useState("")
+  const [postCategory, setPostCategory] = useState("general")
+  const [selectedPost, setSelectedPost] = useState(null)
+  const [newComment, setNewComment] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showCreatePost, setShowCreatePost] = useState(false)
+
+  const categories = [
+    { value: "general", label: "General Discussion" },
+    { value: "advice", label: "Advice & Tips" },
+    { value: "health", label: "Pet Health" },
+    { value: "training", label: "Training & Behavior" },
+    { value: "photos", label: "Pet Photos & Stories" },
+    { value: "recommendations", label: "Product Recommendations" }
+  ]
 
   useEffect(() => {
     const auth = getAuth()
@@ -28,6 +40,7 @@ const SocialPage = () => {
     if (user) {
       setCurrentUser(user)
       fetchUserData()
+      fetchForumPosts()
     }
   }, [])
 
@@ -54,17 +67,26 @@ const SocialPage = () => {
       if (followersData.success) {
         setFollowers(followersData.followers || [])
       }
-
-      // Fetch chat users (people you're following or who follow you)
-      const chatUsersRes = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/social/chat-users?userId=${user.uid}`
-      )
-      const chatUsersData = await chatUsersRes.json()
-      if (chatUsersData.success) {
-        setChatUsers(chatUsersData.users || [])
-      }
     } catch (err) {
       console.error("Error fetching user data:", err)
+    }
+  }
+
+  const fetchForumPosts = async () => {
+    const auth = getAuth()
+    const user = auth.currentUser
+    if (!user) return
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/forum/posts?userId=${user.uid}`
+      )
+      const data = await response.json()
+      if (data.success) {
+        setForumPosts(data.posts || [])
+      }
+    } catch (err) {
+      console.error("Error fetching forum posts:", err)
     }
   }
 
@@ -131,47 +153,28 @@ const SocialPage = () => {
     }
   }
 
-  const handleStartChat = (user) => {
-    setSelectedChat(user)
-    setActiveTab("chat")
-    fetchMessages(user.id)
-  }
-
-  const fetchMessages = async (otherUserId) => {
-    const auth = getAuth()
-    const user = auth.currentUser
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/social/messages?userId=${user.uid}&otherUserId=${otherUserId}`
-      )
-      const data = await response.json()
-      if (data.success) {
-        setMessages(data.messages || [])
-      }
-    } catch (err) {
-      console.error("Error fetching messages:", err)
-    }
-  }
-
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedChat) return
+  const createForumPost = async () => {
+    if (!newPost.trim() || !postTitle.trim()) return
 
     const auth = getAuth()
     const user = auth.currentUser
+    setLoading(true)
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/social/messages`,
+        `${process.env.REACT_APP_API_URL}/api/forum/posts`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            senderId: user.uid,
-            receiverId: selectedChat.id,
-            content: newMessage,
+            authorId: user.uid,
+            authorName: user.displayName || user.email,
+            authorAvatar: user.photoURL,
+            title: postTitle,
+            content: newPost,
+            category: postCategory,
             timestamp: new Date().toISOString()
           })
         }
@@ -179,18 +182,122 @@ const SocialPage = () => {
 
       const result = await response.json()
       if (result.success) {
-        setMessages(prev => [...prev, {
-          id: result.messageId,
-          senderId: user.uid,
-          receiverId: selectedChat.id,
-          content: newMessage,
+        // Add new post to the beginning of the list
+        const newPostData = {
+          id: result.postId,
+          authorId: user.uid,
+          authorName: user.displayName || user.email,
+          authorAvatar: user.photoURL,
+          title: postTitle,
+          content: newPost,
+          category: postCategory,
           timestamp: new Date().toISOString(),
-          senderName: user.displayName || user.email
-        }])
-        setNewMessage("")
+          likes: 0,
+          comments: [],
+          isLiked: false
+        }
+        
+        setForumPosts(prev => [newPostData, ...prev])
+        setNewPost("")
+        setPostTitle("")
+        setPostCategory("general")
+        setShowCreatePost(false)
       }
     } catch (err) {
-      console.error("Error sending message:", err)
+      console.error("Error creating forum post:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const likePost = async (postId, isLiked) => {
+    const auth = getAuth()
+    const user = auth.currentUser
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/forum/posts/${postId}/like`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userId: user.uid,
+            isLiked: !isLiked
+          })
+        }
+      )
+
+      const result = await response.json()
+      if (result.success) {
+        setForumPosts(prev => prev.map(post => 
+          post.id === postId 
+            ? { 
+                ...post, 
+                isLiked: !isLiked,
+                likes: isLiked ? post.likes - 1 : post.likes + 1
+              }
+            : post
+        ))
+      }
+    } catch (err) {
+      console.error("Error liking post:", err)
+    }
+  }
+
+  const addComment = async (postId) => {
+    if (!newComment.trim()) return
+
+    const auth = getAuth()
+    const user = auth.currentUser
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/forum/posts/${postId}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            authorId: user.uid,
+            authorName: user.displayName || user.email,
+            authorAvatar: user.photoURL,
+            content: newComment,
+            timestamp: new Date().toISOString()
+          })
+        }
+      )
+
+      const result = await response.json()
+      if (result.success) {
+        const newCommentData = {
+          id: result.commentId,
+          authorId: user.uid,
+          authorName: user.displayName || user.email,
+          authorAvatar: user.photoURL,
+          content: newComment,
+          timestamp: new Date().toISOString()
+        }
+
+        setForumPosts(prev => prev.map(post => 
+          post.id === postId 
+            ? { ...post, comments: [...(post.comments || []), newCommentData] }
+            : post
+        ))
+
+        if (selectedPost && selectedPost.id === postId) {
+          setSelectedPost(prev => ({
+            ...prev,
+            comments: [...(prev.comments || []), newCommentData]
+          }))
+        }
+
+        setNewComment("")
+      }
+    } catch (err) {
+      console.error("Error adding comment:", err)
     }
   }
 
@@ -213,15 +320,80 @@ const SocialPage = () => {
             {user.isFollowing ? "Unfollow" : "Follow"}
           </button>
         )}
-        {showChatButton && (
-          <button
-            className="chat-btn"
-            onClick={() => handleStartChat(user)}
-          >
-            Chat
-          </button>
-        )}
       </div>
+    </div>
+  )
+
+  const renderForumPost = (post) => (
+    <div key={post.id} className="forum-post">
+      <div className="post-header">
+        <div className="post-author">
+          <img src={post.authorAvatar || user_icon} alt={post.authorName} />
+          <div className="author-info">
+            <h4>{post.authorName}</h4>
+            <span className="post-time">
+              {new Date(post.timestamp).toLocaleDateString()} at {new Date(post.timestamp).toLocaleTimeString()}
+            </span>
+          </div>
+        </div>
+        <div className="post-category">
+          <span className={`category-tag category-${post.category}`}>
+            {categories.find(cat => cat.value === post.category)?.label || post.category}
+          </span>
+        </div>
+      </div>
+      
+      <div className="post-content">
+        <h3 className="post-title">{post.title}</h3>
+        <p className="post-text">{post.content}</p>
+      </div>
+
+      <div className="post-actions">
+        <button
+          className={`like-btn ${post.isLiked ? 'liked' : ''}`}
+          onClick={() => likePost(post.id, post.isLiked)}
+        >
+          ❤️ {post.likes || 0}
+        </button>
+        <button
+          className="comment-btn"
+          onClick={() => setSelectedPost(selectedPost?.id === post.id ? null : post)}
+        >
+          💬 {post.comments?.length || 0} Comments
+        </button>
+      </div>
+
+      {selectedPost?.id === post.id && (
+        <div className="comments-section">
+          <div className="comments-list">
+            {post.comments?.map(comment => (
+              <div key={comment.id} className="comment">
+                <img src={comment.authorAvatar || user_icon} alt={comment.authorName} />
+                <div className="comment-content">
+                  <div className="comment-header">
+                    <h5>{comment.authorName}</h5>
+                    <span className="comment-time">
+                      {new Date(comment.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p>{comment.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="add-comment">
+            <input
+              type="text"
+              placeholder="Write a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addComment(post.id)}
+            />
+            <button onClick={() => addComment(post.id)}>Post</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 
@@ -258,10 +430,10 @@ const SocialPage = () => {
           {user_icon} Followers ({followers.length})
         </button>
         <button
-          className={`nav-tab ${activeTab === 'chat' ? 'active' : ''}`}
-          onClick={() => setActiveTab('chat')}
+          className={`nav-tab ${activeTab === 'forum' ? 'active' : ''}`}
+          onClick={() => setActiveTab('forum')}
         >
-          {chat_icon} Messages
+          {forum_icon} Community Forum
         </button>
       </div>
 
@@ -305,7 +477,7 @@ const SocialPage = () => {
               </div>
             ) : (
               <div className="users-grid">
-                {following.map(user => renderUserCard(user, true, true))}
+                {following.map(user => renderUserCard(user, true, false))}
               </div>
             )}
           </div>
@@ -321,83 +493,76 @@ const SocialPage = () => {
               </div>
             ) : (
               <div className="users-grid">
-                {followers.map(user => renderUserCard(user, true, true))}
+                {followers.map(user => renderUserCard(user, true, false))}
               </div>
             )}
           </div>
         )}
 
-        {/* Chat Tab */}
-        {activeTab === 'chat' && (
-          <div className="chat-section">
-            {!selectedChat ? (
-              <div className="chat-users-list">
-                <h3>Select a user to chat with</h3>
-                {chatUsers.length === 0 ? (
-                  <div className="empty-state">
-                    <p>No chat contacts yet. Follow someone to start chatting!</p>
-                  </div>
-                ) : (
-                  <div className="chat-users">
-                    {chatUsers.map(user => (
-                      <div
-                        key={user.id}
-                        className="chat-user-item"
-                        onClick={() => handleStartChat(user)}
-                      >
-                        <img src={user.profilePicture || user_icon} alt={user.displayName} />
-                        <div className="chat-user-info">
-                          <h4>{user.displayName || user.email}</h4>
-                          <p>{user.lastMessage || "Start a conversation"}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="chat-window">
-                <div className="chat-header">
-                  <button
-                    className="back-btn"
-                    onClick={() => setSelectedChat(null)}
-                  >
-                    ← Back
-                  </button>
-                  <div className="chat-user-info">
-                    <img src={selectedChat.profilePicture || user_icon} alt={selectedChat.displayName} />
-                    <h4>{selectedChat.displayName || selectedChat.email}</h4>
-                  </div>
-                </div>
+        {/* Forum Tab */}
+        {activeTab === 'forum' && (
+          <div className="forum-section">
+            <div className="forum-header">
+              <h3>Community Forum</h3>
+              <button
+                className="create-post-btn"
+                onClick={() => setShowCreatePost(!showCreatePost)}
+              >
+                {showCreatePost ? 'Cancel' : '+ New Post'}
+              </button>
+            </div>
 
-                <div className="messages-container">
-                  {messages.map(message => (
-                    <div
-                      key={message.id}
-                      className={`message ${message.senderId === currentUser?.uid ? 'sent' : 'received'}`}
-                    >
-                      <div className="message-content">
-                        {message.content}
-                      </div>
-                      <div className="message-time">
-                        {new Date(message.timestamp).toLocaleTimeString()}
-                      </div>
-                    </div>
+            {showCreatePost && (
+              <div className="create-post-form">
+                <input
+                  type="text"
+                  placeholder="Post title..."
+                  value={postTitle}
+                  onChange={(e) => setPostTitle(e.target.value)}
+                  className="post-title-input"
+                />
+                
+                <select
+                  value={postCategory}
+                  onChange={(e) => setPostCategory(e.target.value)}
+                  className="category-select"
+                >
+                  {categories.map(cat => (
+                    <option key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </option>
                   ))}
-                </div>
+                </select>
 
-                <div className="message-input">
-                  <input
-                    type="text"
-                    placeholder="Type a message..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  />
-                  <button onClick={sendMessage}>Send</button>
+                <textarea
+                  placeholder="Share your thoughts, ask for advice, or start a discussion..."
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  className="post-content-input"
+                  rows="4"
+                />
+                
+                <div className="post-form-actions">
+                  <button
+                    onClick={createForumPost}
+                    disabled={loading || !postTitle.trim() || !newPost.trim()}
+                    className="submit-post-btn"
+                  >
+                    {loading ? "Posting..." : "Post to Forum"}
+                  </button>
                 </div>
               </div>
             )}
+
+            <div className="forum-posts">
+              {forumPosts.length === 0 ? (
+                <div className="empty-state">
+                  <p>No posts yet. Be the first to start a discussion!</p>
+                </div>
+              ) : (
+                forumPosts.map(post => renderForumPost(post))
+              )}
+            </div>
           </div>
         )}
       </div>
