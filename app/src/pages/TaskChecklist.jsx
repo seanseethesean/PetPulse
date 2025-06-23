@@ -35,7 +35,7 @@ const TaskChecklist = () => {
     type: 'feeding',
     petId: '',
     time: '',
-    recurring: 'daily',
+    recurring: 'once',
     notes: ''
   });
 
@@ -186,7 +186,7 @@ const TaskChecklist = () => {
         type: 'feeding',
         petId: '',
         time: '',
-        recurring: 'daily',
+        recurring: 'once',
         notes: ''
       });
       setShowAddTask(false);
@@ -457,7 +457,7 @@ const TaskChecklist = () => {
                   <option value="playtime">Playtime</option>
                   <option value="training">Training</option>
                   <option value="vet">Vet Visit</option>
-                  <option value="custom">Custom</option>
+                  <option value="custom">Others</option>
                 </select>
               </div>
 
