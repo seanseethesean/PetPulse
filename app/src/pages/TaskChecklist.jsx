@@ -173,7 +173,7 @@ const TaskChecklist = () => {
           userId: user.uid,
           completed: false,
           isRecurring: newTask.recurring !== 'once',
-          recurringType: newTask.recurring
+          recurring: newTask.recurring
         };
         return TaskService.createTask(taskData);
       });
@@ -388,7 +388,7 @@ const TaskChecklist = () => {
                         <h3>
                           {task.title}
                           {task.isRecurring && (
-                            <span className="recurring-badge" title={`Recurring ${task.recurringType}`}>
+                            <span className="recurring-badge" title={`Recurring ${task.recurring}`}>
                               🔄
                             </span>
                           )}
