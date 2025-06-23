@@ -40,12 +40,12 @@ const ExpenseTracker = () => {
       try {
         const user = auth.currentUser;
         if (!user) return;
-        
+
         console.log("Fetching pets for user:", user.uid);
         const res = await fetch(`${process.env.REACT_APP_API_URL}/api/pets?userId=${user.uid}`);
         const data = await res.json();
         console.log("Fetched pets:", data);
-        
+
         if (data.success) {
           setPets(data.pets);
           // Set default pet for new expense form
@@ -94,11 +94,11 @@ const ExpenseTracker = () => {
         }
 
         console.log("Fetching expenses for user:", user.uid, "pet filter:", selectedPet);
-        
+
         // Use 'all' instead of the pet name for the API call
         const petFilter = selectedPet === 'all' ? 'all' : selectedPet;
         const expenseData = await ExpenseService.getExpenses(user.uid, petFilter);
-        
+
         console.log("Fetched expenses:", expenseData);
         setExpenses(expenseData || []);
       } catch (error) {
@@ -126,7 +126,7 @@ const ExpenseTracker = () => {
       if (!user) return;
 
       const selectedPetData = pets.find(p => p.id.toString() === newExpense.petId);
-      
+
       if (!selectedPetData) {
         alert('Please select a valid pet');
         return;
@@ -138,6 +138,7 @@ const ExpenseTracker = () => {
         userId: user.uid,
         petId: selectedPetData.id.toString(),
         petName: selectedPetData.name,
+        date: newExpense.date 
       };
 
       const created = await ExpenseService.createExpense(payload);
@@ -148,7 +149,7 @@ const ExpenseTracker = () => {
         amount: '',
         category: 'Food',
         petId: newExpense.petId,
-        date: new Date().toISOString().split("T")[0]
+        date: newExpense.date 
       });
       setShowAddExpense(false);
     } catch (err) {
@@ -172,7 +173,7 @@ const ExpenseTracker = () => {
   const handleEditExpense = (expense) => {
     setEditingExpense({
       ...expense,
-      date: new Date(expense.date || expense.createdAt).toISOString().split("T")[0],
+      date: new Date(expense.date).toISOString().split("T")[0],
       petId: expense.petId || ''
     });
     setShowEditModal(true);
@@ -186,7 +187,7 @@ const ExpenseTracker = () => {
 
     try {
       const selectedPetData = pets.find(p => p.id.toString() === editingExpense.petId);
-      
+
       if (!selectedPetData) {
         alert('Please select a valid pet');
         return;
@@ -196,7 +197,6 @@ const ExpenseTracker = () => {
         ...editingExpense,
         amount: parseFloat(editingExpense.amount),
         petName: selectedPetData.name, // Update pet name in case it changed
-        updatedAt: new Date().toISOString()
       };
 
       await ExpenseService.updateExpense(editingExpense.id, updated);
@@ -238,7 +238,7 @@ const ExpenseTracker = () => {
 
   const recentExpenses = useMemo(() => {
     return [...filteredExpenses]
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 3);
   }, [filteredExpenses]);
 

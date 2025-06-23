@@ -26,13 +26,13 @@ router.get("/", async (req, res) => {
         expensesRef, 
         where("userId", "==", userId),
         where("petId", "==", petId),
-        orderBy("createdAt", "desc")
+        orderBy("date", "desc")
       );
     } else {
       q = query(
         expensesRef, 
         where("userId", "==", userId),
-        orderBy("createdAt", "desc")
+        orderBy("date", "desc")
       );
     }
 
@@ -58,9 +58,7 @@ router.post("/", async (req, res) => {
     const validated = await validateRequestData(req.body, createExpenseSchema);
     const expenseData = {
       ...validated,
-      amount: parseFloat(validated.amount),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      amount: parseFloat(validated.amount)
     };
 
     // Save to firestore
@@ -82,10 +80,7 @@ router.put("/:id", async (req, res) => {
   try {
     const validated = await validateRequestData(req.body, updateExpenseSchema);
     const { id } = req.params;
-    const updateData = {
-      ...validated,
-      updatedAt: new Date().toISOString()
-    };
+    const updateData = { ...validated };
 
     // Convert amount to number if provided
     if (updateData.amount !== undefined) {
