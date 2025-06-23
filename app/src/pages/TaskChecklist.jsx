@@ -35,7 +35,7 @@ const TaskChecklist = () => {
     type: 'feeding',
     petId: '',
     time: '',
-    recurring: 'daily',
+    recurring: 'once',
     notes: ''
   });
 
@@ -173,7 +173,7 @@ const TaskChecklist = () => {
           userId: user.uid,
           completed: false,
           isRecurring: newTask.recurring !== 'once',
-          recurringType: newTask.recurring
+          recurring: newTask.recurring
         };
         return TaskService.createTask(taskData);
       });
@@ -186,7 +186,7 @@ const TaskChecklist = () => {
         type: 'feeding',
         petId: '',
         time: '',
-        recurring: 'daily',
+        recurring: 'once',
         notes: ''
       });
       setShowAddTask(false);
@@ -388,7 +388,7 @@ const TaskChecklist = () => {
                         <h3>
                           {task.title}
                           {task.isRecurring && (
-                            <span className="recurring-badge" title={`Recurring ${task.recurringType}`}>
+                            <span className="recurring-badge" title={`Recurring ${task.recurring}`}>
                               🔄
                             </span>
                           )}
@@ -457,7 +457,7 @@ const TaskChecklist = () => {
                   <option value="playtime">Playtime</option>
                   <option value="training">Training</option>
                   <option value="vet">Vet Visit</option>
-                  <option value="custom">Custom</option>
+                  <option value="custom">Others</option>
                 </select>
               </div>
 

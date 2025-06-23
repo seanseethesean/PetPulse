@@ -52,9 +52,7 @@ router.post("/", async (req, res) => {
     const validated = await validateRequestData(req.body, createTaskSchema);
     const taskData = {
       ...validated,
-      completed: validated.completed || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      completed: validated.completed || false
     };
 
     // Save to firestore
@@ -76,10 +74,7 @@ router.put("/:id", async (req, res) => {
   try {
     const validated = await validateRequestData(req.body, updateTaskSchema);
     const { id } = req.params;
-    const updateData = {
-      ...validated,
-      updatedAt: new Date().toISOString()
-    };
+    const updateData = { ...validated };
 
     const taskRef = doc(db, "tasks", id);
     await updateDoc(taskRef, updateData);
@@ -121,10 +116,7 @@ router.patch("/:id/toggle", async (req, res) => {
     }
 
     const taskRef = doc(db, "tasks", id);
-    const updateData = {
-      completed,
-      updatedAt: new Date().toISOString()
-    };
+    const updateData = { completed };
 
     await updateDoc(taskRef, updateData);
 

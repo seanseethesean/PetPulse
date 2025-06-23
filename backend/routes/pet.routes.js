@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
    if (!userId) {
      throw Error("no userId bro")
    }
-   const petsCollection = collection(db, "Pets");
+   const petsCollection = collection(db, "pets");
    const filterByUser = query(petsCollection, where("userId", "==", userId))
    const unqiuePets = await getDocs(filterByUser); // filter documents by UID!!!!!!!
    const pets = unqiuePets.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
    const petData = req.body;
   //  console.log("Request Body:", petData); // Log the incoming data
    await validateRequestData(petData, createPetSchema);
-   const petsCollection = collection(db, "Pets");
+   const petsCollection = collection(db, "pets");
    const docId = doc(petsCollection).id
    const docRef = await addDoc(petsCollection, { ...petData, petId: docId }); // spread operator
    res.status(201).json({ success: true, message: "Pet added!", id: docRef.id });
@@ -63,7 +63,7 @@ router.put("/:id", async (req, res) => {
    await validateRequestData(petData, createPetSchema);
 
 
-   const petRef = doc(db, "Pets", req.params.id);
+   const petRef = doc(db, "pets", req.params.id);
    await updateDoc(petRef, petData);
 
 
@@ -78,7 +78,7 @@ router.put("/:id", async (req, res) => {
 // DELETE
 router.delete("/:id", async (req, res) => {
  try {
-   const petRef = doc(db, "Pets", req.params.id);
+   const petRef = doc(db, "pets", req.params.id);
    await deleteDoc(petRef);
    res.json({ success: true });
  } catch (err) {
