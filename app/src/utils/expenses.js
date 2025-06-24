@@ -45,21 +45,6 @@ class ExpenseService {
     }
   }
 
-  // Get expenses by category
-  async getExpensesByCategory(userId, category, petId = null) {
-    try {
-      let url = `${URL}/api/expenses/category?userId=${userId}&category=${category}`;
-      if (petId && petId !== 'all') {
-        url += `&petId=${petId}`;
-      }
-      const response = await fetch(url);
-      return await this.handleResponse(response);
-    } catch (error) {
-      console.error('Error fetching expenses by category:', error);
-      throw error;
-    }
-  }
-
   // Create a new expense
   async createExpense(expenseData) {
     try {

@@ -1,7 +1,7 @@
 import express from "express";
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, orderBy } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { createJournalSchema, updateJournalSchema } from "../types/journal.js";
+import { createJournalSchema, updateJournalSchema } from "../types/journal.types.js";
 import { validateRequestData } from "../request-validation.js";
 
 const router = express.Router()
