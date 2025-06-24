@@ -1,7 +1,7 @@
 import express from "express";
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { createPetSchema } from "../types/pets.js";
+import { createPetSchema } from "../types/pets.types.js";
 import { validateRequestData } from "../request-validation.js";
 
 

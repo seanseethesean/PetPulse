@@ -2,7 +2,7 @@ import express from "express";
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase.js";
 import { validateRequestData } from "../request-validation.js";
-import { createExpenseSchema, updateExpenseSchema } from "../types/expenses.js";
+import { createExpenseSchema, updateExpenseSchema } from "../types/expenses.types.js";
 
 const router = express.Router();
 
