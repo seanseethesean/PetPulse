@@ -1,90 +1,63 @@
 import express from "express";
-import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase.js";
+import { getUserPets, createPet, updatePet, deletePet } from "../services/pet.service.js";
 import { createPetSchema } from "../types/pets.types.js";
 import { validateRequestData } from "../request-validation.js";
 
-
 const router = express.Router();
-
 
 // GET /api/pets
 router.get("/", async (req, res) => {
   const userId = req.query.userId;
-   if (!userId) {
-     return res.status(400).json({ success: false, error: "Missing userId" });
-   }
+  if (!userId) {
+    return res.status(400).json({ success: false, error: "Missing userId" });
+  }
 
-
- try {
-   if (!userId) {
-     throw Error("no userId bro")
-   }
-   const petsCollection = collection(db, "pets");
-   const filterByUser = query(petsCollection, where("userId", "==", userId))
-   const unqiuePets = await getDocs(filterByUser); // filter documents by UID!!!!!!!
-   const pets = unqiuePets.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-   res.status(200).json({ success: true, pets });
- } catch (error) {
-   console.error("Error fetching pets:", error);
-   res.status(500).json({ success: false, error: error.message });
- }
+  try {
+    const pets = await getUserPets(userId);
+    res.status(200).json({ success: true, pets });
+  } catch (error) {
+    console.error("Error fetching pets:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
-
-
-// create another route for indiv user; filters where u.id = the value
-
 
 // POST /api/pets
 router.post("/", async (req, res) => {
- const { name, breed, birthday, animalType, userId } = req.body;
+  const { userId } = req.body;
   if (!userId) {
-   return res.status(400).json({ success: false, error: "Missing userId" });
- }
+    return res.status(400).json({ success: false, error: "Missing userId" });
+  }
+
   try {
-   const petData = req.body;
-  //  console.log("Request Body:", petData); // Log the incoming data
-   await validateRequestData(petData, createPetSchema);
-   const petsCollection = collection(db, "pets");
-   const docId = doc(petsCollection).id
-   const docRef = await addDoc(petsCollection, { ...petData, petId: docId }); // spread operator
-   res.status(201).json({ success: true, message: "Pet added!", id: docRef.id });
- } catch (error) {
-  //  console.error("Error adding pet:", error);
-   res.status(500).json({ success: false, error: error.message });
- }
+    const validated = await validateRequestData(req.body, createPetSchema);
+    const newPet = await createPet(validated);
+    res.status(201).json({ success: true, message: "Pet added!", ...newPet });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
-
-// PUT /api/pets/:id  →  update an existing pet
+// PUT /api/pets/:id
 router.put("/:id", async (req, res) => {
- try {
-   const petData = req.body;
-   await validateRequestData(petData, createPetSchema);
-
-
-   const petRef = doc(db, "pets", req.params.id);
-   await updateDoc(petRef, petData);
-
-
-   res.json({ success: true });
- } catch (err) {
-   console.error("Error updating pet:", err);
-   res.status(500).json({ success: false, error: err.message });
- }
+  try {
+    const validated = await validateRequestData(req.body, createPetSchema);
+    await updatePet(req.params.id, validated);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error updating pet:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
-
-// DELETE
+// DELETE /api/pets/:id
 router.delete("/:id", async (req, res) => {
- try {
-   const petRef = doc(db, "pets", req.params.id);
-   await deleteDoc(petRef);
-   res.json({ success: true });
- } catch (err) {
-   console.error("Error deleting pet:", err);
-   res.status(500).json({ success: false, error: err.message });
- }
+  try {
+    await deletePet(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting pet:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 export default router;
