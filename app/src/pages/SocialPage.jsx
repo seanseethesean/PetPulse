@@ -132,13 +132,12 @@ const SocialPage = () => {
     const user = auth.currentUser
     setLoading(true)
     const postData = {
-      authorId: user.uid,
-      authorName: user.displayName || user.email,
-      authorAvatar: user.photoURL,
+      userId: user.uid,
+      //userName: user.email,
       title: postTitle,
-      content: newPost,
       category: postCategory,
-      timestamp: new Date().toISOString()
+      content: newPost,
+      createdAt: new Date().toISOString()
     }
 
     try {
@@ -197,9 +196,8 @@ const SocialPage = () => {
     const auth = getAuth()
     const user = auth.currentUser
     const commentData = {
-      authorId: user.uid,
-      authorName: user.displayName || user.email,
-      authorAvatar: user.photoURL,
+      userId: user.uid,
+      //userName: user.displayName || user.email,
       content: newComment,
       timestamp: new Date().toISOString()
     }
@@ -262,10 +260,10 @@ const SocialPage = () => {
   const renderForumPost = (post) => (
     <div key={post.id} className="forum-post">
       <div className="post-header">
-        <div className="post-author">
-          <img src={post.authorAvatar || user_icon} alt={post.authorName} />
-          <div className="author-info">
-            <h4>{post.authorName}</h4>
+        <div className="post-user">
+          <img src={post.userAvatar || user_icon} alt={post.userName} />
+          <div className="user-info">
+            <h4>{post.userName}</h4>
             <span className="post-time">
               {new Date(post.timestamp).toLocaleDateString()} at{" "}
               {new Date(post.timestamp).toLocaleTimeString()}
@@ -306,12 +304,12 @@ const SocialPage = () => {
             {post.comments?.map((comment) => (
               <div key={comment.id} className="comment">
                 <img
-                  src={comment.authorAvatar || user_icon}
-                  alt={comment.authorName}
+                  src={comment.userAvatar || user_icon}
+                  alt={comment.userName}
                 />
                 <div className="comment-content">
                   <div className="comment-header">
-                    <h5>{comment.authorName}</h5>
+                    <h5>{comment.userName}</h5>
                     <span className="comment-time">
                       {new Date(comment.timestamp).toLocaleDateString()}
                     </span>

@@ -10,22 +10,22 @@ class SocialService {
   }
 
   async getFollowers(userId) {
-    const res = await fetch(`${URL}/api/social/followers?userId=${userId}`);
+    const res = await fetch(`${URL}/api/followers?userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async getFollowing(userId) {
-    const res = await fetch(`${URL}/api/social/following?userId=${userId}`);
+    const res = await fetch(`${URL}/api/following?userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async searchUsers(query, userId) {
-    const res = await fetch(`${URL}/api/social/search?query=${encodeURIComponent(query)}&userId=${userId}`);
+    const res = await fetch(`${URL}/api/search?query=${encodeURIComponent(query)}&userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async followUser(userId, targetUserId) {
-    const res = await fetch(`${URL}/api/social/follow`, {
+    const res = await fetch(`${URL}/api/follow`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, targetUserId })
@@ -34,7 +34,7 @@ class SocialService {
   }
 
   async unfollowUser(userId, targetUserId) {
-    const res = await fetch(`${URL}/api/social/unfollow`, {
+    const res = await fetch(`${URL}/api/unfollow`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, targetUserId })
