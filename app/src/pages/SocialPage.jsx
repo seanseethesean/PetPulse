@@ -4,7 +4,6 @@ import { getAuth } from "firebase/auth";
 import Navbar from "../components/Navbar";
 import SocialService from "../utils/social";
 
-// Icons - you can replace with your actual icons
 const search_icon = "🔎";
 const user_icon = "👤";
 const forum_icon = "💭";
@@ -133,7 +132,7 @@ const SocialPage = () => {
     setLoading(true)
     const postData = {
       userId: user.uid,
-      //userName: user.email,
+      userEmail: user.email,
       title: postTitle,
       category: postCategory,
       content: newPost,
@@ -236,7 +235,7 @@ const SocialPage = () => {
   ) => (
     <div key={user.id} className="user-card">
       <div className="user-avatar">
-        <img src={user.profilePicture || user_icon} alt={user.displayName} />
+        {/* <img src={user.profilePicture || user_icon} alt={user.displayName} /> */}
       </div>
       <div className="user-info">
         <h4>{user.displayName || user.email}</h4>
@@ -261,12 +260,21 @@ const SocialPage = () => {
     <div key={post.id} className="forum-post">
       <div className="post-header">
         <div className="post-user">
-          <img src={post.userAvatar || user_icon} alt={post.userName} />
+          {/* <img src={post.userAvatar || user_icon} alt={post.userName} /> */}
           <div className="user-info">
             <h4>{post.userName}</h4>
             <span className="post-time">
-              {new Date(post.timestamp).toLocaleDateString()} at{" "}
-              {new Date(post.timestamp).toLocaleTimeString()}
+              {post.userEmail?.split("@")[0]} at{" "}
+              {new Date(post.createdAt).toLocaleDateString("en-SG", {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+              })}
+              ,{" "}
+              {new Date(post.createdAt).toLocaleTimeString("en-SG", {
+                hour: "2-digit",
+                minute: "2-digit"
+              })}
             </span>
           </div>
         </div>
@@ -303,10 +311,10 @@ const SocialPage = () => {
           <div className="comments-list">
             {post.comments?.map((comment) => (
               <div key={comment.id} className="comment">
-                <img
+                {/* <img
                   src={comment.userAvatar || user_icon}
                   alt={comment.userName}
-                />
+                /> */}
                 <div className="comment-content">
                   <div className="comment-header">
                     <h5>{comment.userName}</h5>
@@ -382,7 +390,7 @@ const SocialPage = () => {
                 placeholder="Search for users by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                onDoubleClick={(e) => e.key === "Enter" && handleSearch()}
               />
               <button onClick={handleSearch} disabled={loading}>
                 {loading ? "Searching..." : "Search"}

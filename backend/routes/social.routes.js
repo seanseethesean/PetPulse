@@ -37,7 +37,7 @@ router.post("/posts", async (req, res) => {
    const postData = {
      ...validated,
      createdAt: new Date().toISOString(),
-     updatedAt: new Date().toISOString(),
+    //  updatedAt: new Date().toISOString(),
    };
 
 
