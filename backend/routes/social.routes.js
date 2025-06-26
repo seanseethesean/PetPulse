@@ -1,10 +1,5 @@
 import express from "express";
-import {
-  getForumPosts,
-  createForumPost,
-  deleteForumPost
-} from "../services/social.service.js";
-
+import { getForumPosts, createForumPost, deleteForumPost } from "../services/social.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createForumPostSchema } from "../types/social.types.js";
 

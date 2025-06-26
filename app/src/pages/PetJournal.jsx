@@ -22,7 +22,7 @@ const PetJournal = () => {
   const [filterMood, setFilterMood] = useState("")
 
   const activityOptions = [
-    "Walk", "Play", "Eat", "Sleep", "Vet Visit", "Grooming", 
+    "Walk", "Play", "Eat", "Sleep", "Vet Visit", "Grooming",
     "Training", "Bath", "Medication", "Playtime", "Other"
   ]
 
@@ -117,10 +117,10 @@ const PetJournal = () => {
     }
 
     try {
-      const url = editingEntry 
+      const url = editingEntry
         ? `${process.env.REACT_APP_API_URL}/api/journal/${editingEntry.id}`
         : `${process.env.REACT_APP_API_URL}/api/journal`
-      
+
       const method = editingEntry ? "PUT" : "POST"
 
       const response = await fetch(url, {
@@ -201,18 +201,18 @@ const PetJournal = () => {
       {/* Header */}
       <div className="journal-header">
         <h1>Pet Journal</h1>
-        
+
         {/* Pet Selection */}
         <div className="pet-selector">
           <label>Select Pet: </label>
-          <select 
-            value={selectedPet} 
+          <select
+            value={selectedPet}
             onChange={(e) => setSelectedPet(e.target.value)}
           >
             <option value="">Choose a pet...</option>
             {petList.map(pet => (
-              <option key={pet.id} value={pet.name}>
-                {pet.name}
+              <option key={pet.id} value={pet.petName}>
+                {pet.petName}
               </option>
             ))}
           </select>
@@ -223,13 +223,13 @@ const PetJournal = () => {
         <>
           {/* Action Bar */}
           <div className="action-bar">
-            <button 
+            <button
               className="add-entry-btn"
               onClick={() => setShowAddEntry(!showAddEntry)}
             >
               {showAddEntry ? "Cancel" : "Add New Entry"}
             </button>
-            
+
             {/* Filters */}
             <div className="filters">
               <input
@@ -256,7 +256,7 @@ const PetJournal = () => {
           {showAddEntry && (
             <div className="add-entry-form">
               <h3>{editingEntry ? "Edit Entry" : "Add New Entry"}</h3>
-              
+
               <div className="form-group">
                 <label>Date:</label>
                 <input
@@ -330,7 +330,7 @@ const PetJournal = () => {
           {/* Journal Entries */}
           <div className="journal-entries">
             <h3>Journal Entries for {selectedPet}</h3>
-            
+
             {filteredEntries.length === 0 ? (
               <div className="no-entries">
                 <p>No journal entries yet. Start by adding your first entry!</p>
@@ -347,25 +347,25 @@ const PetJournal = () => {
                         {getMoodEmoji(entry.mood)}
                       </div>
                     </div>
-                    
+
                     <h4>{entry.title}</h4>
                     <p className="entry-content">{entry.content}</p>
-                    
+
                     {entry.activities && entry.activities.length > 0 && (
                       <div className="entry-activities">
                         <strong>Activities: </strong>
                         {entry.activities.join(", ")}
                       </div>
                     )}
-                    
+
                     <div className="entry-actions">
-                      <button 
+                      <button
                         className="edit-entry-btn"
                         onClick={() => handleEditEntry(entry)}
                       >
                         Edit
                       </button>
-                      <button 
+                      <button
                         className="delete-entry-btn"
                         onClick={() => handleDeleteEntry(entry.id)}
                       >

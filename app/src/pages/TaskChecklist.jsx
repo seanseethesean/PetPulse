@@ -346,7 +346,7 @@ const TaskChecklist = () => {
           <option value="all">All Pets</option>
           {pets.map(pet => (
             <option key={pet.id} value={pet.id.toString()}>
-              {pet.name}
+              {pet.petName}
             </option>
           ))}
         </select>
@@ -363,7 +363,7 @@ const TaskChecklist = () => {
             <p>
               {selectedPetFilter === 'all' 
                 ? 'No tasks scheduled for this day' 
-                : `No tasks for ${getPetById(selectedPetFilter)?.name || 'selected pet'} on this day`
+                : `No tasks for ${getPetById(selectedPetFilter)?.petName || 'selected pet'} on this day`
               }
             </p>
             <button className="add-task-btn" onClick={() => setShowAddTask(true)}>
@@ -395,7 +395,7 @@ const TaskChecklist = () => {
                         </h3>
                         <div className="task-meta">
                           <span className="task-pet" style={{ color: pet?.color }}>
-                            {pet?.name}
+                            {pet?.petName}
                           </span>
                           {task.time && <span className="task-time">{task.time}</span>}
                         </div>
@@ -467,7 +467,7 @@ const TaskChecklist = () => {
                   onChange={(e) => setNewTask({ ...newTask, petId: e.target.value })}>
                   <option value="">Select a pet</option>
                   {pets.map(pet => (
-                    <option key={pet.id} value={pet.id}>{pet.name}</option>
+                    <option key={pet.id} value={pet.id}>{pet.petName}</option>
                   ))}
                 </select>
               </div>

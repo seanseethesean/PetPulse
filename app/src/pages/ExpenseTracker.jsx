@@ -137,7 +137,7 @@ const ExpenseTracker = () => {
         amount: parseFloat(newExpense.amount),
         userId: user.uid,
         petId: selectedPetData.id.toString(),
-        petName: selectedPetData.name,
+        petName: selectedPetData.petName,
         date: newExpense.date 
       };
 
@@ -196,7 +196,7 @@ const ExpenseTracker = () => {
       const updated = {
         ...editingExpense,
         amount: parseFloat(editingExpense.amount),
-        petName: selectedPetData.name, // Update pet name in case it changed
+        petName: selectedPetData.petName, // Update pet name in case it changed
       };
 
       await ExpenseService.updateExpense(editingExpense.id, updated);
@@ -284,7 +284,7 @@ const ExpenseTracker = () => {
               >
                 <option value="all">All Pets</option>
                 {pets.map((pet) => (
-                  <option key={pet.id} value={pet.name}>{pet.name}</option>
+                  <option key={pet.id} value={pet.petName}>{pet.petName}</option>
                 ))}
               </select>
             </div>
@@ -380,7 +380,7 @@ const ExpenseTracker = () => {
               >
                 <option value="">Select Pet *</option>
                 {pets.map((pet) => (
-                  <option key={pet.id} value={pet.id.toString()}>{pet.name}</option>
+                  <option key={pet.id} value={pet.id.toString()}>{pet.petName}</option>
                 ))}
               </select>
               <input className="expense-form-input"

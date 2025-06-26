@@ -22,6 +22,7 @@ class ExpenseService {
       if (petId && petId !== 'all') {
         url += `&petId=${petId}`;
       }
+      console.log("Managed to fetch");
       const response = await fetch(url);
       return await this.handleResponse(response);
     } catch (error) {
