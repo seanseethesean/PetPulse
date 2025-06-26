@@ -121,7 +121,6 @@ const PetJournal = () => {
       createdAt: new Date().toISOString()
     }
     
-
     try {
       const result = editingEntry
       ? await JournalService.updateEntry(editingEntry.id, entryData)
@@ -201,8 +200,8 @@ const PetJournal = () => {
             onChange={(e) => setSelectedPet(e.target.value)}>
             <option value="">Choose a pet...</option>
             {petList.map((pet) => (
-              <option key={pet.id} value={pet.name}>
-                {pet.name}
+              <option key={pet.id} value={pet.petName}>
+                {pet.petName}
               </option>
             ))}
           </select>

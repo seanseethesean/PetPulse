@@ -1,16 +1,8 @@
 import "../assets/Home.css"
 import Navbar from "../components/Navbar"
-// import { useNavigate } from "react-router-dom"
-// import { useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 const Home = () => {
-  // const navigate = useNavigate();
-  // const goToPetMgm = () => {
-  //   navigate('/PetMgm');  // navigate to /petmgm route
-  // };
-
-  // const location = useLocation()
   const [selectedPetName, setSelectedPetName] = useState("")
 
   useEffect(() => {
@@ -27,13 +19,6 @@ const Home = () => {
         {selectedPetName && (
           <h1>{selectedPetName}'s day is about to get a whole lot better!</h1>
         )}
-        {/* <h2>Revolutionizing pet care for you</h2>
-        <p>
-          Here, we are determined to help you stay organized, connected, and
-          confident in giving your pets the love and attention they deserve
-        </p> */}
-        {/* <button onClick={goToPetMgm} className='startBtn'>Get Started!</button> */}
-        {/* <button onClick={goToPetMgm}> This button goes to pet management </button> */}
       </div>
     </div>
   )

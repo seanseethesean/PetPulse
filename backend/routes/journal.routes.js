@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  getJournalEntries,
-  createJournalEntry,
-  updateJournalEntry,
-  deleteJournalEntry
-} from "../services/journal.service.js";
-
+import { getJournalEntries, createJournalEntry, updateJournalEntry, deleteJournalEntry } from "../services/journal.service.js";
 import { createJournalSchema, updateJournalSchema } from "../types/journal.types.js";
 import { validateRequestData } from "../request-validation.js";
 

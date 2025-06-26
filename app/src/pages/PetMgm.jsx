@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom"
 import { getAuth } from "firebase/auth"
 import PetService from "../utils/pet";
 
-// import pet_icon from "../assets/images/petname.png"
-// import animaltype_icon from "../assets/images/animaltype.png"
-
 const addPetIcon = {
   pet_icon: "🙈",
   animaltype_icon: "🙉",
@@ -16,7 +13,7 @@ const addPetIcon = {
 const PetMgm = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    name: "",
+    petName: "",
     animalType: "",
     breed: "",
     birthday: ""
@@ -58,7 +55,7 @@ const PetMgm = () => {
   const handleSubmit = async () => {
     const newErrors = {}
 
-    if (!formData.name) newErrors.name = "required"
+    if (!formData.petName) newErrors.petName = "required"
     if (!formData.animalType) newErrors.animalType = "required"
     if (!formData.breed) newErrors.breed = "required"
 
@@ -80,7 +77,7 @@ const PetMgm = () => {
       if (result.success) {
         alert("Pet added!")
         setFormData({
-          name: "",
+          petName: "",
           animalType: "",
           breed: "",
           birthday: ""
@@ -148,8 +145,8 @@ const PetMgm = () => {
                   <div className="pet-edit-form">
                     <input
                       type="text"
-                      name="name"
-                      value={pet.name}
+                      name="petName"
+                      value={pet.petName}
                       onChange={(e) => handleEditChange(e, pet.id)}
                       className="edit-input"
                     />
@@ -190,7 +187,7 @@ const PetMgm = () => {
                 ) : (
                   // View mode
                   <div className="pet-info">
-                    <h3>{pet.name}</h3>
+                    <h3>{pet.petName}</h3>
                     <p>
                       <strong>Type:</strong> {pet.animalType}
                     </p>
@@ -204,7 +201,7 @@ const PetMgm = () => {
                     <div className="pet-actions">
                       <button
                         className="select-btn"
-                        onClick={() => handleSelectPet(pet.name)}>
+                        onClick={() => handleSelectPet(pet.petName)}>
                         Select Pet
                       </button>
                       <button
@@ -235,12 +232,12 @@ const PetMgm = () => {
             <span className="emoji-icon">{addPetIcon.pet_icon}</span>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="petName"
+              value={formData.petName}
               onChange={handleChange}
-              placeholder="pet name"
+              placeholder="name"
             />
-            {errors.name && <p className="error-text">{errors.name}</p>}
+            {errors.petName && <p className="error-text">{errors.petName}</p>}
           </div>
 
           <div className="petmgm-input">
