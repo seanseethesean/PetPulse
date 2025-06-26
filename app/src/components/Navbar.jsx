@@ -12,6 +12,14 @@ const Navbar = () => {
         <img src={petpulse_icon} alt="logo" className="pplogo" />
 
         <ul className="navbar-menu">
+
+          <button
+            onClick={() => navigate("/Home")}
+            className={location.pathname === "/Home" ? "active" : ""}
+            disabled={location.pathname === "/Home"}>
+            Home
+          </button>
+
           <button
             onClick={() => navigate("/Social-Page")}
             className={location.pathname === "/Social-Page" ? "active" : ""}
@@ -24,13 +32,6 @@ const Navbar = () => {
             className={location.pathname === "/Task-Checklist" ? "active" : ""}
             disabled={location.pathname === "/Task-Checklist"}>
             Task Checklist
-          </button>
-
-          <button
-            onClick={() => navigate("/Home")}
-            className={location.pathname === "/Home" ? "active" : ""}
-            disabled={location.pathname === "/Home"}>
-            Home
           </button>
 
           <button
