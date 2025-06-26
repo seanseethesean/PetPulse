@@ -1,6 +1,5 @@
 import express from "express";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
-import { db } from "../firebase.js";
+import { getTasks, createTask, updateTask, deleteTask, toggleTaskCompletion } from "../services/tasks.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createTaskSchema, updateTaskSchema } from "../types/tasks.types.js";
 
@@ -10,35 +9,15 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const { date, userId } = req.query;
-    
+
     if (!date) {
-      return res.status(400).json({ 
-        error: "Date parameter is required (format: YYYY-MM-DD)" 
-      });
+      return res.status(400).json({ error: "Date parameter is required (format: YYYY-MM-DD)" });
     }
-
     if (!userId) {
-      return res.status(400).json({ 
-        error: "UserId parameter is required" 
-      });
+      return res.status(400).json({ error: "UserId parameter is required" });
     }
 
-    // Create query to get tasks for specific date and user
-    const tasksRef = collection(db, "tasks");
-    const q = query(
-      tasksRef, 
-      where("date", "==", date),
-      where("userId", "==", userId),
-      orderBy("time", "asc")
-    );
-    const querySnapshot = await getDocs(q);
-    const tasks = [];
-    querySnapshot.forEach((doc) => {
-      tasks.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
+    const tasks = await getTasks(date, userId);
     res.json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -46,56 +25,34 @@ router.get("/", async (req, res) => {
   }
 });
 
-// POST /api/tasks  create new task
+// POST /api/tasks
 router.post("/", async (req, res) => {
   try {
     const validated = await validateRequestData(req.body, createTaskSchema);
-    const taskData = {
-      ...validated,
-      completed: validated.completed || false
-    };
-
-    // Save to firestore
-    const docRef = await addDoc(collection(db, "tasks"), taskData);
-    
-    // respond to frontend
-    res.status(201).json({
-      id: docRef.id,
-      ...taskData
-    });
+    const createdTask = await createTask(validated);
+    res.status(201).json(createdTask);
   } catch (error) {
     console.error("Error creating task:", error);
     res.status(500).json({ error: "Failed to create task" });
   }
 });
 
-// PUT /api/tasks/:id  update task
+// PUT /api/tasks/:id
 router.put("/:id", async (req, res) => {
   try {
     const validated = await validateRequestData(req.body, updateTaskSchema);
-    const { id } = req.params;
-    const updateData = { ...validated };
-
-    const taskRef = doc(db, "tasks", id);
-    await updateDoc(taskRef, updateData);
-
-    res.json({
-      id,
-      ...updateData
-    });
+    const updatedTask = await updateTask(req.params.id, validated);
+    res.json(updatedTask);
   } catch (error) {
     console.error("Error updating task:", error);
     res.status(500).json({ error: "Failed to update task" });
   }
 });
 
-// DELETE /api/tasks/:id  Delete a task
+// DELETE /api/tasks/:id
 router.delete("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    await deleteDoc(doc(db, "tasks", id));
-    
+    await deleteTask(req.params.id);
     res.json({ message: "Task deleted successfully" });
   } catch (error) {
     console.error("Error deleting task:", error);
@@ -103,28 +60,16 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// PATCH /api/tasks/:id/toggle  Toggle task completion status
+// PATCH /api/tasks/:id/toggle
 router.patch("/:id/toggle", async (req, res) => {
   try {
-    const { id } = req.params;
     const { completed } = req.body;
-
-    if (typeof completed !== 'boolean') {
-      return res.status(400).json({ 
-        error: "Completed field must be a boolean" 
-      });
+    if (typeof completed !== "boolean") {
+      return res.status(400).json({ error: "Completed field must be a boolean" });
     }
 
-    const taskRef = doc(db, "tasks", id);
-    const updateData = { completed };
-
-    await updateDoc(taskRef, updateData);
-
-    res.json({
-      id,
-      completed,
-      updatedAt: updateData.updatedAt
-    });
+    const toggledTask = await toggleTaskCompletion(req.params.id, completed);
+    res.json(toggledTask);
   } catch (error) {
     console.error("Error toggling task:", error);
     res.status(500).json({ error: "Failed to toggle task" });
