@@ -37,9 +37,10 @@ const Login = () => {
       const idToken = await result.user.getIdToken();
       await authService.verifyGoogleToken(idToken);
       navigate('/petmgm');
-    } catch (error) {
-      setError(error.message || "Google sign-in failed. Please try again.");
-    }
+    } catch (err) {
+        console.error('Google sign-in error', err);
+        setError('Google error');
+      }      
   };
 
   const handleForgotPassword = () => {

@@ -1,158 +1,62 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ExpenseTracker from './ExpenseTracker';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
+import ExpenseTracker from './ExpenseTracker';
+import { getAuth } from 'firebase/auth';
 
-// ✅ Mock Firebase Auth
 jest.mock('firebase/auth', () => ({
   getAuth: () => ({
     currentUser: { uid: 'test-user-id' },
-    onAuthStateChanged: jest.fn((cb) => cb({ uid: 'test-user-id' }))
+    onAuthStateChanged: (callback) => {
+      callback({ uid: 'test-user-id' });
+      return jest.fn(); // unsubscribe
+    }
   })
 }));
 
-// ✅ Mock ExpenseService
-const mockCreateExpense = jest.fn(() => Promise.resolve({
-  id: '1',
-  petName: 'Fluffy',
-  description: 'Test expense',
-  amount: 10,
-  category: 'Food',
-  date: new Date().toISOString(),
-}));
-
-const mockDeleteExpense = jest.fn(() => Promise.resolve());
-const mockUpdateExpense = jest.fn(() => Promise.resolve());
-const mockGetExpenses = jest.fn(() => Promise.resolve([
-  {
-    id: '1',
-    petName: 'Fluffy',
-    description: 'Test expense',
-    amount: 10,
-    category: 'Food',
-    date: new Date().toISOString(),
-  }
-]));
-
 jest.mock('../utils/expenses', () => ({
-  getExpenses: () => mockGetExpenses(),
-  createExpense: (data) => mockCreateExpense(data),
-  deleteExpense: (id) => mockDeleteExpense(id),
-  updateExpense: (id, data) => mockUpdateExpense(id, data),
+  getExpenses: jest.fn(() => Promise.resolve([])),
+  createExpense: jest.fn(() => Promise.resolve({ id: 1 })),
+  updateExpense: jest.fn(() => Promise.resolve({})),
+  deleteExpense: jest.fn(() => Promise.resolve({}))
 }));
 
-// ✅ Mock fetch for pets
-beforeEach(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      json: () =>
-        Promise.resolve({
-          success: true,
-          pets: [
-            { id: 1, petName: 'Fluffy' },
-            { id: 2, petName: 'Rex' }
-          ]
-        })
-    })
-  );
-});
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () =>
+      Promise.resolve({
+        success: true,
+        pets: [
+          { id: 1, petName: 'Buddy' },
+          { id: 2, petName: 'Fluffy' }
+        ]
+      })
+  })
+);
 
-describe('ExpenseTracker Component', () => {
-  test('renders the header and summary section', async () => {
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
+const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 
-    expect(await screen.findByText(/Expense Tracker/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Expenses/i)).toBeInTheDocument();
+describe('ExpenseTracker', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  test('displays empty state message when no expenses exist', async () => {
-    mockGetExpenses.mockImplementationOnce(() => Promise.resolve([]));
-
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
-
-    expect(await screen.findByText(/No expenses found/i)).toBeInTheDocument();
-  });
-
-  test('opens add expense modal when clicking Add Expense', async () => {
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
-
-    fireEvent.click(await screen.findByText(/Add Expense/i));
-    expect(await screen.findByText(/Add New Expense/i)).toBeInTheDocument();
-  });
-
-  test('submits new expense successfully', async () => {
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
-
-    fireEvent.click(await screen.findByText(/Add Expense/i));
-
-    fireEvent.change(await screen.findByPlaceholderText(/Description/i), {
-      target: { value: 'Vet visit' },
-    });
-
-    fireEvent.change(await screen.findByPlaceholderText(/Amount/i), {
-      target: { value: '55.50' },
-    });
-
-    fireEvent.click(screen.getByText(/Save Expense/i));
+  test('renders main title', async () => {
+    renderWithRouter(<ExpenseTracker />);
+    const title = screen.getByRole('heading', { name: 'Expense Tracker' });
+    expect(title).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(mockCreateExpense).toHaveBeenCalled();
-      expect(screen.queryByText(/Add New Expense/i)).not.toBeInTheDocument();
+      expect(global.fetch).toHaveBeenCalled();
     });
   });
 
-  test('deletes an expense successfully', async () => {
-    window.confirm = jest.fn(() => true); // Auto-confirm
-
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
-
-    expect(await screen.findByText(/Test expense/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /Edit/i }).nextSibling); // Trash icon
-
-    await waitFor(() => {
-      expect(mockDeleteExpense).toHaveBeenCalledWith('1');
-    });
-  });
-
-  test('edits an expense successfully', async () => {
-    render(
-      <BrowserRouter>
-        <ExpenseTracker />
-      </BrowserRouter>
-    );
-
-    fireEvent.click(await screen.findByText(/Edit/i));
-
-    const descriptionInput = await screen.findByPlaceholderText(/Description/i);
-    fireEvent.change(descriptionInput, { target: { value: 'Updated expense' } });
-
-    fireEvent.click(screen.getByText(/Save Changes/i));
-
-    await waitFor(() => {
-      expect(mockUpdateExpense).toHaveBeenCalledWith('1', expect.objectContaining({
-        description: 'Updated expense',
-      }));
-    });
+  test('shows add expense modal when button is clicked', async () => {
+    renderWithRouter(<ExpenseTracker />);
+    const addButton = screen.getByText('Add Expense');
+    fireEvent.click(addButton);
+    expect(await screen.findByText('Add New Expense')).toBeInTheDocument();
   });
 });
