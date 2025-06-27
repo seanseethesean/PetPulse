@@ -19,7 +19,7 @@ jest.mock('../utils/tasks', () => ({
   formatDateForAPI: jest.fn()
 }));
 
-describe('TaskChecklist (Simple)', () => {
+describe('TaskChecklist ', () => {
   test('renders Task Checklist header', async () => {
     render(
       <BrowserRouter>
