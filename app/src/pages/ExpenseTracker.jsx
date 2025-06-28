@@ -216,18 +216,19 @@ const ExpenseTracker = () => {
   const { totalExpenses, categoryTotals, filteredExpenses } = useMemo(() => {
     // Filter expenses by selected pet
     const filtered = selectedPet === 'all'
-      ? expenses
-      : expenses.filter(exp => exp.petName === selectedPet);
+    ? expenses
+    : expenses.filter(exp => exp.petId?.toString() === selectedPet);  
 
     // Calculate total
-    const total = filtered.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+    const total = filtered.reduce((sum, exp) => sum + (parseFloat(exp?.amount) || 0), 0);
 
     // Calculate category totals
     const categories = filtered.reduce((acc, exp) => {
-      const category = exp.category || 'others';
-      acc[category] = (acc[category] || 0) + (parseFloat(exp.amount) || 0);
-      return acc;
-    }, {});
+        const category = exp?.category || "Others";
+        const amount = parseFloat(exp?.amount) || 0;
+        acc[category] = (acc[category] || 0) + amount;
+        return acc;
+      }, {});      
 
     return {
       totalExpenses: total,
@@ -284,7 +285,7 @@ const ExpenseTracker = () => {
               >
                 <option value="all">All Pets</option>
                 {pets.map((pet) => (
-                  <option key={pet.id} value={pet.petName}>{pet.petName}</option>
+                  <option key={pet.id} value={pet.id.toString()}>{pet.petName}</option>
                 ))}
               </select>
             </div>
