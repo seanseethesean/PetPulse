@@ -15,6 +15,7 @@
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 2px solid #e2e8f0;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   }
   
   .social-header h1 {
@@ -156,18 +157,6 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     border-color: #667eea;
-  }
-  
-  .user-avatar {
-    flex-shrink: 0;
-  }
-  
-  .user-avatar img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
   }
   
   .user-info {
@@ -402,14 +391,6 @@
     gap: 12px;
   }
   
-  .post-user img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
-  }
-  
   .user-info h4 {
     color: #2d3748;
     margin: 0 0 5px 0;
@@ -540,14 +521,6 @@
     background: white;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
-  }
-  
-  .comment img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
   }
   
   .comment-content {
@@ -682,12 +655,6 @@
       gap: 10px;
     }
     
-    .comment img {
-      width: 35px;
-      height: 35px;
-      align-self: flex-start;
-    }
-    
     .add-comment {
       flex-direction: column;
     }
@@ -701,11 +668,6 @@
     .nav-tab {
       padding: 8px 12px;
       font-size: 0.8rem;
-    }
-    
-    .user-avatar img {
-      width: 50px;
-      height: 50px;
     }
     
     .forum-post {
