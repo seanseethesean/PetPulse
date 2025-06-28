@@ -52,7 +52,7 @@ nav {
    
    
    .navbar-container {
-      max-width: 1200px; /* or any value you want for centered content */
+      max-width: 1200px; /* centered content */
       margin: 0 auto;
       padding: 0 24px;
       padding-left: 10%;
@@ -67,7 +67,6 @@ nav {
     nav button {
       font-size: 15px;
       color: #638bc7;
-      text-decoration: underline;
       background: none;
       border: none;
       cursor: pointer;

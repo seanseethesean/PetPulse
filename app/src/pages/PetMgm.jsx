@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react"
-import "../assets/PetMgm.css"
-import { useNavigate } from "react-router-dom"
-import { getAuth } from "firebase/auth"
+import { useEffect, useState } from "react";
+import "../assets/PetMgm.css";
+import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 import PetService from "../utils/pet";
+import Navbar from "../components/Navbar";
 
 const addPetIcon = {
   pet_icon: "🙈",
@@ -128,6 +129,7 @@ const PetMgm = () => {
 
   return (
     <div className="pet-management-container">
+      <Navbar />
       {/* Left Panel - Existing Pets */}
       <div className="pets-list-panel">
         <h2>Your Pets</h2>
