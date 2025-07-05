@@ -29,7 +29,6 @@ class TaskService {
 
   // Create a new task
   async createTask(taskData) {
-    try {
       const response = await fetch(`${URL}/api/tasks`, {
         method: 'POST',
         headers: {
@@ -37,11 +36,7 @@ class TaskService {
         },
         body: JSON.stringify(taskData),
       });
-      return await this.handleResponse(response);
-    } catch (error) {
-      console.error('Error creating task:', error);
-      throw error;
-    }
+      return this.handleResponse(response);
   }
 
   // Update a task

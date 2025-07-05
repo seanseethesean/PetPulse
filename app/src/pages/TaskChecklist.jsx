@@ -123,10 +123,10 @@ const TaskChecklist = () => {
     }
     const dates = [];
     const current = new Date(startDate);
-    
+
     for (let i = 0; i < count; i++) {
       dates.push(new Date(current));
-      
+
       switch (recurring) {
         case 'daily':
           current.setDate(current.getDate() + 1);
@@ -141,7 +141,7 @@ const TaskChecklist = () => {
           return [startDate]; // For 'once'
       }
     }
-    
+
     return dates;
   };
 
@@ -159,28 +159,19 @@ const TaskChecklist = () => {
         return;
       }
 
-      // Generate dates for recurring tasks
-      const dates = newTask.recurring === 'once' 
-        ? [selectedDate] 
-        : generateRecurringDates(selectedDate, newTask.recurring);
+      const taskData = {
+        ...newTask,
+        petId: newTask.petId.toString(),
+        date: TaskService.formatDateForAPI(selectedDate),
+        userId: user.uid,
+        completed: false,
+        isRecurring: newTask.recurring !== 'once',
+        recurring: newTask.recurring
+      };
+      await TaskService.createTask(taskData);
 
-      // Create tasks for all dates
-      const taskPromises = dates.map(date => {
-        const taskData = {
-          ...newTask,
-          petId: newTask.petId.toString(),
-          date: TaskService.formatDateForAPI(date),
-          userId: user.uid,
-          completed: false,
-          isRecurring: newTask.recurring !== 'once',
-          recurring: newTask.recurring
-        };
-        return TaskService.createTask(taskData);
-      });
-
-      await Promise.all(taskPromises);
       await loadTasks();
-      
+
       setNewTask({
         title: '',
         type: 'feeding',
@@ -340,7 +331,7 @@ const TaskChecklist = () => {
       <div className="pet-filter">
         <label htmlFor="pet-filter">Filter by Pet:</label>
         <select id="pet-filter"
-          value={selectedPetFilter} 
+          value={selectedPetFilter}
           onChange={(e) => setSelectedPetFilter(e.target.value)}
           className="pet-filter-select">
           <option value="all">All Pets</option>
@@ -361,8 +352,8 @@ const TaskChecklist = () => {
         {filteredTasks.length === 0 ? (
           <div className="no-tasks">
             <p>
-              {selectedPetFilter === 'all' 
-                ? 'No tasks scheduled for this day' 
+              {selectedPetFilter === 'all'
+                ? 'No tasks scheduled for this day'
                 : `No tasks for ${getPetById(selectedPetFilter)?.petName || 'selected pet'} on this day`
               }
             </p>
@@ -490,7 +481,10 @@ const TaskChecklist = () => {
                 </select>
                 {newTask.recurring !== 'once' && (
                   <small className="recurring-info">
-                    This will create tasks for the next 30 {newTask.recurring.replace('ly', '')} periods
+                    This will create tasks for the next 30 {newTask.recurring === "daily" ? "day" :
+                      newTask.recurring === "weekly" ? "weeks" :
+                        newTask.recurring === "monthly" ? "months" :
+                          ""} periods
                   </small>
                 )}
               </div>
@@ -556,7 +550,7 @@ const TaskChecklist = () => {
               <div className="calendar-days">
                 {generateCalendarDays(calendarDate.getFullYear(), calendarDate.getMonth()).map((date, index) => (
                   <button key={index}
-                    className={`calendar-day ${date ? 
+                    className={`calendar-day ${date ?
                       (date.toDateString() === selectedDate.toDateString() ? 'selected' :
                         date.toDateString() === new Date().toDateString() ? 'today' : '')
                       : 'empty'
