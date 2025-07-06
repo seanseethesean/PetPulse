@@ -106,7 +106,7 @@ const PetJournal = () => {
   }
 
   const handleSubmitEntry = async () => {
-    if (!newEntry.title.trim() || !newEntry.content.trim()) {
+    if (!newEntry.title.trim() || !newEntry.mood.trim()) {
       alert("Please fill in title and mood")
       return
     }

@@ -1,14 +1,5 @@
 import * as yup from "yup"
 
-// Valid journal categories
-const validCategories = [
-    'Date',
-    'Title', 
-    'Mood',
-    'Activities',
-    'Content'
-  ];
-
   export const createJournalSchema = yup.object().shape({
     title: yup.string().required("Title is required"),
     content: yup.string().optional(),
