@@ -14,12 +14,21 @@ import { LoadingProvider, useLoading } from './components/LoadingContext';
 
 function RouteChangeHandler() {
   const location = useLocation();
-  const {setLoading} = useLoading();
+  const { setLoading } = useLoading();
 
   useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => setLoading(false), 400); // simulate page load delay
-    return () => clearTimeout(timeout);
+    const pingBackend = async () => {
+      setLoading(true);
+      try {
+        await fetch(`${process.env.REACT_APP_API_URL}/ping`, { method: "GET" });
+      } catch (err) {
+        console.error("Ping failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    pingBackend();
   }, [location.pathname]);
 
   return null;
