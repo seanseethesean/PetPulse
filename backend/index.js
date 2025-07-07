@@ -7,6 +7,7 @@ import taskRoutes from "./routes/task.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
 import forumRoutes from "./routes/social.routes.js";
+import pingRoute from "./routes/ping.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/journal", journalRoutes);
 app.use("/api/forum", forumRoutes);
+app.use("/ping", pingRoute);
 
 
 // Start the server
