@@ -1,12 +1,33 @@
-/* frontend/components/NearbyServices.css */
-
 .nearby-container {
   padding: 2rem;
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
   font-family: sans-serif;
 }
 
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* Map Styling */
+.map-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* Grid of services */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -35,10 +56,4 @@
   margin: 0;
   color: #666;
   font-size: 0.95rem;
-}
-
-.error {
-  color: #d32f2f;
-  font-weight: bold;
-  margin-top: 1rem;
 }
