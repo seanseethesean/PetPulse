@@ -101,7 +101,6 @@ const NearbyServices = () => {
             zoom={14}
             onLoad={(map) => (mapRef.current = map)}
           >
-            {/* Your location in blue */}
             <Marker position={location}
               icon={{
                 url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
@@ -109,7 +108,6 @@ const NearbyServices = () => {
               }}
             />
 
-            {/* Nearby service markers in default red */}
             {services.map((place, idx) => (
               place.location && (
                 <Marker
