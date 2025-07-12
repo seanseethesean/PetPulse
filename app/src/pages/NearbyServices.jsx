@@ -2,11 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import NearbyService from "../utils/nearby";
 import Navbar from "../components/Navbar";
 import "../assets/NearbyServices.css";
-import {
-  GoogleMap,
-  Marker,
-  useJsApiLoader,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
