@@ -52,36 +52,6 @@ const NearbyServices = () => {
     }
   };
 
-  const handleAddressSearch = async () => {
-    if (!manualAddress) return;
-
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-        manualAddress
-      )}&key=${apiKey}`
-    );
-    const data = await response.json();
-
-    if (data.status === "OK") {
-      const { lat, lng } = data.results[0].geometry.location;
-      setLocation({ lat, lng });
-      focusOnPlace(lat, lng);
-      setLoading(true);
-      try {
-        const results = await NearbyService.getNearbyServices(lat, lng);
-        setServices(results);
-        setError("");
-      } catch (err) {
-        setError("Failed to load nearby services.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setError("Could not find location. Try again.");
-    }
-  };
-
   return (
     <div className="nearby-container">
       <Navbar />
