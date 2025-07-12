@@ -35,7 +35,6 @@ export async function fetchNearbyPlaces(lat, lon) {
     }
 
     if (data.places) {
-      // Tag each place with its type (optional, helps with UI filtering)
       const tagged = data.places.map((place) => ({ ...place, type }));
       allPlaces.push(...tagged);
     }
