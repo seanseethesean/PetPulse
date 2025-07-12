@@ -11,6 +11,7 @@ import Journal from './pages/Journal';
 import SocialPage from './pages/SocialPage';
 import Spinner from './components/Spinner';
 import { LoadingProvider, useLoading } from './components/LoadingContext';
+import NearbyServices from './pages/NearbyServices';
 
 function RouteChangeHandler() {
   const location = useLocation();
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path="/social-page" element={<SocialPage />} />
         <Route path="/expense-tracker" element={<ExpenseTracker />} />
         <Route path="/petmgm" element={<PetMgm />} />
+        <Route path="/nearby-services" element={<NearbyServices />} />
       </Routes>
     </>
   );

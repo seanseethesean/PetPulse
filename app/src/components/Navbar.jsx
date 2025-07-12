@@ -15,38 +15,46 @@ const Navbar = () => {
 
           <button
             onClick={() => navigate("/Home")}
-            className={location.pathname === "/Home" ? "active" : ""}
-            disabled={location.pathname === "/Home"}>
+            className={location.pathname === "/home" ? "active" : ""}
+            disabled={location.pathname === "/home"}>
             Home
           </button>
 
           <button
-            onClick={() => navigate("/Social-Page")}
-            className={location.pathname === "/Social-Page" ? "active" : ""}
-            disabled={location.pathname === "/Social-Page"}>
+            onClick={() => navigate("/social-Page")}
+            className={location.pathname === "/social-Page" ? "active" : ""}
+            disabled={location.pathname === "/social-Page"}>
             Social
           </button>
 
           <button
-            onClick={() => navigate("/Task-Checklist")}
-            className={location.pathname === "/Task-Checklist" ? "active" : ""}
-            disabled={location.pathname === "/Task-Checklist"}>
+            onClick={() => navigate("/task-Checklist")}
+            className={location.pathname === "/task-Checklist" ? "active" : ""}
+            disabled={location.pathname === "/task-Checklist"}>
             Task Checklist
           </button>
 
           <button
-            onClick={() => navigate("/Journal")}
-            className={location.pathname === "/Journal" ? "active" : ""}
-            disabled={location.pathname === "/Journal"}>
+            onClick={() => navigate("/journal")}
+            className={location.pathname === "/journal" ? "active" : ""}
+            disabled={location.pathname === "/journal"}>
             Pet Journal
           </button>
 
           <button
-            onClick={() => navigate("/Expense-Tracker")}
-            className={location.pathname === "/Expense-Tracker" ? "active" : ""}
-            disabled={location.pÍthname === "/Expense-Tracker"}>
+            onClick={() => navigate("/expense-Tracker")}
+            className={location.pathname === "/expense-Tracker" ? "active" : ""}
+            disabled={location.pathname === "/expense-Tracker"}>
             Expense Tracker
           </button>
+
+          <button
+            onClick={() => navigate("/nearby-services")}
+            className={location.pathname === "/nearby-services" ? "active" : ""}
+            disabled={location.pathname === "/nearby-services"}>
+            Nearby Services
+          </button>
+
         </ul>
         <button className="btn" onClick={() => navigate("/petmgm")}>
           Pet Profile
