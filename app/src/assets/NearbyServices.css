@@ -5,9 +5,11 @@
   font-family: sans-serif;
 }
 
-h2 {
-  text-align: center;
+.nearby-container h1 {
+  text-align: left;
   margin-bottom: 1rem;
+  padding-top: 50px;
+  color: #0fb5a4;
 }
 
 .error {

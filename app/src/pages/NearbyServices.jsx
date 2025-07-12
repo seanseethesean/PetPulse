@@ -85,7 +85,7 @@ const NearbyServices = () => {
   return (
     <div className="nearby-container">
       <Navbar />
-      <h2>Nearby Pet Services</h2>
+      <h1>Nearby Pet Services</h1>
 
       {loading && <p>Loading nearby services...</p>}
       {error && <p className="error">{error}</p>}
