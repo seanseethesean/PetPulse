@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import Navbar from "../components/Navbar";
 import SocialService from "../utils/social";
 
+
 const search_icon = "🔎";
 const user_icon = "👤";
 const forum_icon = "💭";
@@ -64,14 +65,25 @@ const SocialPage = () => {
 
   const fetchForumPosts = async (userId) => {
     try {
-      const data = await SocialService.getForumPosts(userId)
+      const data = await SocialService.getForumPosts(userId);
+  
       if (data.success) {
-        setForumPosts(data.posts || [])
+        const postsWithComments = await Promise.all(
+          (data.posts || []).map(async (post) => {
+            const comments = await SocialService.getCommentsForPost(post.id); 
+            return {
+              ...post,
+              comments: comments || []
+            };
+          })
+        );
+  
+        setForumPosts(postsWithComments);
       }
     } catch (err) {
-      console.error("Error fetching forum posts:", err)
+      console.error("Error fetching forum posts:", err);
     }
-  }
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return

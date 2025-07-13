@@ -2,6 +2,7 @@ import express from "express";
 import { getForumPosts, createForumPost, deleteForumPost } from "../services/social.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createForumPostSchema } from "../types/social.types.js";
+import { likeForumPost, addForumComment } from "../services/social.service.js";
 
 const router = express.Router();
 
@@ -36,6 +37,30 @@ router.delete("/posts/:id", async (req, res) => {
   } catch (error) {
     console.error("Error deleting forum post:", error);
     res.status(500).json({ success: false, error: "Failed to delete post" });
+  }
+});
+
+// Like/Unlike a post
+router.post("/posts/:id/like", async (req, res) => {
+  const { userId, isLiked } = req.body;
+  try {
+    await likeForumPost(req.params.id, userId, isLiked);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error liking post:", error);
+    res.status(500).json({ success: false, error: "Failed to like/unlike post" });
+  }
+});
+
+// Add a comment to a post
+router.post("/posts/:id/comments", async (req, res) => {
+  const comment = req.body;
+  try {
+    const commentId = await addForumComment(req.params.id, comment);
+    res.status(201).json({ success: true, commentId });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({ success: false, error: "Failed to add comment" });
   }
 });
 
