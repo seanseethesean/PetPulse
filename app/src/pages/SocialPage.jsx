@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import "../assets/SocialPage.css";
-import { getAuth } from "firebase/auth";
-import Navbar from "../components/Navbar";
-import SocialService from "../utils/social";
+import { useEffect, useState } from "react"
+import "../assets/SocialPage.css"
+import { getAuth } from "firebase/auth"
+import Navbar from "../components/Navbar"
+import SocialService from "../utils/social"
 
-
-const search_icon = "🔎";
-const user_icon = "👤";
-const forum_icon = "💭";
-const follow_icon = "👋";
+const search_icon = "🔎"
+const user_icon = "👤"
+const forum_icon = "💭"
+const follow_icon = "👋"
 
 const SocialPage = () => {
   const [activeTab, setActiveTab] = useState("search") // search, following, followers, forum
@@ -65,26 +64,26 @@ const SocialPage = () => {
 
   const fetchForumPosts = async (userId) => {
     try {
-      const data = await SocialService.getForumPosts(userId);
-  
+      const data = await SocialService.getForumPosts(userId)
+
       if (data.success) {
         const postsWithComments = await Promise.all(
           (data.posts || []).map(async (post) => {
-            const response = await SocialService.getCommentsForPost(post.id);
-            const comments = response.comments || [];
+            const response = await SocialService.getCommentsForPost(post.id)
+            const comments = response.comments || []
             return {
               ...post,
               comments: comments || []
-            };
+            }
           })
-        );
-  
-        setForumPosts(postsWithComments);
+        )
+
+        setForumPosts(postsWithComments)
       }
     } catch (err) {
-      console.error("Error fetching forum posts:", err);
+      console.error("Error fetching forum posts:", err)
     }
-  };
+  }
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -209,7 +208,7 @@ const SocialPage = () => {
     const user = auth.currentUser
     const commentData = {
       userId: user.uid,
-      //userName: user.displayName || user.email,
+      userEmail: user.email,
       content: newComment,
       timestamp: new Date().toISOString()
     }
@@ -247,9 +246,7 @@ const SocialPage = () => {
     showChatButton = false
   ) => (
     <div key={user.id} className="user-card">
-      <div className="user-avatar">
-        {/* <img src={user.profilePicture || user_icon} alt={user.displayName} /> */}
-      </div>
+      <div className="user-avatar"></div>
       <div className="user-info">
         <h4>{user.displayName || user.email}</h4>
         <p>{user.bio || "Pet lover"}</p>
@@ -273,7 +270,6 @@ const SocialPage = () => {
     <div key={post.id} className="forum-post">
       <div className="post-header">
         <div className="post-user">
-          {/* <img src={post.userAvatar || user_icon} alt={post.userName} /> */}
           <div className="user-info">
             <h4>{post.userName}</h4>
             <span className="post-time">
@@ -298,12 +294,10 @@ const SocialPage = () => {
           </span>
         </div>
       </div>
-
       <div className="post-content">
         <h3 className="post-title">{post.title}</h3>
         <p className="post-text">{post.content}</p>
       </div>
-
       <div className="post-actions">
         <button
           className={`like-btn ${post.isLiked ? "liked" : ""}`}
@@ -318,21 +312,27 @@ const SocialPage = () => {
           💬 {post.comments?.length || 0} Comments
         </button>
       </div>
-
+      
       {selectedPost?.id === post.id && (
         <div className="comments-section">
           <div className="comments-list">
             {post.comments?.map((comment) => (
               <div key={comment.id} className="comment">
-                {/* <img
-                  src={comment.userAvatar || user_icon}
-                  alt={comment.userName}
-                /> */}
                 <div className="comment-content">
                   <div className="comment-header">
                     <h5>{comment.userName}</h5>
                     <span className="comment-time">
-                      {new Date(comment.timestamp).toLocaleDateString()}
+                      {comment.userEmail?.split("@")[0]} at{" "}
+                      {new Date(comment.timestamp).toLocaleDateString("en-SG", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric"
+                      })}
+                      ,{" "}
+                      {new Date(comment.timestamp).toLocaleTimeString("en-SG", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
                     </span>
                   </div>
                   <p>{comment.content}</p>
