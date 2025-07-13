@@ -70,7 +70,8 @@ const SocialPage = () => {
       if (data.success) {
         const postsWithComments = await Promise.all(
           (data.posts || []).map(async (post) => {
-            const comments = await SocialService.getCommentsForPost(post.id); 
+            const response = await SocialService.getCommentsForPost(post.id);
+            const comments = response.comments || [];
             return {
               ...post,
               comments: comments || []

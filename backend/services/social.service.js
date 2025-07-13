@@ -63,3 +63,10 @@ export const addForumComment = async (postId, commentData) => {
   await setDoc(commentRef, commentData);
   return commentRef.id;
 };
+
+// Get comments
+export const getCommentsForPost = async (postId) => {
+  const commentsRef = collection(db, `forum/${postId}/comments`);
+  const snapshot = await getDocs(commentsRef);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};

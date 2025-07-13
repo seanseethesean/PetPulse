@@ -2,7 +2,7 @@ import express from "express";
 import { getForumPosts, createForumPost, deleteForumPost } from "../services/social.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createForumPostSchema } from "../types/social.types.js";
-import { likeForumPost, addForumComment } from "../services/social.service.js";
+import { likeForumPost, addForumComment, getCommentsForPost } from "../services/social.service.js";
 
 const router = express.Router();
 
@@ -61,6 +61,18 @@ router.post("/posts/:id/comments", async (req, res) => {
   } catch (error) {
     console.error("Error adding comment:", error);
     res.status(500).json({ success: false, error: "Failed to add comment" });
+  }
+});
+
+// get the comments for post 
+router.get("/posts/:id/comments", async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const comments = await getCommentsForPost(postId);
+    res.json({ success: true, comments });
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch comments" });
   }
 });
 
