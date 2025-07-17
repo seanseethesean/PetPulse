@@ -73,6 +73,10 @@ class SocialService {
     });
     return await this.handleResponse(res);
   }
-}
 
+  async getCommentsForPost(postId) {
+    const res = await fetch(`${URL}/api/forum/posts/${postId}/comments`);
+    return await this.handleResponse(res);
+  }
+}
 export default new SocialService();

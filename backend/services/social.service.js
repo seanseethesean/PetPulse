@@ -1,6 +1,14 @@
 import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
-  import { db } from "../firebase.js";
-  
+import { db } from "../firebase.js";
+import {
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  getDoc,
+  setDoc
+} from "firebase/firestore";
+
   // Get all forum posts
   export const getForumPosts = async () => {
     const postsRef = collection(db, "forum");
@@ -17,6 +25,8 @@ import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "fir
   export const createForumPost = async (postData) => {
     const data = {
       ...postData,
+      likes: 0, 
+      likedBy: [],
       createdAt: new Date().toISOString()
     };
   
@@ -34,3 +44,29 @@ import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "fir
     await deleteDoc(postRef);
   };
   
+  // Like/unlike a post
+export const likeForumPost = async (postId, userId, isLiked) => {
+  const postRef = doc(db, "forum", postId);
+  const postSnap = await getDoc(postRef);
+  if (!postSnap.exists()) throw new Error("Post not found");
+
+  const updates = {
+    likes: increment(isLiked ? 1 : -1),
+    likedBy: isLiked ? arrayUnion(userId) : arrayRemove(userId)
+  };
+  await updateDoc(postRef, updates);
+};
+
+// Add a comment
+export const addForumComment = async (postId, commentData) => {
+  const commentRef = doc(collection(db, `forum/${postId}/comments`));
+  await setDoc(commentRef, commentData);
+  return commentRef.id;
+};
+
+// Get comments
+export const getCommentsForPost = async (postId) => {
+  const commentsRef = collection(db, `forum/${postId}/comments`);
+  const snapshot = await getDocs(commentsRef);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
