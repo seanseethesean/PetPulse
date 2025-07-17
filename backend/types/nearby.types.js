@@ -1,5 +1,3 @@
-// backend/types/nearby.types.js
-
 import * as yup from "yup";
 
 // Schema to validate incoming request to /api/nearby-services

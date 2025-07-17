@@ -12,7 +12,7 @@ export async function fetchNearbyPlaces(lat, lon) {
       locationRestriction: {
         circle: {
           center: { latitude: lat, longitude: lon },
-          radius: 5000,
+          radius: 5000, // 5 km radius
         },
       },
     };
@@ -40,5 +40,5 @@ export async function fetchNearbyPlaces(lat, lon) {
     }
   }
 
-  return allPlaces; // total should be up to 9 places
+  return allPlaces;
 }

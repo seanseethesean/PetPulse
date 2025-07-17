@@ -14,8 +14,7 @@ const NearbyServices = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [location, setLocation] = useState(null);
-  const [manualAddress, setManualAddress] = useState("");
-  const mapRef = useRef(null);
+  const mapRef = useRef(null); 
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -76,8 +75,7 @@ const NearbyServices = () => {
 
             {services.map((place, idx) => (
               place.location && (
-                <Marker
-                  key={idx}
+                <Marker key={idx}
                   position={{
                     lat: place.location.latitude,
                     lng: place.location.longitude,
@@ -92,8 +90,7 @@ const NearbyServices = () => {
 
       <div className="services-grid">
         {services.map((place, index) => (
-          <div
-            className="service-card"
+          <div className="service-card"
             key={index}
             onClick={() =>
               focusOnPlace(place.location.latitude, place.location.longitude)
