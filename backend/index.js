@@ -6,9 +6,11 @@ import petRoutes from "./routes/pet.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
-import forumRoutes from "./routes/social.routes.js";
+// import forumRoutes from "./routes/social.routes.js";
 import pingRoute from "./routes/ping.js";
 import nearbyRoutes from "./routes/nearby.routes.js";
+// import searchRoutes from "./routes/social.routes.js";
+import socialRoutes from "./routes/social.routes.js";;
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
@@ -29,9 +31,10 @@ app.use("/api/pets", petRoutes);  // prefix all routes inside with /api/pets
 app.use("/api/tasks", taskRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/journal", journalRoutes);
-app.use("/api/forum", forumRoutes);
+// app.use("/api/forum", forumRoutes);
 app.use("/ping", pingRoute);
-app.use("/api/nearby", nearbyRoutes)
+app.use("/api/nearby", nearbyRoutes);
+app.use("/api", socialRoutes);
 
 
 // Start the server

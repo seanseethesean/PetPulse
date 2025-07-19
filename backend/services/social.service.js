@@ -70,3 +70,49 @@ export const getCommentsForPost = async (postId) => {
   const snapshot = await getDocs(commentsRef);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
+
+// Search function
+export const searchUsersByEmail = async (searchQuery, userIdToExclude = null) => {
+  const usersRef = collection(db, "users");
+
+  const q = query(
+    usersRef,
+    where("displayName", ">=", searchQuery),
+    where("displayName", "<=", searchQuery + "\uf8ff")
+  );
+
+  const snapshot = await getDocs(q);
+  console.log("🔥 Query matched:", snapshot.docs.map(doc => doc.data())); //DEBUG
+
+  return snapshot.docs
+    .filter(doc => doc.id !== userIdToExclude)
+    .map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+// follow
+export const followUser = async (userId, targetUserId) => {
+  const userRef = doc(db, "users", userId);
+  const targetRef = doc(db, "users", targetUserId);
+
+  await updateDoc(userRef, {
+    following: arrayUnion(targetUserId)
+  });
+
+  await updateDoc(targetRef, {
+    followers: arrayUnion(userId)
+  });
+};
+
+// unfollow 
+export const unfollowUser = async (userId, targetUserId) => {
+  const userRef = doc(db, "users", userId);
+  const targetRef = doc(db, "users", targetUserId);
+
+  await updateDoc(userRef, {
+    following: arrayRemove(targetUserId)
+  });
+
+  await updateDoc(targetRef, {
+    followers: arrayRemove(userId)
+  });
+};

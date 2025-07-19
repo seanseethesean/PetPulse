@@ -2,7 +2,7 @@ import express from "express";
 import { getForumPosts, createForumPost, deleteForumPost } from "../services/social.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createForumPostSchema } from "../types/social.types.js";
-import { likeForumPost, addForumComment, getCommentsForPost } from "../services/social.service.js";
+import { likeForumPost, addForumComment, getCommentsForPost, searchUsersByEmail, followUser, unfollowUser } from "../services/social.service.js";
 
 const router = express.Router();
 
@@ -73,6 +73,42 @@ router.get("/posts/:id/comments", async (req, res) => {
   } catch (error) {
     console.error("Error fetching comments:", error);
     res.status(500).json({ success: false, error: "Failed to fetch comments" });
+  }
+});
+
+// Searching for other users
+router.get("/search", async (req, res) => {
+  const { query: searchQuery, userId } = req.query;
+
+  try {
+    const users = await searchUsersByEmail(searchQuery, userId);
+    console.log("🔥 Matched users in backend:", users); //DEBUG
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ success: false, error: "Search failed" });
+  }
+});
+
+// Follow a user
+router.post("/follow", async (req, res) => {
+  const { userId, targetUserId } = req.body;
+  try {
+    await followUser(userId, targetUserId);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to follow user" });
+  }
+});
+
+// Unfollow a user
+router.post("/unfollow", async (req, res) => {
+  const { userId, targetUserId } = req.body;
+  try {
+    await unfollowUser(userId, targetUserId);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to unfollow user" });
   }
 });
 

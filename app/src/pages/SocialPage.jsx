@@ -94,6 +94,7 @@ const SocialPage = () => {
 
     try {
       const data = await SocialService.searchUsers(searchQuery, user.uid)
+      console.log("🐶 Received data from backend:", data); //DEBUG
       if (data.success) {
         setSearchResults(data.users || [])
       }
@@ -242,17 +243,16 @@ const SocialPage = () => {
 
   const renderUserCard = (
     user,
-    showFollowButton = true,
-    showChatButton = false
+    showFollowButton = true
   ) => (
     <div key={user.id} className="user-card">
       <div className="user-avatar"></div>
       <div className="user-info">
         <h4>{user.displayName || user.email}</h4>
         <p>{user.bio || "Pet lover"}</p>
-        {user.petCount && (
+        {/* {user.petCount && (
           <span className="pet-count">{user.petCount} pets</span>
-        )}
+        )} */}
       </div>
       <div className="user-actions">
         {showFollowButton && (

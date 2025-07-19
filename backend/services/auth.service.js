@@ -1,4 +1,21 @@
 import admin from "../firebase.js";
+import { db } from "../firebase.js";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+
+// Create user document if it doesn't exist
+const createUserDocIfNotExists = async (uid, email) => {
+  const userRef = doc(db, "users", uid);
+  const docSnap = await getDoc(userRef);
+  if (!docSnap.exists()) {
+    await setDoc(userRef, {
+      email,
+      displayName: email.split('@')[0],
+      followers: [],
+      following: [],
+      createdAt: new Date().toISOString()
+    });
+  }
+};
 
 // Sign up new user
 export const signUpUser = async (email, password) => {
@@ -8,6 +25,7 @@ export const signUpUser = async (email, password) => {
       password,
       emailVerified: false
     });
+    await createUserDocIfNotExists(userRecord.uid, userRecord.email);
 
     return {
       uid: userRecord.uid,
@@ -38,6 +56,11 @@ export const signUpUser = async (email, password) => {
 export const verifyGoogleToken = async (idToken) => {
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    await createUserDocIfNotExists(
+      decodedToken.uid,
+      decodedToken.email,
+      decodedToken.name
+    );
 
     return {
       uid: decodedToken.uid,
