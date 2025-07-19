@@ -32,7 +32,7 @@ const renderWithRouter = (ui) => {
   return render(<BrowserRouter>{ui}</BrowserRouter>);
 };
 
-describe('PetJournal (simple)', () => {
+describe('PetJournal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
