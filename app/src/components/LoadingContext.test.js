@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { LoadingProvider, useLoading } from "./LoadingContext";
+import { LoadingProvider, useLoading, LoadingContext } from "./LoadingContext";
 import userEvent from "@testing-library/user-event";
 
 const TestComponent = () => {
