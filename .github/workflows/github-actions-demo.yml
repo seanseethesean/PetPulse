@@ -10,10 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: app
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,10 +20,14 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd app
+          npm install
 
       - name: Run tests with coverage
-        run: npm test -- --coverage --watchAll=false
+        run: |
+          cd app
+          npm test -- --coverage --watchAll=false
 
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v4
