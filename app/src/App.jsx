@@ -36,7 +36,7 @@ function RouteChangeHandler() {
 }
 
 function AppRoutes() {
-  const {loading} = useLoading();
+  const { loading } = useLoading();
 
   return (
     <>
