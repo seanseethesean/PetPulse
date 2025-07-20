@@ -1,13 +1,6 @@
 import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase.js";
-import {
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  increment,
-  getDoc,
-  setDoc
-} from "firebase/firestore";
+import { where, updateDoc, arrayUnion, arrayRemove, increment, getDoc, setDoc } from "firebase/firestore";
 
   // Get all forum posts
   export const getForumPosts = async () => {
@@ -69,4 +62,53 @@ export const getCommentsForPost = async (postId) => {
   const commentsRef = collection(db, `forum/${postId}/comments`);
   const snapshot = await getDocs(commentsRef);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+// Search function
+export const searchUsersByEmail = async (searchQuery, userIdToExclude = null) => {
+  try {
+  const usersRef = collection(db, "users");
+
+  const q = query(
+    usersRef,
+    where("displayName", ">=", searchQuery),
+    where("displayName", "<=", searchQuery + "\uf8ff")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs
+    .filter(doc => doc.id !== userIdToExclude)
+    .map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    throw new Error("Search failed");
+  }
+};
+
+// follow
+export const followUser = async (userId, targetUserId) => {
+  const userRef = doc(db, "users", userId);
+  const targetRef = doc(db, "users", targetUserId);
+
+  await updateDoc(userRef, {
+    following: arrayUnion(targetUserId)
+  });
+
+  await updateDoc(targetRef, {
+    followers: arrayUnion(userId)
+  });
+};
+
+// unfollow 
+export const unfollowUser = async (userId, targetUserId) => {
+  const userRef = doc(db, "users", userId);
+  const targetRef = doc(db, "users", targetUserId);
+
+  await updateDoc(userRef, {
+    following: arrayRemove(targetUserId)
+  });
+
+  await updateDoc(targetRef, {
+    followers: arrayRemove(userId)
+  });
 };
