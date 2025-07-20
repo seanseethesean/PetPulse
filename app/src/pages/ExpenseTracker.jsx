@@ -138,7 +138,7 @@ const ExpenseTracker = () => {
         userId: user.uid,
         petId: selectedPetData.id.toString(),
         petName: selectedPetData.petName,
-        date: newExpense.date 
+        date: newExpense.date
       };
 
       const created = await ExpenseService.createExpense(payload);
@@ -149,7 +149,7 @@ const ExpenseTracker = () => {
         amount: '',
         category: 'Food',
         petId: newExpense.petId,
-        date: newExpense.date 
+        date: newExpense.date
       });
       setShowAddExpense(false);
     } catch (err) {
@@ -216,19 +216,19 @@ const ExpenseTracker = () => {
   const { totalExpenses, categoryTotals, filteredExpenses } = useMemo(() => {
     // Filter expenses by selected pet
     const filtered = selectedPet === 'all'
-    ? expenses
-    : expenses.filter(exp => exp.petId?.toString() === selectedPet);  
+      ? expenses
+      : expenses.filter(exp => exp.petId?.toString() === selectedPet);
 
     // Calculate total
     const total = filtered.reduce((sum, exp) => sum + (parseFloat(exp?.amount) || 0), 0);
 
     // Calculate category totals
     const categories = filtered.reduce((acc, exp) => {
-        const category = exp?.category || "Others";
-        const amount = parseFloat(exp?.amount) || 0;
-        acc[category] = (acc[category] || 0) + amount;
-        return acc;
-      }, {});      
+      const category = exp?.category || "Others";
+      const amount = parseFloat(exp?.amount) || 0;
+      acc[category] = (acc[category] || 0) + amount;
+      return acc;
+    }, {});
 
     return {
       totalExpenses: total,
@@ -253,6 +253,12 @@ const ExpenseTracker = () => {
   return (
     <div className="expense-tracker">
       <Navbar />
+      {error && (
+        <div className="expense-error-banner" data-testid="expense-error">
+          {error}
+        </div>
+      )}
+
       <div className="expense-tracker-container">
 
         {/* Header */}
