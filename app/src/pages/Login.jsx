@@ -18,6 +18,12 @@ const Login = () => {
 
   const handleSubmit = async () => {
     setError("");
+
+    if (!email || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
     try {
       if (action === "Sign Up") {
         await authService.signup(email, password);
@@ -38,9 +44,9 @@ const Login = () => {
       await authService.verifyGoogleToken(idToken);
       navigate('/petmgm');
     } catch (err) {
-        console.error('Google sign-in error', err);
-        setError('Google error');
-      }      
+      console.error('Google sign-in error', err);
+      setError('Google error');
+    }
   };
 
   const handleForgotPassword = () => {
