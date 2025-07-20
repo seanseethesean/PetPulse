@@ -81,7 +81,6 @@ export const searchUsersByEmail = async (searchQuery, userIdToExclude = null) =>
     .filter(doc => doc.id !== userIdToExclude)
     .map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (err) {
-    console.error("❌ Firestore query failed:", err); // <-- this will tell us the real issue
     throw new Error("Search failed");
   }
 };
