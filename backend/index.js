@@ -34,7 +34,8 @@ app.use("/api/journal", journalRoutes);
 // app.use("/api/forum", forumRoutes);
 app.use("/ping", pingRoute);
 app.use("/api/nearby", nearbyRoutes);
-app.use("/api", socialRoutes);
+app.use("/api/users", socialRoutes);
+app.use("/api/forum", socialRoutes);
 
 
 // Start the server

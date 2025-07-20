@@ -1,13 +1,6 @@
 import { collection, addDoc, getDocs, deleteDoc, doc, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase.js";
-import {
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  increment,
-  getDoc,
-  setDoc
-} from "firebase/firestore";
+import { where, updateDoc, arrayUnion, arrayRemove, increment, getDoc, setDoc } from "firebase/firestore";
 
   // Get all forum posts
   export const getForumPosts = async () => {
@@ -73,6 +66,7 @@ export const getCommentsForPost = async (postId) => {
 
 // Search function
 export const searchUsersByEmail = async (searchQuery, userIdToExclude = null) => {
+  try {
   const usersRef = collection(db, "users");
 
   const q = query(
@@ -82,11 +76,14 @@ export const searchUsersByEmail = async (searchQuery, userIdToExclude = null) =>
   );
 
   const snapshot = await getDocs(q);
-  console.log("🔥 Query matched:", snapshot.docs.map(doc => doc.data())); //DEBUG
 
   return snapshot.docs
     .filter(doc => doc.id !== userIdToExclude)
     .map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.error("❌ Firestore query failed:", err); // <-- this will tell us the real issue
+    throw new Error("Search failed");
+  }
 };
 
 // follow

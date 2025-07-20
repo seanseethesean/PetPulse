@@ -2,6 +2,8 @@ import express from "express";
 import { getForumPosts, createForumPost, deleteForumPost } from "../services/social.service.js";
 import { validateRequestData } from "../request-validation.js";
 import { createForumPostSchema } from "../types/social.types.js";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase.js";
 import { likeForumPost, addForumComment, getCommentsForPost, searchUsersByEmail, followUser, unfollowUser } from "../services/social.service.js";
 
 const router = express.Router();
@@ -82,7 +84,6 @@ router.get("/search", async (req, res) => {
 
   try {
     const users = await searchUsersByEmail(searchQuery, userId);
-    console.log("🔥 Matched users in backend:", users); //DEBUG
     res.json({ success: true, users });
   } catch (error) {
     console.error("Error searching users:", error);
@@ -109,6 +110,54 @@ router.post("/unfollow", async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ success: false, error: "Failed to unfollow user" });
+  }
+});
+
+// GET following list
+router.get("/following", async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const userRef = doc(db, "users", userId);
+    const snapshot = await getDoc(userRef);
+    const data = snapshot.exists() ? snapshot.data() : {};
+    const followingIds = data.following || [];
+
+    const following = await Promise.all(
+      followingIds.map(async (id) => {
+        const ref = doc(db, "users", id);
+        const snap = await getDoc(ref);
+        return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+      })
+    );
+
+    res.json({ success: true, following: following.filter(Boolean) });
+  } catch (error) {
+    console.error("Error fetching following list:", error);
+    res.status(500).json({ success: false, error: "Failed to get following" });
+  }
+});
+
+// GET followers list
+router.get("/followers", async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const userRef = doc(db, "users", userId);
+    const snapshot = await getDoc(userRef);
+    const data = snapshot.exists() ? snapshot.data() : {};
+    const followerIds = data.followers || [];
+
+    const followers = await Promise.all(
+      followerIds.map(async (id) => {
+        const ref = doc(db, "users", id);
+        const snap = await getDoc(ref);
+        return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+      })
+    );
+
+    res.json({ success: true, followers: followers.filter(Boolean) });
+  } catch (error) {
+    console.error("Error fetching followers list:", error);
+    res.status(500).json({ success: false, error: "Failed to get followers" });
   }
 });
 

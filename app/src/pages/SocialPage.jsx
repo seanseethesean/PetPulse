@@ -94,7 +94,6 @@ const SocialPage = () => {
 
     try {
       const data = await SocialService.searchUsers(searchQuery, user.uid)
-      console.log("🐶 Received data from backend:", data); //DEBUG
       if (data.success) {
         setSearchResults(data.users || [])
       }
@@ -120,7 +119,7 @@ const SocialPage = () => {
           setFollowing((prev) => prev.filter((f) => f.id !== targetUserId))
         } else {
           // Refetch to get updated data
-          fetchUserData()
+          fetchUserData(user.uid)
         }
 
         // Update search results
