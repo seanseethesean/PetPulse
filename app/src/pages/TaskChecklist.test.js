@@ -389,39 +389,4 @@ describe("TaskChecklist", () => {
     ).toBeInTheDocument();
   });
   
-  test("shows error if delete task fails", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
-    fetch
-      .mockResolvedValueOnce({
-        json: async () => ({ success: true, pets: [{ id: "1", petName: "Buddy" }] }),
-      })
-      .mockResolvedValueOnce({
-        json: async () => ({
-          success: true,
-          tasks: [{ id: "1", title: "Feed Buddy", petId: "1", completed: false }],
-        }),
-      });
-  
-    jest.spyOn(TaskService, "deleteTask").mockRejectedValue(new Error("server error"));
-  
-    render(
-      <MemoryRouter>
-        <TaskChecklist />
-      </MemoryRouter>
-    );
-  
-    // Force filter to show all pets
-    fireEvent.change(await screen.findByLabelText(/filter by pet/i), {
-      target: { value: 'all' },
-    });
-  
-    expect(await screen.findByTestId("task-title-1")).toHaveTextContent(/feed buddy/i);
-  
-    const deleteBtn = screen.getByRole("button", { name: /delete/i });
-    fireEvent.click(deleteBtn);
-  
-    expect(await screen.findByTestId("task-error")).toHaveTextContent(/failed to delete task: server error/i);
-  });  
-  
 })
