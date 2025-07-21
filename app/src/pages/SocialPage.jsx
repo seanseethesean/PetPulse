@@ -119,7 +119,7 @@ const SocialPage = () => {
           setFollowing((prev) => prev.filter((f) => f.id !== targetUserId))
         } else {
           // Refetch to get updated data
-          fetchUserData()
+          fetchUserData(user.uid)
         }
 
         // Update search results
@@ -242,17 +242,16 @@ const SocialPage = () => {
 
   const renderUserCard = (
     user,
-    showFollowButton = true,
-    showChatButton = false
+    showFollowButton = true
   ) => (
     <div key={user.id} className="user-card">
       <div className="user-avatar"></div>
       <div className="user-info">
         <h4>{user.displayName || user.email}</h4>
         <p>{user.bio || "Pet lover"}</p>
-        {user.petCount && (
+        {/* {user.petCount && (
           <span className="pet-count">{user.petCount} pets</span>
-        )}
+        )} */}
       </div>
       <div className="user-actions">
         {showFollowButton && (
