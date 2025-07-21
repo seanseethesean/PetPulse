@@ -7,7 +7,7 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import TaskChecklist from './pages/TaskChecklist';
 import ExpenseTracker from './pages/ExpenseTracker';
-import Journal from './pages/Journal';
+import Journal from './pages/PetJournal';
 import SocialPage from './pages/SocialPage';
 import Spinner from './components/Spinner';
 import { LoadingProvider, useLoading } from './components/LoadingContext';
