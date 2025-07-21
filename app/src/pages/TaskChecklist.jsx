@@ -105,45 +105,6 @@ const TaskChecklist = () => {
     }
   };
 
-  // Helper function to generate recurring task dates
-  const generateRecurringDates = (startDate, recurring) => {
-    let count;
-    switch (recurring) {
-      case 'daily':
-        count = 30;  // 30 days
-        break;
-      case 'weekly':
-        count = 4;   // 4 weeks
-        break;
-      case 'monthly':
-        count = 12;  // 12 months
-        break;
-      default:
-        return [startDate];
-    }
-    const dates = [];
-    const current = new Date(startDate);
-
-    for (let i = 0; i < count; i++) {
-      dates.push(new Date(current));
-
-      switch (recurring) {
-        case 'daily':
-          current.setDate(current.getDate() + 1);
-          break;
-        case 'weekly':
-          current.setDate(current.getDate() + 7);
-          break;
-        case 'monthly':
-          current.setMonth(current.getMonth() + 1);
-          break;
-        default:
-          return [startDate]; // For 'once'
-      }
-    }
-
-    return dates;
-  };
 
   const addNewTask = async () => {
     if (!newTask.title || !newTask.petId) {
@@ -344,7 +305,8 @@ const TaskChecklist = () => {
       </div>
 
       <button className="floating-add-btn"
-        onClick={() => setShowAddTask(true)}>
+        onClick={() => setShowAddTask(true)}
+        data-testid="submit-task-button">
         Add Task
       </button>
 
@@ -368,6 +330,7 @@ const TaskChecklist = () => {
               return (
                 <div key={task.id} className={`task-item ${task.completed ? 'completed' : ''}`}>
                   <button className="task-checkbox"
+                    data-testid={`task-checkbox-${task.id}`}
                     onClick={() => toggleTaskCompletion(task.id)}>
                     {task.completed && <span className="checkmark">✓</span>}
                   </button>
@@ -376,7 +339,7 @@ const TaskChecklist = () => {
                     <div className="task-main">
                       <div className="task-icon">{TaskIcons[task.type]}</div>
                       <div className="task-info">
-                        <h3>
+                        <h3 data-testid={`task-title-${task.id}`}>
                           {task.title}
                           {task.isRecurring && (
                             <span className="recurring-badge" title={`Recurring ${task.recurring}`}>
@@ -418,7 +381,7 @@ const TaskChecklist = () => {
       {/* New Task modal */}
       {showAddTask && (
         <div className="modal-overlay">
-          <div className="add-task-modal">
+          <div className="add-task-modal" role="dialog">
             <div className="modal-header">
               <h3>Add New Task</h3>
               <button className="close-btn"
@@ -429,8 +392,9 @@ const TaskChecklist = () => {
 
             <div className="modal-content">
               <div className="form-group">
-                <label>Task Name</label>
+                <label htmlFor='taskName'>Task Name</label>
                 <input type="text"
+                  id="taskName"
                   value={newTask.title}
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                   placeholder="Enter task name" />
@@ -453,8 +417,9 @@ const TaskChecklist = () => {
               </div>
 
               <div className="form-group">
-                <label>Pet</label>
+                <label htmlFor="pet-select">Pet</label>
                 <select value={newTask.petId}
+                  id="pet-select"
                   onChange={(e) => setNewTask({ ...newTask, petId: e.target.value })}>
                   <option value="">Select a pet</option>
                   {pets.map(pet => (
@@ -471,8 +436,9 @@ const TaskChecklist = () => {
               </div>
 
               <div className="form-group">
-                <label>Recurring</label>
+                <label htmlFor="recurring-select">Recurring</label>
                 <select value={newTask.recurring}
+                  id="recurring-select"
                   onChange={(e) => setNewTask({ ...newTask, recurring: e.target.value })}>
                   <option value="once">One Time</option>
                   <option value="daily">Daily</option>
@@ -480,7 +446,7 @@ const TaskChecklist = () => {
                   <option value="monthly">Monthly</option>
                 </select>
                 {newTask.recurring !== 'once' && (
-                  <small className="recurring-info">
+                  <small className="recurring-info" data-testid="recurring-info">
                     This will create tasks for the next 30 {newTask.recurring === "daily" ? "day" :
                       newTask.recurring === "weekly" ? "weeks" :
                         newTask.recurring === "monthly" ? "months" :
@@ -498,6 +464,12 @@ const TaskChecklist = () => {
                   rows="3"
                 />
               </div>
+
+              {error && (
+                <div className="error-message" data-testid="task-error">
+                  {error}
+                </div>
+              )}
 
               <div className="modal-actions">
                 <button className="cancel-btn"

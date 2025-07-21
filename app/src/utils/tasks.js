@@ -1,4 +1,4 @@
-const URL = process.env.REACT_APP_API_URL;
+const getURL = () => process.env.REACT_APP_API_URL;
 
 class TaskService {
   // Helper method to format date for API
@@ -19,7 +19,7 @@ class TaskService {
   async getTasksByDate(date, userId) {
     try {
       const dateStr = this.formatDateForAPI(date);
-      const response = await fetch(`${URL}/api/tasks?date=${dateStr}&userId=${userId}`);
+      const response = await fetch(`${getURL()}/api/tasks?date=${dateStr}&userId=${userId}`);
       return await this.handleResponse(response);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -29,7 +29,7 @@ class TaskService {
 
   // Create a new task
   async createTask(taskData) {
-      const response = await fetch(`${URL}/api/tasks`, {
+      const response = await fetch(`${getURL()}/api/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ class TaskService {
   // Update a task
   async updateTask(taskId, updateData) {
     try {
-      const response = await fetch(`${URL}/api/tasks/${taskId}`, {
+      const response = await fetch(`${getURL()}/api/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ class TaskService {
   // Toggle task completion
   async toggleTaskCompletion(taskId, completed) {
     try {
-      const response = await fetch(`${URL}/api/tasks/${taskId}/toggle`, {
+      const response = await fetch(`${getURL()}/api/tasks/${taskId}/toggle`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ class TaskService {
   // Delete a task
   async deleteTask(taskId) {
     try {
-      const response = await fetch(`${URL}/api/tasks/${taskId}`, {
+      const response = await fetch(`${getURL()}/api/tasks/${taskId}`, {
         method: 'DELETE',
       });
       return await this.handleResponse(response);
