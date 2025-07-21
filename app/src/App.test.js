@@ -8,7 +8,7 @@ jest.mock("./pages/Home", () => () => <div>Home Page</div>);
 jest.mock("./pages/ForgotPassword", () => () => <div>Forgot Password Page</div>);
 jest.mock("./pages/TaskChecklist", () => () => <div>Task Checklist Page</div>);
 jest.mock("./pages/ExpenseTracker", () => () => <div>Expense Tracker Page</div>);
-jest.mock("./pages/Journal", () => () => <div>Journal Page</div>);
+jest.mock("./pages/PetJournal", () => () => <div>Journal Page</div>);
 jest.mock("./pages/SocialPage", () => () => <div>Social Page</div>);
 jest.mock("./pages/PetMgm", () => () => <div>Pet Management Page</div>);
 jest.mock("./pages/NearbyServices", () => () => <div>Nearby Services Page</div>);

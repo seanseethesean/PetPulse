@@ -21,7 +21,6 @@ const PetMgm = () => {
   })
 
   const [petList, setPetList] = useState([])
-  const [selectedPet, setSelectedPet] = useState("")
   const [errors, setErrors] = useState({})
   const [editingPet, setEditing] = useState(null)
   const URL = process.env.REACT_APP_API_URL
@@ -271,6 +270,7 @@ const PetMgm = () => {
           <div className="petmgm-input">
             <label htmlFor="birthday">Date of Birth</label>
             <input
+              id="birthday"
               type="date"
               name="birthday"
               value={formData.birthday}

@@ -1,4 +1,4 @@
-const URL = process.env.REACT_APP_API_URL;
+const getURL = () => process.env.REACT_APP_API_URL;
 
 class PetService {
   async handleResponse(response) {
@@ -10,12 +10,12 @@ class PetService {
   }
 
   async getPets(userId) {
-    const response = await fetch(`${URL}/api/pets?userId=${userId}`);
+    const response = await fetch(`${getURL()}/api/pets?userId=${userId}`);
     return await this.handleResponse(response);
   }
 
   async createPet(petData) {
-    const response = await fetch(`${URL}/api/pets`, {
+    const response = await fetch(`${getURL()}/api/pets`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -26,7 +26,7 @@ class PetService {
   }
 
   async updatePet(petId, petData) {
-    const response = await fetch(`${URL}/api/pets/${petId}`, {
+    const response = await fetch(`${getURL()}/api/pets/${petId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -37,7 +37,7 @@ class PetService {
   }
 
   async deletePet(petId) {
-    const response = await fetch(`${URL}/api/pets/${petId}`, {
+    const response = await fetch(`${getURL()}/api/pets/${petId}`, {
       method: "DELETE"
     });
     return await this.handleResponse(response);

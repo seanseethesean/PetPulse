@@ -194,8 +194,8 @@ const PetJournal = () => {
 
         {/* Pet Selection */}
         <div className="pet-selector">
-          <label>Select Pet: </label>
-          <select
+          <label htmlFor="pet-select">Select Pet: </label>
+          <select id="pet-select"
             value={selectedPet}
             onChange={(e) => setSelectedPet(e.target.value)}>
             <option value="">Choose a pet...</option>
@@ -255,8 +255,8 @@ const PetJournal = () => {
               </div>
 
               <div className="form-group">
-                <label>Title:</label>
-                <input
+                <label htmlFor="title-input">Title:</label>
+                <input id="title-input"
                   type="text"
                   name="title"
                   value={newEntry.title}
@@ -266,10 +266,11 @@ const PetJournal = () => {
               </div>
 
               <div className="form-group">
-                <label>Mood:</label>
+                <label htmlFor="mood-select">Mood:</label>
                 <div className="mood-selector">
                   {moodOptions.map((mood) => (
                     <button
+                      id="mood-select"
                       key={mood.value}
                       type="button"
                       className={`mood-btn ${newEntry.mood === mood.value ? "selected" : ""}`}
@@ -298,8 +299,9 @@ const PetJournal = () => {
               </div>
 
               <div className="form-group">
-                <label>Content:</label>
+                <label htmlFor="content">Content:</label>
                 <textarea
+                  id="content"
                   name="content"
                   value={newEntry.content}
                   onChange={handleInputChange}
@@ -347,6 +349,7 @@ const PetJournal = () => {
 
                     <div className="entry-actions">
                       <button
+                        data-testid={"edit-entry-" + entry.id}
                         className="edit-entry-btn"
                         onClick={() => handleEditEntry(entry)}>
                         Edit
