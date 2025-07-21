@@ -1,4 +1,4 @@
-const URL = process.env.REACT_APP_API_URL;
+const getURL = () => process.env.REACT_APP_API_URL;
 
 class SocialService {
   async handleResponse(response) {
@@ -10,22 +10,22 @@ class SocialService {
   }
 
   async getFollowers(userId) {
-    const res = await fetch(`${URL}/api/followers?userId=${userId}`);
+    const res = await fetch(`${getURL()}/api/followers?userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async getFollowing(userId) {
-    const res = await fetch(`${URL}/api/following?userId=${userId}`);
+    const res = await fetch(`${getURL()}/api/following?userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async searchUsers(query, userId) {
-    const res = await fetch(`${URL}/api/search?query=${encodeURIComponent(query)}&userId=${userId}`);
+    const res = await fetch(`${getURL()}/api/search?query=${encodeURIComponent(query)}&userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async followUser(userId, targetUserId) {
-    const res = await fetch(`${URL}/api/follow`, {
+    const res = await fetch(`${getURL()}/api/follow`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, targetUserId })
@@ -34,7 +34,7 @@ class SocialService {
   }
 
   async unfollowUser(userId, targetUserId) {
-    const res = await fetch(`${URL}/api/unfollow`, {
+    const res = await fetch(`${getURL()}/api/unfollow`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, targetUserId })
@@ -43,12 +43,12 @@ class SocialService {
   }
 
   async getForumPosts(userId) {
-    const res = await fetch(`${URL}/api/forum/posts?userId=${userId}`);
+    const res = await fetch(`${getURL()}/api/forum/posts?userId=${userId}`);
     return await this.handleResponse(res);
   }
 
   async createForumPost(postData) {
-    const res = await fetch(`${URL}/api/forum/posts`, {
+    const res = await fetch(`${getURL()}/api/forum/posts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(postData)
@@ -57,7 +57,7 @@ class SocialService {
   }
 
   async likePost(postId, userId, isLiked) {
-    const res = await fetch(`${URL}/api/forum/posts/${postId}/like`, {
+    const res = await fetch(`${getURL()}/api/forum/posts/${postId}/like`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, isLiked })
@@ -66,7 +66,7 @@ class SocialService {
   }
 
   async addComment(postId, commentData) {
-    const res = await fetch(`${URL}/api/forum/posts/${postId}/comments`, {
+    const res = await fetch(`${getURL()}/api/forum/posts/${postId}/comments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(commentData)
@@ -75,7 +75,7 @@ class SocialService {
   }
 
   async getCommentsForPost(postId) {
-    const res = await fetch(`${URL}/api/forum/posts/${postId}/comments`);
+    const res = await fetch(`${getURL()}/api/forum/posts/${postId}/comments`);
     return await this.handleResponse(res);
   }
 }
