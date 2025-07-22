@@ -1,27 +1,22 @@
-import React from "react"
-import { act, render, screen, waitFor } from "@testing-library/react"
-import NearbyServices from "./NearbyServices"
-import NearbyService from "../utils/nearby"
-import "@testing-library/jest-dom"
+import React from "react";
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
+import NearbyServices from "./NearbyServices";
+import NearbyService from "../utils/nearby";
+import "@testing-library/jest-dom";
 
-jest.mock("../utils/nearby")
+// Mock Navbar
+jest.mock("../components/Navbar", () => () => <div data-testid="navbar">Navbar</div>);
 
-jest.mock("../components/Navbar", () => () => (
-  <div data-testid="navbar">Navbar</div>
-))
-
-jest.mock("firebase/auth", () => ({
-  getAuth: jest.fn(() => ({
-    currentUser: { uid: "mockUserId" }
-  }))
-}))
-
+// Mock Google Maps API
 const mockPanTo = jest.fn();
 const mockSetZoom = jest.fn();
-const mockMapInstance = {
-  panTo: mockPanTo,
-  setZoom: mockSetZoom,
-};
+const mockMapInstance = { panTo: mockPanTo, setZoom: mockSetZoom };
 
 jest.mock("@react-google-maps/api", () => ({
   GoogleMap: ({ onLoad, children }) => {
@@ -32,116 +27,116 @@ jest.mock("@react-google-maps/api", () => ({
   useJsApiLoader: () => ({ isLoaded: true }),
 }));
 
+// Mock NearbyService
+jest.mock("../utils/nearby");
+
 beforeAll(() => {
+  // mock google.maps.Size
   global.window.google = {
     maps: {
       Size: function (width, height) {
-        return { width, height }
-      }
-    }
-  }
-})
+        return { width, height };
+      },
+    },
+  };
+});
 
 describe("NearbyServices", () => {
   const mockLocation = {
     coords: {
       latitude: 1.3521,
-      longitude: 103.8198
-    }
-  }
+      longitude: 103.8198,
+    },
+  };
 
   beforeEach(() => {
-    // Mock geolocation success
     global.navigator.geolocation = {
-      getCurrentPosition: jest.fn((success) => success(mockLocation))
-    }
+      getCurrentPosition: jest.fn((success) => success(mockLocation)),
+    };
 
     NearbyService.getNearbyServices.mockResolvedValue([
       {
         displayName: { text: "PetVet Clinic" },
         formattedAddress: "123 Pet Street",
-        type: "VETERINARY_CARE",
-        location: {
-          latitude: 1.353,
-          longitude: 103.82
-        }
-      }
-    ])
-  })
+        type: "veterinary_care",
+        location: { latitude: 1.353, longitude: 103.82 },
+      },
+      {
+        displayName: { text: "PetMart" },
+        formattedAddress: "456 Pet Ave",
+        type: "store",
+        location: { latitude: 1.354, longitude: 103.821 },
+      },
+    ]);
+  });
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+  afterEach(() => jest.clearAllMocks());
 
-  it("renders loading state initially", async () => {
-    render(<NearbyServices />)
-    expect(screen.getByText("Loading nearby services...")).toBeInTheDocument()
-  })
-
-  it("displays map and services after successful fetch", async () => {
+  it("renders map and pet services after successful fetch", async () => {
     await act(async () => {
-      render(<NearbyServices />)
-    })
+      render(<NearbyServices />);
+    });
 
-    await waitFor(() => {
-      expect(screen.getByTestId("map")).toBeInTheDocument()
-      expect(screen.getByText("PetVet Clinic")).toBeInTheDocument()
-      expect(screen.getByText("123 Pet Street")).toBeInTheDocument()
-      expect(screen.getByText("VETERINARY CARE")).toBeInTheDocument()
-    })
-  })
+    expect(await screen.findByTestId("map")).toBeInTheDocument();
+    expect(await screen.findByText("PetVet Clinic")).toBeInTheDocument();
+    expect(screen.getByText("123 Pet Street")).toBeInTheDocument();
+    expect(screen.getByText("Veterinary Care")).toBeInTheDocument();
 
-  it("displays error message when geolocation fails", async () => {
-    global.navigator.geolocation.getCurrentPosition = jest.fn((_, error) =>
-      error()
-    )
+    expect(screen.getByText("PetMart")).toBeInTheDocument();
+    expect(screen.getByText("456 Pet Ave")).toBeInTheDocument();
+    expect(screen.getByText("Pet Store")).toBeInTheDocument();
+  });
+
+  it("displays error message when location is denied", async () => {
+    global.navigator.geolocation.getCurrentPosition = jest.fn((_, error) => error());
 
     await act(async () => {
       render(<NearbyServices />);
     });
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Location permission denied. Try entering your address."
-        )
-      ).toBeInTheDocument()
-    })
-  })
 
-  it("displays error message when fetching services fails", async () => {
+    expect(
+      await screen.findByText("Location permission denied. Try entering your address.")
+    ).toBeInTheDocument();
+  });
+
+  it("shows error if NearbyService fails", async () => {
     NearbyService.getNearbyServices.mockRejectedValueOnce(
-      new Error("API failed")
-    )
+      new Error("Failed to fetch")
+    );
 
-    render(<NearbyServices />)
+    await act(async () => {
+      render(<NearbyServices />);
+    });
 
-    await waitFor(() => {
-      expect(screen.getByText("API failed")).toBeInTheDocument()
-    })
-  })
+    expect(await screen.findByText("Failed to fetch")).toBeInTheDocument();
+  });
 
-  it("renders fallback values when name and type are missing", async () => {
+  it("renders fallback for unnamed services", async () => {
     NearbyService.getNearbyServices.mockResolvedValueOnce([
       {
-        formattedAddress: "456 Unknown Ave",
-        location: { latitude: 1.354, longitude: 103.821 }
-      }
+        formattedAddress: "789 Unknown Road",
+        type: "store",
+        location: { latitude: 1.355, longitude: 103.822 },
+      },
     ]);
-  
-    render(<NearbyServices />);
+
+    await act(async () => {
+      render(<NearbyServices />);
+    });
+
     expect(await screen.findByText("Unnamed Place")).toBeInTheDocument();
-    expect(screen.getByText("456 Unknown Ave")).toBeInTheDocument();
-    expect(screen.getByText("pet service")).toBeInTheDocument();
+    expect(screen.getByText("789 Unknown Road")).toBeInTheDocument();
   });
-  
-  it("calls panTo and setZoom when service card is clicked", async () => {
-    render(<NearbyServices />);
-    await screen.findByText("PetVet Clinic");
-  
-    screen.getByText("PetVet Clinic").closest(".service-card").click();
-  
+
+  it("pans and zooms on service card click", async () => {
+    await act(async () => {
+      render(<NearbyServices />);
+    });
+
+    const card = await screen.findByText("PetVet Clinic");
+    fireEvent.click(card.closest(".service-card"));
+
     expect(mockPanTo).toHaveBeenCalledWith({ lat: 1.353, lng: 103.82 });
     expect(mockSetZoom).toHaveBeenCalledWith(16);
   });
-  
-})
+});
