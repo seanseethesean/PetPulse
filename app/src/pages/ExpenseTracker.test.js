@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import ExpenseTracker from "../pages/ExpenseTracker"
 import { MemoryRouter } from "react-router-dom"
 import ExpenseService from "../utils/expenses"
+import { getAuth } from "firebase/auth"
 
 jest.mock("firebase/auth", () => {
   return {
@@ -511,5 +512,26 @@ describe("ExpenseTracker", () => {
       expect(screen.getByText("Save Changes")).toBeInTheDocument()
     })
   })
+
+  it("skips fetching expenses when no current user", async () => {
+    const originalGetAuth = getAuth;
+  
+    // Spy and override currentUser to null
+    jest.spyOn(require("firebase/auth"), "getAuth").mockReturnValue({
+      ...originalGetAuth(),
+      currentUser: null,
+      onAuthStateChanged: (cb) => {
+        cb(null); // simulate logout
+        return () => {};
+      }
+    });
+  
+    renderWithRouter(<ExpenseTracker />);
+  
+    await waitFor(() => {
+      // Should render but not call getExpenses
+      expect(ExpenseService.getExpenses).not.toHaveBeenCalled();
+    });
+  });
   
 })
