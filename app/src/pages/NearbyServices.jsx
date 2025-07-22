@@ -14,7 +14,7 @@ const NearbyServices = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [location, setLocation] = useState(null);
-  const mapRef = useRef(null); 
+  const mapRef = useRef(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -75,7 +75,8 @@ const NearbyServices = () => {
 
             {services.map((place, idx) => (
               place.location && (
-                <Marker key={idx}
+                <Marker
+                  key={idx}
                   position={{
                     lat: place.location.latitude,
                     lng: place.location.longitude,
@@ -88,22 +89,42 @@ const NearbyServices = () => {
         </div>
       )}
 
-      <div className="services-grid">
-        {services.map((place, index) => (
-          <div className="service-card"
-            key={index}
-            onClick={() =>
-              focusOnPlace(place.location.latitude, place.location.longitude)
-            }
-          >
-            <h3>{place.displayName?.text || "Unnamed Place"}</h3>
-            <p>{place.formattedAddress}</p>
-            <p className="service-type">
-              {place.type?.replace("_", " ") || "pet service"}
-            </p>
-          </div>
-        ))}
+      <div className="services-section">
+        <h2 className="service-group-header">Veterinary Care</h2>
+        <div className="services-grid">
+          {services
+            .filter((place) => place.type?.includes("veterinary"))
+            .map((place, index) => (
+              <div className="service-card"
+                key={`vet-${index}`}
+                onClick={() =>
+                  focusOnPlace(place.location.latitude, place.location.longitude)
+                }
+              >
+                <h3>{place.displayName?.text || "Unnamed Place"}</h3>
+                <p>{place.formattedAddress}</p>
+              </div>
+            ))}
+        </div>
+
+        <h2 className="service-group-header">Pet Store</h2>
+        <div className="services-grid">
+          {services
+            .filter((place) => place.type?.includes("store"))
+            .map((place, index) => (
+              <div className="service-card"
+                key={`store-${index}`}
+                onClick={() =>
+                  focusOnPlace(place.location.latitude, place.location.longitude)
+                }
+              >
+                <h3>{place.displayName?.text || "Unnamed Place"}</h3>
+                <p>{place.formattedAddress}</p>
+              </div>
+            ))}
+        </div>
       </div>
+
     </div>
   );
 };

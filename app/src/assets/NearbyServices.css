@@ -59,3 +59,11 @@
   color: #666;
   font-size: 0.95rem;
 }
+
+.service-group-header {
+  width: 100%;
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 32px 0 12px;
+  color: #333;
+}
