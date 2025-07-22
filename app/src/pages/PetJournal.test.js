@@ -11,6 +11,7 @@ import "@testing-library/jest-dom"
 import { render, screen, waitFor } from "@testing-library/react"
 import { BrowserRouter } from "react-router-dom"
 import PetJournal from "./PetJournal"
+import { getAuth } from "firebase/auth"
 
 // Mock JournalService
 import JournalService from "../utils/journal"
@@ -55,7 +56,13 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  jest.clearAllMocks()
+  // Don't clear static `jest.mock()` declarations
+  JournalService.getEntries.mockClear()
+  JournalService.createEntry?.mockClear?.()
+  JournalService.deleteEntry?.mockClear?.()
+  global.fetch?.mockClear?.()
+  window.alert?.mockClear?.()
+  console.error?.mockClear?.()
 })
 
 const renderWithRouter = (ui) => {
@@ -496,4 +503,43 @@ test("does not fetch journal entries if user or pet is missing", async () => {
   await waitFor(() => {
     expect(screen.queryByText("Journal Entries")).not.toBeInTheDocument()
   })
+})
+
+test("handles edit entry correctly", async () => {
+  // Re-apply Firebase Auth mock if needed (safe redundancy)
+  jest
+    .spyOn(require("firebase/auth"), "getAuth")
+    .mockReturnValue({ currentUser: { uid: "test-user-id" } })
+
+  // Mock journal entry to edit
+  JournalService.getEntries.mockResolvedValueOnce({
+    success: true,
+    entries: [
+      {
+        id: "1",
+        title: "Edit Me",
+        content: "Content to edit",
+        mood: "happy",
+        activities: ["Play"],
+        date: "2025-07-22"
+      }
+    ]
+  })
+
+  renderWithRouter(<PetJournal />)
+
+  // Select pet
+  await screen.findByRole("option", { name: "Buddy" })
+  userEvent.selectOptions(screen.getByRole("combobox"), "Buddy")
+
+  // Wait for the entry to appear
+  await screen.findByText("Edit Me")
+
+  // Click the "Edit" button
+  userEvent.click(screen.getByText("Edit"))
+
+  screen.debug() // Logs current DOM output
+
+  expect(screen.getByText("Edit Entry")).toBeInTheDocument()
+  expect(screen.getByText("Update Entry")).toBeInTheDocument()
 })
