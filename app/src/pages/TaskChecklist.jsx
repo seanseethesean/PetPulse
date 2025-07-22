@@ -363,7 +363,8 @@ const TaskChecklist = () => {
                     )}
                   </div>
 
-                  <button className="task-delete" onClick={() => deleteTask(task.id)}>Delete</button>
+                  <button className="task-delete" onClick={() => deleteTask(task.id)}
+                    data-testid={`delete-task-${task.id}`}>Delete</button>
                 </div>
               );
             })}
