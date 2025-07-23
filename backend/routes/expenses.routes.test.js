@@ -12,7 +12,7 @@ app.use("/api/expenses", expensesRoutes);
 
 describe("Expenses Routes", () => {
   beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {}); // silence logs
+    jest.spyOn(console, "error").mockImplementation(() => {}); 
   });
 
   afterEach(() => {
