@@ -7,7 +7,7 @@ import taskRoutes from "./routes/task.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
 // import forumRoutes from "./routes/social.routes.js";
-import pingRoute from "./routes/ping.js";
+import pingRoute from "./routes/ping.routes.js";
 import nearbyRoutes from "./routes/nearby.routes.js";
 // import searchRoutes from "./routes/social.routes.js";
 import socialRoutes from "./routes/social.routes.js";;
