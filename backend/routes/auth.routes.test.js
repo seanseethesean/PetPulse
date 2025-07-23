@@ -1,17 +1,26 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
 import request from "supertest";
 import express from "express";
 import authRoutes from "../routes/auth.routes.js";
 import * as authService from "../services/auth.service.js";
-
-const app = express();
-app.use(express.json());
-app.use("/api", authRoutes);
-
-vi.mock("../services/auth.service.js");
+import { describe, it, expect, afterEach, beforeEach, jest } from "@jest/globals";
 
 describe("Auth Routes", () => {
-  afterEach(() => vi.clearAllMocks());
+  let app;
+
+  beforeEach(() => {
+    // Mock the authService functions before each test
+    authService.signUpUser = jest.fn();
+    authService.verifyGoogleToken = jest.fn();
+
+    // Setup the app for testing
+    app = express();
+    app.use(express.json());
+    app.use("/api", authRoutes);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   describe("POST /signup", () => {
     it("should return 400 if email or password is missing", async () => {
