@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import petRoutes from "./routes/pet.routes.js";
-import taskRoutes from "./routes/task.routes.js";
+import taskRoutes from "./routes/tasks.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
 // import forumRoutes from "./routes/social.routes.js";
