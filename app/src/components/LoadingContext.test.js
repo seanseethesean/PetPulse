@@ -30,7 +30,7 @@ describe("LoadingContext", () => {
         <TestComponent />
       </LoadingProvider>
     );
-    await userEvent.click(screen.getByText("Start Loading"));
+    userEvent.click(screen.getByText("Start Loading"));
     expect(screen.getByTestId("loading").textContent).toBe("true");
   });
 

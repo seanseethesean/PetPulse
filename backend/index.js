@@ -29,7 +29,6 @@ app.use("/api/pets", petRoutes);  // prefix all routes inside with /api/pets
 app.use("/api/tasks", taskRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/journal", journalRoutes);
-// app.use("/api/forum", forumRoutes);
 app.use("/ping", pingRoute);
 app.use("/api/nearby", nearbyRoutes);
 app.use("/api/users", socialRoutes);
