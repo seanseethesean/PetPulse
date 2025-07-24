@@ -3,13 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import petRoutes from "./routes/pet.routes.js";
-import taskRoutes from "./routes/task.routes.js";
+import taskRoutes from "./routes/tasks.routes.js";
 import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
-// import forumRoutes from "./routes/social.routes.js";
 import pingRoute from "./routes/ping.routes.js";
 import nearbyRoutes from "./routes/nearby.routes.js";
-// import searchRoutes from "./routes/social.routes.js";
 import socialRoutes from "./routes/social.routes.js";;
 dotenv.config(); // Load environment variables from .env file
 
