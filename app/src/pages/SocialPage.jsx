@@ -3,6 +3,7 @@ import "../assets/SocialPage.css"
 import { getAuth } from "firebase/auth"
 import Navbar from "../components/Navbar"
 import SocialService from "../utils/social"
+import ChatSidebar from "../components/ChatSidebar"
 
 const search_icon = "🔎"
 const user_icon = "👤"
@@ -24,6 +25,7 @@ const SocialPage = () => {
   const [newComment, setNewComment] = useState("")
   const [loading, setLoading] = useState(false)
   const [showCreatePost, setShowCreatePost] = useState(false)
+  const [showChat, setShowChat] = useState(false);
 
   const categories = [
     { value: "general", label: "General Discussion" },
@@ -188,10 +190,10 @@ const SocialPage = () => {
           prev.map((post) =>
             post.id === postId
               ? {
-                  ...post,
-                  isLiked: !isLiked,
-                  likes: isLiked ? post.likes - 1 : post.likes + 1
-                }
+                ...post,
+                isLiked: !isLiked,
+                likes: isLiked ? post.likes - 1 : post.likes + 1
+              }
               : post
           )
         )
@@ -221,9 +223,9 @@ const SocialPage = () => {
           prev.map((post) =>
             post.id === postId
               ? {
-                  ...post,
-                  comments: [...(post.comments || []), newCommentEntry]
-                }
+                ...post,
+                comments: [...(post.comments || []), newCommentEntry]
+              }
               : post
           )
         )
@@ -311,7 +313,7 @@ const SocialPage = () => {
           💬 {post.comments?.length || 0} Comments
         </button>
       </div>
-      
+
       {selectedPost?.id === post.id && (
         <div className="comments-section">
           <div className="comments-list">
@@ -356,172 +358,192 @@ const SocialPage = () => {
   )
 
   return (
-    <div className="social-page-container">
-      <Navbar />
-      {/* Header */}
-      <div className="social-header">
-        <h1>Social Hub</h1>
-        <div className="social-stats">
-          <span>{following.length} Following</span>
-          <span>{followers.length} Followers</span>
+    <>
+      <div className="social-page-container">
+        <Navbar />
+        {/* Header */}
+        <div className="social-header">
+          <h1>Social Hub</h1>
+          <div className="social-stats">
+            <span>{following.length} Following</span>
+            <span>{followers.length} Followers</span>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="social-nav">
+          <button
+            className={`nav-tab ${activeTab === "search" ? "active" : ""}`}
+            onClick={() => setActiveTab("search")}>
+            {search_icon} Search Users
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "following" ? "active" : ""}`}
+            onClick={() => setActiveTab("following")}>
+            {follow_icon} Following ({following.length})
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "followers" ? "active" : ""}`}
+            onClick={() => setActiveTab("followers")}>
+            {user_icon} Followers ({followers.length})
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "forum" ? "active" : ""}`}
+            onClick={() => setActiveTab("forum")}>
+            {forum_icon} Community Forum
+          </button>
+        </div>
+
+        {/* Content Area */}
+        <div className="social-content">
+          {/* Search Tab */}
+          {activeTab === "search" && (
+            <div className="search-section">
+              <div className="search-bar">
+                <input
+                  type="text"
+                  placeholder="Search for users by name or email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onDoubleClick={(e) => e.key === "Enter" && handleSearch()}
+                />
+                <button onClick={handleSearch} disabled={loading}>
+                  {loading ? "Searching..." : "Search"}
+                </button>
+              </div>
+
+              <div className="search-results">
+                {searchResults.length === 0 && searchQuery && !loading && (
+                  <div className="no-results">
+                    <p>No users found matching "{searchQuery}"</p>
+                  </div>
+                )}
+
+                {searchResults.map((user) => renderUserCard(user, true, false))}
+              </div>
+            </div>
+          )}
+
+          {/* Following Tab */}
+          {activeTab === "following" && (
+            <div className="following-section">
+              <h3>People You Follow</h3>
+              {following.length === 0 ? (
+                <div className="empty-state">
+                  <p>
+                    You're not following anyone yet. Start by searching for users!
+                  </p>
+                </div>
+              ) : (
+                <div className="users-grid">
+                  {following.map((user) => renderUserCard(user, true, false))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Followers Tab */}
+          {activeTab === "followers" && (
+            <div className="followers-section">
+              <h3>Your Followers</h3>
+              {followers.length === 0 ? (
+                <div className="empty-state">
+                  <p>
+                    No followers yet. Share your profile to get more followers!
+                  </p>
+                </div>
+              ) : (
+                <div className="users-grid">
+                  {followers.map((user) => renderUserCard(user, true, false))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Forum Tab */}
+          {activeTab === "forum" && (
+            <div className="forum-section">
+              <div className="forum-header">
+                <h3>Community Forum</h3>
+                <button
+                  className="create-post-btn"
+                  onClick={() => setShowCreatePost(!showCreatePost)}>
+                  {showCreatePost ? "Cancel" : "+ New Post"}
+                </button>
+              </div>
+
+              {showCreatePost && (
+                <div className="create-post-form">
+                  <input
+                    type="text"
+                    placeholder="Post title..."
+                    value={postTitle}
+                    onChange={(e) => setPostTitle(e.target.value)}
+                    className="post-title-input"
+                  />
+
+                  <select
+                    value={postCategory}
+                    onChange={(e) => setPostCategory(e.target.value)}
+                    className="category-select">
+                    {categories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <textarea
+                    placeholder="Share your thoughts, ask for advice, or start a discussion..."
+                    value={newPost}
+                    onChange={(e) => setNewPost(e.target.value)}
+                    className="post-content-input"
+                    rows="4"
+                  />
+
+                  <div className="post-form-actions">
+                    <button
+                      onClick={createForumPost}
+                      disabled={loading || !postTitle.trim() || !newPost.trim()}
+                      className="submit-post-btn">
+                      {loading ? "Posting..." : "Post to Forum"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="forum-posts">
+                {forumPosts.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No posts yet. Be the first to start a discussion!</p>
+                  </div>
+                ) : (
+                  forumPosts.map((post) => renderForumPost(post))
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="social-nav">
-        <button
-          className={`nav-tab ${activeTab === "search" ? "active" : ""}`}
-          onClick={() => setActiveTab("search")}>
-          {search_icon} Search Users
-        </button>
-        <button
-          className={`nav-tab ${activeTab === "following" ? "active" : ""}`}
-          onClick={() => setActiveTab("following")}>
-          {follow_icon} Following ({following.length})
-        </button>
-        <button
-          className={`nav-tab ${activeTab === "followers" ? "active" : ""}`}
-          onClick={() => setActiveTab("followers")}>
-          {user_icon} Followers ({followers.length})
-        </button>
-        <button
-          className={`nav-tab ${activeTab === "forum" ? "active" : ""}`}
-          onClick={() => setActiveTab("forum")}>
-          {forum_icon} Community Forum
-        </button>
-      </div>
+      Chat Toggle Button + Floating Chat Window
+      <button
+        className="chat-toggle-btn"
+        onClick={() => setShowChat((prev) => !prev)}>
+        💬 Chat
+      </button>
 
-      {/* Content Area */}
-      <div className="social-content">
-        {/* Search Tab */}
-        {activeTab === "search" && (
-          <div className="search-section">
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Search for users by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onDoubleClick={(e) => e.key === "Enter" && handleSearch()}
-              />
-              <button onClick={handleSearch} disabled={loading}>
-                {loading ? "Searching..." : "Search"}
-              </button>
-            </div>
-
-            <div className="search-results">
-              {searchResults.length === 0 && searchQuery && !loading && (
-                <div className="no-results">
-                  <p>No users found matching "{searchQuery}"</p>
-                </div>
-              )}
-
-              {searchResults.map((user) => renderUserCard(user, true, false))}
-            </div>
-          </div>
-        )}
-
-        {/* Following Tab */}
-        {activeTab === "following" && (
-          <div className="following-section">
-            <h3>People You Follow</h3>
-            {following.length === 0 ? (
-              <div className="empty-state">
-                <p>
-                  You're not following anyone yet. Start by searching for users!
-                </p>
-              </div>
-            ) : (
-              <div className="users-grid">
-                {following.map((user) => renderUserCard(user, true, false))}
-              </div>
+      {showChat && (
+        <div className="chat-float-wrapper">
+          <ChatSidebar
+            currentUserId={currentUser?.uid}
+            mutuals={following.filter((f) =>
+              followers.find((fol) => fol.id === f.id)
             )}
-          </div>
-        )}
-
-        {/* Followers Tab */}
-        {activeTab === "followers" && (
-          <div className="followers-section">
-            <h3>Your Followers</h3>
-            {followers.length === 0 ? (
-              <div className="empty-state">
-                <p>
-                  No followers yet. Share your profile to get more followers!
-                </p>
-              </div>
-            ) : (
-              <div className="users-grid">
-                {followers.map((user) => renderUserCard(user, true, false))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Forum Tab */}
-        {activeTab === "forum" && (
-          <div className="forum-section">
-            <div className="forum-header">
-              <h3>Community Forum</h3>
-              <button
-                className="create-post-btn"
-                onClick={() => setShowCreatePost(!showCreatePost)}>
-                {showCreatePost ? "Cancel" : "+ New Post"}
-              </button>
-            </div>
-
-            {showCreatePost && (
-              <div className="create-post-form">
-                <input
-                  type="text"
-                  placeholder="Post title..."
-                  value={postTitle}
-                  onChange={(e) => setPostTitle(e.target.value)}
-                  className="post-title-input"
-                />
-
-                <select
-                  value={postCategory}
-                  onChange={(e) => setPostCategory(e.target.value)}
-                  className="category-select">
-                  {categories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
-
-                <textarea
-                  placeholder="Share your thoughts, ask for advice, or start a discussion..."
-                  value={newPost}
-                  onChange={(e) => setNewPost(e.target.value)}
-                  className="post-content-input"
-                  rows="4"
-                />
-
-                <div className="post-form-actions">
-                  <button
-                    onClick={createForumPost}
-                    disabled={loading || !postTitle.trim() || !newPost.trim()}
-                    className="submit-post-btn">
-                    {loading ? "Posting..." : "Post to Forum"}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="forum-posts">
-              {forumPosts.length === 0 ? (
-                <div className="empty-state">
-                  <p>No posts yet. Be the first to start a discussion!</p>
-                </div>
-              ) : (
-                forumPosts.map((post) => renderForumPost(post))
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+          />
+        </div>
+      )}
+    </>
   )
 }
 

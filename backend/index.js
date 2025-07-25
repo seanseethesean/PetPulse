@@ -8,7 +8,8 @@ import expenseRoutes from "./routes/expenses.routes.js";
 import journalRoutes from "./routes/journal.routes.js";
 import pingRoute from "./routes/ping.routes.js";
 import nearbyRoutes from "./routes/nearby.routes.js";
-import socialRoutes from "./routes/social.routes.js";;
+import socialRoutes from "./routes/social.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
@@ -33,7 +34,8 @@ app.use("/ping", pingRoute);
 app.use("/api/nearby", nearbyRoutes);
 app.use("/api/users", socialRoutes);
 app.use("/api/forum", socialRoutes);
-
+app.use("/api", socialRoutes);
+app.use("/api", chatRoutes);
 
 // Start the server
 app.listen(PORT, () => {
