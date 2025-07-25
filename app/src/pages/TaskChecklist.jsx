@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/TaskChecklist.css';
-import Navbar from '../components/Navbar';
 import TaskService from '../utils/tasks';
 import { getAuth } from 'firebase/auth';
 
@@ -224,7 +223,6 @@ const TaskChecklist = () => {
   return (
     <div className="task-checklist">
       <div className="task-header">
-        <Navbar />
         <h1>📋 Task Checklist</h1>
         <div className="progress-summary">
           <div className="progress-circle">

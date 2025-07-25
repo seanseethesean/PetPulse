@@ -1,86 +1,81 @@
 nav {
-    width: 100%;
-    background: #FFF8F0;
-    color: white;
-    padding: 20px 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 10;
-   }
-   
-   
-   .pplogo{
-      width: 75px;
-      align-self: flex-start;
-   }
-   
-   
-   .btn{
-      color: white;
-      background: #f1356d;
-      font-size: 15px;
-      border-radius: 30px;
-      padding: 10px 10px;
-      cursor: pointer;
-      border: 0;
-      outline: 0;
-      align-items: middle;
-   }
-   
-   
-   .navbar-menu{
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      align-items: right;
-      gap: 32px;
-   }
-   
-   
-   nav ul li {
-      display: inline-block;
-      list-style: none;
-      margin: 5px 20px;
-      font-size: 12px;
-      color: #3B3B98;
-   }
-   
-   
-   .navbar-container {
-      max-width: 1200px; /* centered content */
-      margin: 0 auto;
-      padding: 0 24px;
-      padding-left: 10%;
-      padding-right: 10%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-height: 400px;
-    }
+  width: 100%;
+  background: #fff8f0;
+  color: white;
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
 
-    nav button {
-      font-size: 15px;
-      color: #638bc7;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
+.pplogo {
+  width: 75px;
+  align-self: flex-start;
+}
 
-    nav button.active,
-    nav button:disabled {
-      color: #888;
-      cursor: not-allowed;
-      text-decoration: none;
-    }
+.btn {
+  color: white;
+  background: #f1356d;
+  font-size: 15px;
+  border-radius: 30px;
+  padding: 10px 10px;
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  align-items: middle;
+}
 
-    .btn.active,
-    .btn:disabled {
-      color: #888;
-      cursor: not-allowed;
-    }
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: right;
+  gap: 32px;
+}
+
+nav ul li {
+  display: inline-block;
+  list-style: none;
+  margin: 5px 20px;
+  font-size: 12px;
+  color: #3b3b98;
+}
+
+.navbar-container {
+  max-width: 1200px; /* centered content */
+  margin: 0 auto;
+  padding: 0 24px;
+  padding-left: 10%;
+  padding-right: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-height: 400px;
+}
+
+nav button {
+  font-size: 15px;
+  color: #638bc7;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+nav button.active,
+nav button:disabled {
+  color: #888;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.btn.active,
+.btn:disabled {
+  color: #888;
+  cursor: not-allowed;
+}

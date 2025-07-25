@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import NearbyService from "../utils/nearby";
-import Navbar from "../components/Navbar";
 import "../assets/NearbyServices.css";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
@@ -53,7 +52,6 @@ const NearbyServices = () => {
 
   return (
     <div className="nearby-container">
-      <Navbar />
       <h1>Nearby Pet Services</h1>
 
       {loading && <p>Loading nearby services...</p>}

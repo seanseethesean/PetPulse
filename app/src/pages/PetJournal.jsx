@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import "../assets/Journal.css";
 import { getAuth } from "firebase/auth";
 import JournalService from "../utils/journal";
-import Navbar from "../components/Navbar";
 
 const PetJournal = () => {
   const [selectedPet, setSelectedPet] = useState("")
@@ -187,7 +186,6 @@ const PetJournal = () => {
 
   return (
     <div className="pet-journal-container">
-      <Navbar />
       {/* Header */}
       <div className="journal-header">
         <h1>Pet Journal</h1>

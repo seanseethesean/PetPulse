@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ChatWindow from "./ChatWindow";
+import '../assets/ChatSidebar.css';
 
 const ChatSidebar = ({ currentUserId, mutuals }) => {
   const [selectedChat, setSelectedChat] = useState(null);

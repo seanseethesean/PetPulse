@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react"
 import { DollarSign, Filter, Trash2, PawPrint } from 'lucide-react';
-import Navbar from "../components/Navbar";
 import '../assets/ExpenseTracker.css';
 import { getAuth } from "firebase/auth";
 import ExpenseService from "../utils/expenses";
@@ -252,7 +251,6 @@ const ExpenseTracker = () => {
 
   return (
     <div className="expense-tracker">
-      <Navbar />
       {error && (
         <div className="expense-error-banner" data-testid="expense-error">
           {error}

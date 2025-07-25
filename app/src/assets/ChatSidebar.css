@@ -1,0 +1,55 @@
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #5c67f2;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.chat-float-wrapper {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  max-height: 500px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.chat-sidebar {
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-user-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  margin-bottom: 10px;
+}
+
+.chat-user-btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 4px;
+  border: none;
+  background: #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.chat-user-btn.active {
+  background: #d1d1ff;
+}

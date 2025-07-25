@@ -12,6 +12,7 @@ import SocialPage from './pages/SocialPage';
 import Spinner from './components/Spinner';
 import { LoadingProvider, useLoading } from './components/LoadingContext';
 import NearbyServices from './pages/NearbyServices';
+import Navbar from './components/Navbar';
 
 function RouteChangeHandler() {
   const location = useLocation();
@@ -56,17 +57,26 @@ function AppRoutes() {
     </>
   );
 }
+function AppContent() {
+  const location = useLocation();
+  const hideLayout = ['/login', '/', '/forgot-password'].includes(location.pathname);
+
+  return (
+    <div className="App">
+      {!hideLayout && <Navbar />}
+      <div className="content">
+        <AppRoutes />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <LoadingProvider>
       <Router>
         <RouteChangeHandler />
-        <div className="App">
-          <div className="content">
-            <AppRoutes />
-          </div>
-        </div>
+        <AppContent />
       </Router>
     </LoadingProvider>
   );
