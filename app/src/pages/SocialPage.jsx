@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import "../assets/SocialPage.css"
 import { getAuth } from "firebase/auth"
-import Navbar from "../components/Navbar"
 import SocialService from "../utils/social"
 import ChatSidebar from "../components/ChatSidebar"
 
@@ -360,7 +359,6 @@ const SocialPage = () => {
   return (
     <>
       <div className="social-page-container">
-        <Navbar />
         {/* Header */}
         <div className="social-header">
           <h1>Social Hub</h1>

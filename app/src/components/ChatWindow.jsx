@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import SocialService from "../utils/social";
+import '../assets/ChatWindow.css';
 
 const ChatWindow = ({ currentUserId, targetUser }) => {
   const [messages, setMessages] = useState([]);

@@ -1,5 +1,4 @@
 import "../assets/Home.css"
-import Navbar from "../components/Navbar"
 import { useEffect, useState } from "react"
 
 const Home = () => {
@@ -15,7 +14,6 @@ const Home = () => {
   return (
     <div className="home container">
       <div className="home-text">
-        <div><Navbar></Navbar></div>
         {selectedPetName && (
           <h1>{selectedPetName}'s day is about to get a whole lot better!</h1>
         )}
