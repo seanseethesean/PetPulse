@@ -33,7 +33,7 @@ app.use("/ping", pingRoute);
 app.use("/api/nearby", nearbyRoutes);
 app.use("/api/users", socialRoutes);
 app.use("/api/forum", socialRoutes);
-
+app.use("/api", socialRoutes);
 
 // Start the server
 app.listen(PORT, () => {
