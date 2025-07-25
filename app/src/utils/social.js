@@ -78,5 +78,25 @@ class SocialService {
     const res = await fetch(`${getURL()}/api/forum/posts/${postId}/comments`);
     return await this.handleResponse(res);
   }
+
+  getChatId(userA, userB) {
+    return [userA, userB].sort().join("_"); // ensures same ID no matter the order
+  }
+  
+  async getMessages(chatId) {
+    const res = await fetch(`${getURL()}/api/chats/${chatId}`);
+    return await this.handleResponse(res);
+  }
+  
+  async sendMessage(chatId, message) {
+    const res = await fetch(`${getURL()}/api/chats/${chatId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(message)
+    });
+    return await this.handleResponse(res);
+  }
+  
 }
+
 export default new SocialService();
