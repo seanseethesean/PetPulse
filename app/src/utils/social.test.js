@@ -102,4 +102,45 @@ describe("SocialService", () => {
     })
     await expect(SocialService.getFollowers("fail")).rejects.toThrow("Network error")
   })
+  
+  describe("Chat Features", () => {
+    beforeEach(() => {
+      fetch.mockReset();
+    });
+  
+    it("getChatId returns consistent ID regardless of user order", () => {
+      const id1 = SocialService.getChatId("a", "b");
+      const id2 = SocialService.getChatId("b", "a");
+      expect(id1).toBe(id2);
+      expect(id1).toBe("a_b");
+    });
+  
+    it("getMessages calls correct endpoint and returns parsed response", async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, messages: ["hi", "yo"] })
+      });
+  
+      const res = await SocialService.getMessages("a_b");
+      expect(fetch).toHaveBeenCalledWith("https://mockapi.com/api/chats/a_b");
+      expect(res).toEqual({ success: true, messages: ["hi", "yo"] });
+    });
+  
+    it("sendMessage calls POST endpoint and returns success", async () => {
+      const msg = { content: "hi", senderId: "a", receiverId: "b" };
+  
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      });
+  
+      const res = await SocialService.sendMessage("a_b", msg);
+      expect(fetch).toHaveBeenCalledWith("https://mockapi.com/api/chats/a_b", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(msg)
+      });
+      expect(res).toEqual({ success: true });
+    });
+  });
 })
