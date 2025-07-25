@@ -524,7 +524,6 @@ const SocialPage = () => {
         </div>
       </div>
 
-      Chat Toggle Button + Floating Chat Window
       <button
         className="chat-toggle-btn"
         onClick={() => setShowChat((prev) => !prev)}>
