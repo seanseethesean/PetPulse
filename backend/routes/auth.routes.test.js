@@ -4,6 +4,8 @@ import authRoutes from "../routes/auth.routes.js";
 import * as authService from "../services/auth.service.js";
 import { describe, it, expect, afterEach, beforeEach, jest } from "@jest/globals";
 
+jest.mock("../firebase");
+
 describe("Auth Routes", () => {
   let app;
 

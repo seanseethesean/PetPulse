@@ -1,12 +1,12 @@
 import request from "supertest";
 import express from "express";
-import chatRouter from "./chat.routes.js"; // Adjust path if needed
-import * as chatService from "../services/chat.service.js"; // Mocked
+import chatRouter from "./chat.routes.js";
+import * as chatService from "../services/chat.service.js";
 
 const app = express();
 app.use(express.json());
 app.use("/api", chatRouter);
-
+jest.mock("../firebase");
 jest.mock("../services/chat.service.js");
 
 describe("Chat Routes", () => {
