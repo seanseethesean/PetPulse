@@ -97,4 +97,4 @@ export const toggleTaskCompletion = async (id, completed) => {
     id,
     completed
   };
-};  
+};

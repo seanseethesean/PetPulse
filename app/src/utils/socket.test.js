@@ -1,7 +1,3 @@
-import { io } from "socket.io-client"
-
-import { getSocket } from "./socket"
-
 jest.mock("socket.io-client", () => ({
   io: jest.fn(() => ({
     on: jest.fn(),

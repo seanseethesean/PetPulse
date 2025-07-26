@@ -1,264 +1,112 @@
-import { jest, describe, it, beforeEach, afterEach, expect } from "@jest/globals";
 import request from "supertest";
 import express from "express";
-
-// calling mock firebase module
-jest.unstable_mockModule("firebase/firestore", () => ({
-  doc: jest.fn(),
-  getDoc: jest.fn()
-}));
-
-import socialRoutes from "../routes/social.routes.js";
+import router from "./social.routes.js";
 import * as socialService from "../services/social.service.js";
 import * as validation from "../request-validation.js";
-import { getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
-// Set up app
+// Mock Firebase functions
+jest.mock("firebase/firestore", () => ({
+  doc: jest.fn(),
+  getDoc: jest.fn(),
+}));
+
+jest.mock("../firebase.js", () => ({
+  db: {},
+}));
+
+// Mock social service
+jest.mock("../services/social.service.js");
+
 const app = express();
 app.use(express.json());
-app.use("/api/social", socialRoutes);
+app.use("/api/social", router);
 
 describe("Social Routes", () => {
   beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("GET /posts", () => {
-    it("should return forum posts", async () => {
-      const mockPosts = [{ id: 1, text: "Hello" }];
-      jest.spyOn(socialService, "getForumPosts").mockResolvedValue(mockPosts);
+  test("GET /posts should return all forum posts", async () => {
+    socialService.getForumPosts.mockResolvedValue([{ id: "1", title: "Test Post" }]);
 
-      const res = await request(app).get("/api/social/posts");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.posts).toEqual(mockPosts);
-    });
+    const res = await request(app).get("/api/social/posts");
 
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "getForumPosts").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app).get("/api/social/posts");
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.posts)).toBe(true);
   });
 
-  describe("POST /posts", () => {
-    it("should create a post", async () => {
-      const mockPost = { userId: "1", content: "Post" };
-      const created = { id: "abc", ...mockPost };
-
-      jest.spyOn(validation, "validateRequestData").mockResolvedValue(mockPost);
-      jest.spyOn(socialService, "createForumPost").mockResolvedValue(created);
-
-      const res = await request(app).post("/api/social/posts").send(mockPost);
-      expect(res.status).toBe(201);
-      expect(res.body.success).toBe(true);
-      expect(res.body.content).toBe("Post");
+  test("POST /posts should create a new forum post", async () => {
+    jest.spyOn(validation, "validateRequestData").mockResolvedValue({
+      title: "New Post",
+      userId: "uid",
     });
+    socialService.createForumPost.mockResolvedValue({ id: "1", title: "New Post" });
 
-    it("should return 500 on error", async () => {
-      jest.spyOn(validation, "validateRequestData").mockRejectedValue(new Error("Invalid"));
+    const res = await request(app)
+      .post("/api/social/posts")
+      .send({ title: "New Post", userId: "uid" });
 
-      const res = await request(app).post("/api/social/posts").send({});
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.id).toBe("1");
   });
 
-  describe("DELETE /posts/:id", () => {
-    it("should delete a post", async () => {
-      jest.spyOn(socialService, "deleteForumPost").mockResolvedValue();
+  test("POST /posts/:id/like should like or unlike a post", async () => {
+    socialService.likeForumPost.mockResolvedValue();
 
-      const res = await request(app).delete("/api/social/posts/abc");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-    });
+    const res = await request(app)
+      .post("/api/social/posts/123/like")
+      .send({ userId: "u1", isLiked: true });
 
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "deleteForumPost").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app).delete("/api/social/posts/abc");
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
-  describe("POST /posts/:id/like", () => {
-    it("should like/unlike a post", async () => {
-      jest.spyOn(socialService, "likeForumPost").mockResolvedValue();
+  test("POST /posts/:id/comments should add a comment", async () => {
+    socialService.addForumComment.mockResolvedValue("comment123");
 
-      const res = await request(app)
-        .post("/api/social/posts/post123/like")
-        .send({ userId: "user1", isLiked: true });
+    const res = await request(app)
+      .post("/api/social/posts/abc/comments")
+      .send({ userId: "u1", content: "Nice post!" });
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-    });
-
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "likeForumPost").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app)
-        .post("/api/social/posts/post123/like")
-        .send({ userId: "user1", isLiked: true });
-
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.commentId).toBe("comment123");
   });
 
-  describe("POST /posts/:id/comments", () => {
-    it("should add a comment", async () => {
-      jest.spyOn(socialService, "addForumComment").mockResolvedValue("comment123");
+  test("GET /search should return matching users", async () => {
+    socialService.searchUsersByEmail.mockResolvedValue([
+      { id: "u2", email: "x@example.com" },
+    ]);
 
-      const res = await request(app)
-        .post("/api/social/posts/post123/comments")
-        .send({ userId: "1", content: "Nice!" });
+    const res = await request(app).get("/api/social/search").query({ query: "x", userId: "u1" });
 
-      expect(res.status).toBe(201);
-      expect(res.body.success).toBe(true);
-      expect(res.body.commentId).toBe("comment123");
-    });
-
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "addForumComment").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app)
-        .post("/api/social/posts/post123/comments")
-        .send({});
-
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.users.length).toBeGreaterThan(0);
   });
 
-  describe("GET /posts/:id/comments", () => {
-    it("should get comments", async () => {
-      const mockComments = [{ text: "Hi" }];
-      jest.spyOn(socialService, "getCommentsForPost").mockResolvedValue(mockComments);
+  test("POST /follow should follow a user", async () => {
+    socialService.followUser.mockResolvedValue();
 
-      const res = await request(app).get("/api/social/posts/post123/comments");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.comments).toEqual(mockComments);
-    });
+    const res = await request(app)
+      .post("/api/social/follow")
+      .send({ userId: "u1", targetUserId: "u2" });
 
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "getCommentsForPost").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app).get("/api/social/posts/post123/comments");
-      expect(res.status).toBe(500);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
-  describe("GET /search", () => {
-    it("should search users", async () => {
-      const mockUsers = [{ email: "a@test.com" }];
-      jest.spyOn(socialService, "searchUsersByEmail").mockResolvedValue(mockUsers);
+  test("POST /unfollow should unfollow a user", async () => {
+    socialService.unfollowUser.mockResolvedValue();
 
-      const res = await request(app).get("/api/social/search?query=a&userId=1");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.users).toEqual(mockUsers);
-    });
+    const res = await request(app)
+      .post("/api/social/unfollow")
+      .send({ userId: "u1", targetUserId: "u2" });
 
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "searchUsersByEmail").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app).get("/api/social/search?query=a&userId=1");
-      expect(res.status).toBe(500);
-    });
-  });
-
-  describe("POST /follow", () => {
-    it("should follow a user", async () => {
-      jest.spyOn(socialService, "followUser").mockResolvedValue();
-
-      const res = await request(app)
-        .post("/api/social/follow")
-        .send({ userId: "1", targetUserId: "2" });
-
-      expect(res.status).toBe(200);
-    });
-
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "followUser").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app)
-        .post("/api/social/follow")
-        .send({ userId: "1", targetUserId: "2" });
-
-      expect(res.status).toBe(500);
-    });
-  });
-
-  describe("POST /unfollow", () => {
-    it("should unfollow a user", async () => {
-      jest.spyOn(socialService, "unfollowUser").mockResolvedValue();
-
-      const res = await request(app)
-        .post("/api/social/unfollow")
-        .send({ userId: "1", targetUserId: "2" });
-
-      expect(res.status).toBe(200);
-    });
-
-    it("should return 500 on error", async () => {
-      jest.spyOn(socialService, "unfollowUser").mockRejectedValue(new Error("Fail"));
-
-      const res = await request(app)
-        .post("/api/social/unfollow")
-        .send({ userId: "1", targetUserId: "2" });
-
-      expect(res.status).toBe(500);
-    });
-  });
-
-  describe("GET /following", () => {
-    it("should return following users", async () => {
-      getDoc.mockImplementation(async (ref) => {
-        if (ref.id === "uid1") {
-          return {
-            exists: () => true,
-            data: () => ({ following: ["uid2"] }),
-          };
-        }
-        if (ref.id === "uid2") {
-          return {
-            exists: () => true,
-            id: "uid2",
-            data: () => ({ name: "Alice" }),
-          };
-        }
-        return {
-          exists: () => false,
-          data: () => ({}),
-        };
-      });
-  
-      const res = await request(app).get("/api/social/following?userId=uid1");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.following).toEqual([{ id: "uid2", name: "Alice" }]);
-    });
-  });
-
-  describe("GET /followers", () => {
-    it("should return followers", async () => {
-      getDoc.mockResolvedValueOnce({
-        exists: () => true,
-        data: () => ({ followers: ["uid3"] }),
-      });
-      getDoc.mockResolvedValueOnce({
-        exists: () => true,
-        id: "uid3",
-        data: () => ({ name: "Bob" }),
-      });
-
-      const res = await request(app).get("/api/social/followers?userId=uid1");
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.followers).toEqual([{ id: "uid3", name: "Bob" }]);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 });

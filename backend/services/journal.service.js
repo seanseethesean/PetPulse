@@ -47,4 +47,4 @@ export const updateJournalEntry = async (id, updateData) => {
 export const deleteJournalEntry = async (id) => {
   const entryRef = doc(db, "journal", id);
   await deleteDoc(entryRef);
-};  
+};

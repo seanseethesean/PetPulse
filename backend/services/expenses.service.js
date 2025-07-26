@@ -63,4 +63,4 @@ export const updateExpense = async (id, updateData) => {
 export const deleteExpense = async (id) => {
   const expenseRef = doc(db, "expenses", id);
   await deleteDoc(expenseRef);
-};  
+};

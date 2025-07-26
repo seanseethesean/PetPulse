@@ -103,3 +103,37 @@ describe("Expenses Routes", () => {
     });
   });
 });
+
+it("should return 500 if amount has more than 2 decimal places", async () => {
+  const payload = {
+    description: "Excess decimals",
+    amount: 10.123, // triggers the test() failure
+    category: "Food",
+    date: "2025-07-27",
+    petId: "pet123",
+    petName: "Fluffy",
+    userId: "user123"
+  };
+
+  jest.spyOn(validation, "validateRequestData").mockImplementation((data, schema) => {
+    return schema.validate(data); // do real validation to trigger Yup error
+  });
+
+  const res = await request(app).post("/api/expenses").send(payload);
+  expect(res.status).toBe(500);
+  expect(res.body.error).toBe("Failed to create expense");
+});
+
+it("should return 500 if amount in update has more than 2 decimal places", async () => {
+  const payload = {
+    amount: 15.678, // invalid, too many decimal places
+  };
+
+  jest.spyOn(validation, "validateRequestData").mockImplementation((data, schema) => {
+    return schema.validate(data); // actually trigger yup validation
+  });
+
+  const res = await request(app).put("/api/expenses/1").send(payload);
+  expect(res.status).toBe(500);
+  expect(res.body.error).toBe("Failed to update expense");
+});
