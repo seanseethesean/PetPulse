@@ -19,18 +19,32 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: |
-          cd app
-          npm install
+      # ----------------- BACKEND -----------------
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
 
-      - name: Run tests with coverage
-        run: |
-          cd app
-          npm test -- --coverage --watchAll=false
+      - name: Run backend tests with coverage
+        working-directory: ./backend
+        run: npm run test:coverage
 
-      - name: Upload coverage report artifact
+      - name: Upload backend coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: backend-coverage
+          path: backend/coverage/
+
+      # ----------------- FRONTEND -----------------
+      - name: Install frontend dependencies
+        working-directory: ./app
+        run: npm install
+
+      - name: Run frontend tests with coverage
+        working-directory: ./app
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
           path: app/coverage/
