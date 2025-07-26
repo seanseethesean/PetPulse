@@ -4,19 +4,6 @@ const mockCreateUser = jest.fn();
 const mockVerifyIdToken = jest.fn();
 
 jest.mock("../firebase");
-jest.mock('../firebase.js', () => {
-  const original = jest.requireActual('../firebase.js');
-  return {
-    __esModule: true,
-    ...original,
-    default: {
-      auth: () => ({
-        createUser: mockCreateUser,
-        verifyIdToken: mockVerifyIdToken,
-      })
-    }
-  };
-});
 
 jest.mock('firebase/firestore', () => {
   const original = jest.requireActual('firebase/firestore');
@@ -112,4 +99,4 @@ describe('AuthService', () => {
           .rejects.toEqual({ status: 401, message: 'Token has expired' });
       });
     });
-  });  
+  });
