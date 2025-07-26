@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import SocialService from "../utils/social";
 import '../assets/ChatWindow.css';
 import { io } from "socket.io-client";
-const socket = io("https://petpulse-backend.onrender.com");
+const socket = io("https://your-backend-url.onrender.com", {
+  transports: ["websocket", "polling"],
+  withCredentials: true
+});
 
 const ChatWindow = ({ currentUserId, targetUser }) => {
   const [messages, setMessages] = useState([]);
