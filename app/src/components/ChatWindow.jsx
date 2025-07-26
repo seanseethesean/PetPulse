@@ -49,9 +49,9 @@ const ChatWindow = ({ currentUserId, targetUser }) => {
       chatId: SocialService.getChatId(currentUserId, targetUser.id)
     };
   
-    socket.emit("sendMessage", message); // 🔁 Send through socket only
+    socket.emit("sendMessage", message); // Send through socket only
   
-    setMessages((prev) => [...prev, message]); // Optimistic UI
+    setMessages((prev) => [...prev, message]);
     setInput("");
   };
 
