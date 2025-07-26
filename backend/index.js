@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
@@ -10,14 +12,50 @@ import pingRoute from "./routes/ping.routes.js";
 import nearbyRoutes from "./routes/nearby.routes.js";
 import socialRoutes from "./routes/social.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
+import { sendMessage } from "./services/chat.service.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
+const server = http.createServer(app); // wrap express app
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});  
+
 const PORT = process.env.PORT;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
+  
+    socket.on("sendMessage", async (message) => {
+      console.log("Socket message received:", message);
+    
+      const { chatId, ...rest } = message;
+    
+      try {
+        const msgId = await sendMessage(chatId, rest);
+
+        socket.broadcast.emit("receiveMessage", {
+          ...rest,
+          chatId,
+          id: msgId
+        });
+      } catch (err) {
+        console.error("Failed to save message:", err);
+      }
+    });
+  
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", socket.id);
+    });
+  });  
 
 // Basic route
 app.get("/", (req, res) => {
@@ -38,6 +76,6 @@ app.use("/api", socialRoutes);
 app.use("/api", chatRoutes);
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server (with Socket.IO) running on http://localhost:${PORT}`);
 });
