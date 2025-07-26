@@ -4,7 +4,7 @@ import { validateRequestData } from "../request-validation.js";
 import { createTaskSchema, updateTaskSchema } from "../types/tasks.types.js";
 
 const router = express.Router();
-
+jest.mock("../firebase");
 // GET /api/tasks
 router.get("/", async (req, res) => {
   try {

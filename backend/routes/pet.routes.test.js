@@ -5,7 +5,7 @@ import * as petService from "../services/pet.service.js";
 import * as validation from "../request-validation.js";
 import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
 
-// Setup test app
+jest.mock("../firebase");
 const app = express();
 app.use(express.json());
 app.use("/api/pets", petRoutes);
