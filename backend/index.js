@@ -20,15 +20,19 @@ const server = http.createServer(app); // wrap express app
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: "https://pet-pulse.vercel.app",
+    methods: ["GET", "POST"],
+    credentials: true
   }
-});  
+}); 
 
 const PORT = process.env.PORT;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://pet-pulse.vercel.app",
+  credentials: true
+}));
 app.use(express.json());
 
 io.on("connection", (socket) => {
