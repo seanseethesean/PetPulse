@@ -104,4 +104,11 @@ describe('ChatWindow', () => {
       expect(screen.getByText('Hey!')).toBeInTheDocument();
     });
   });
+  
+  afterAll(() => {
+    if (mockSocket.disconnect) {
+      mockSocket.disconnect();
+    }
+  });
+  
 });
