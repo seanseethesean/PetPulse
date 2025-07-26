@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
 import SocialService from "../utils/social";
 import '../assets/ChatWindow.css';
-import { io } from "socket.io-client";
-const socket = io("https://petpulse-backend.onrender.com", {
-  transports: ["websocket", "polling"],
-  withCredentials: true
-});
+import { getSocket } from "../utils/socket";
+const socket = getSocket();
 
 const ChatWindow = ({ currentUserId, targetUser }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
   useEffect(() => {
+    const socket = getSocket();
     const chatId = SocialService.getChatId(currentUserId, targetUser.id);
+
     const loadMessages = async () => {
       const res = await SocialService.getMessages(chatId);
       if (res.success) {
@@ -21,45 +20,46 @@ const ChatWindow = ({ currentUserId, targetUser }) => {
         console.error("Failed to load messages:", res);
       }
     };
-  
+
     loadMessages();
-  
+
     const handleIncoming = (incomingMessage) => {
       if (incomingMessage.chatId === chatId) {
         setMessages((prev) => [...prev, incomingMessage]);
       }
       console.log("Received via socket:", incomingMessage);
     };
-  
+    
     socket.on("receiveMessage", handleIncoming);
-  
+
     return () => {
       socket.off("receiveMessage", handleIncoming);
     };
-  }, [currentUserId, targetUser]);  
+  }, [currentUserId, targetUser])
 
   const handleSend = async () => {
     if (!input.trim()) return;
-  
+
     const message = {
       senderId: currentUserId,
       receiverId: targetUser.id,
       content: input,
       timestamp: new Date().toISOString(),
-      chatId: SocialService.getChatId(currentUserId, targetUser.id)
+      chatId: SocialService.getChatId(currentUserId, targetUser.id),
     };
-  
-    socket.emit("sendMessage", message); // Send through socket only
-  
+
+    const socket = getSocket();
+    socket.emit("sendMessage", message);
+
     setMessages((prev) => [...prev, message]);
     setInput("");
   };
 
   useEffect(() => {
-    const el = document.querySelector('.chat-messages');
+    const el = document.querySelector(".chat-messages");
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
-  
+
   return (
     <div className="chat-window">
       <h4>Chat with {targetUser.displayName || targetUser.email}</h4>

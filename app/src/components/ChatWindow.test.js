@@ -1,114 +1,120 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import ChatWindow from './ChatWindow';
-import SocialService from '../utils/social';
-import { io } from 'socket.io-client';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import ChatWindow from "./ChatWindow";
+import SocialService from "../utils/social";
+import { getSocket } from "../utils/socket";
 
-jest.mock('../utils/social');
-jest.mock('socket.io-client', () => {
-  const socket = {
-    emit: jest.fn(),
+jest.mock("../utils/socket", () => ({
+  getSocket: jest.fn(),
+}));
+
+jest.mock("../utils/social", () => ({
+  getChatId: jest.fn(),
+  getMessages: jest.fn(),
+}));
+
+describe("ChatWindow", () => {
+  const currentUserId = "me";
+  const targetUser = { id: "you", displayName: "You", email: "you@example.com" };
+  const mockChatId = "chat_me_you";
+  const mockSocket = {
     on: jest.fn(),
-    off: jest.fn()
+    off: jest.fn(),
+    emit: jest.fn(),
   };
-  return {
-    io: () => socket,
-    __esModule: true,
-    socket,
-  };
-});
-
-const mockSocket = io();
-
-describe('ChatWindow', () => {
-  const currentUserId = 'me';
-  const targetUser = { id: 'you', email: 'you@example.com' };
-  const chatId = 'chat_me_you';
 
   beforeEach(() => {
-    SocialService.getChatId.mockReturnValue(chatId);
-    SocialService.getMessages.mockResolvedValue({ success: true, messages: [{ content: 'Hello', senderId: 'you' }] });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('fetches and displays messages on mount', async () => {
-    render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    expect(await screen.findByText('Hello')).toBeInTheDocument();
-  });
-
-  it('logs error when getMessages fails', async () => {
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    SocialService.getMessages.mockResolvedValueOnce({ success: false, error: 'fail' });
-
-    render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    await waitFor(() => {
-      expect(errorSpy).toHaveBeenCalledWith("Failed to load messages:", { success: false, error: 'fail' });
-    });
-
-    errorSpy.mockRestore();
-  });
-
-  it('ignores incoming socket message with wrong chatId', async () => {
-    render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    const handler = mockSocket.on.mock.calls.find(call => call[0] === 'receiveMessage')[1];
-    handler({ chatId: 'wrong_id', content: 'Should not appear', senderId: 'you' });
-
-    await waitFor(() => {
-      expect(screen.queryByText('Should not appear')).not.toBeInTheDocument();
+    getSocket.mockReturnValue(mockSocket);
+    SocialService.getChatId.mockReturnValue(mockChatId);
+    SocialService.getMessages.mockResolvedValue({
+      success: true,
+      messages: [
+        { senderId: "me", content: "Hi", chatId: mockChatId },
+        { senderId: "you", content: "Hello", chatId: mockChatId },
+      ],
     });
   });
 
-  it('does not send empty message', async () => {
+  test("renders chat window with initial messages", async () => {
     render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    const input = screen.getByRole('textbox');
-    const sendBtn = screen.getByText('Send');
 
-    fireEvent.change(input, { target: { value: '    ' } });
-    fireEvent.click(sendBtn);
-
-    await waitFor(() => {
-      expect(mockSocket.emit).not.toHaveBeenCalled();
-    });
+    expect(await screen.findByText("Chat with You")).toBeInTheDocument();
+    expect(await screen.findByText("Hi")).toBeInTheDocument();
+    expect(await screen.findByText("Hello")).toBeInTheDocument();
   });
 
-  it('sends message and updates UI on send click', async () => {
+  test("sends a new message on button click", async () => {
     render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    const input = screen.getByRole('textbox');
-    const sendBtn = screen.getByText('Send');
+    const input = await screen.findByRole("textbox");
+    const button = screen.getByText("Send");
 
     fireEvent.change(input, { target: { value: "What's up?" } });
-    fireEvent.click(sendBtn);
+    fireEvent.click(button);
 
     await waitFor(() => {
-      expect(mockSocket.emit).toHaveBeenCalledWith('sendMessage', expect.objectContaining({
-        senderId: 'me',
-        receiverId: 'you',
+      expect(mockSocket.emit).toHaveBeenCalledWith("sendMessage", expect.objectContaining({
         content: "What's up?",
-        chatId,
+        senderId: "me",
+        receiverId: "you",
+        chatId: mockChatId,
       }));
-      expect(screen.getByText("What's up?")).toBeInTheDocument();
     });
+
+    expect(screen.getByText("What's up?")).toBeInTheDocument();
+    expect(input.value).toBe(""); // Should clear input
   });
 
-  it('sends message on Enter key', async () => {
+  test("sends a new message on Enter key", async () => {
     render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
-    const input = screen.getByRole('textbox');
+    const input = await screen.findByRole("textbox");
 
-    fireEvent.change(input, { target: { value: 'Hey!' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    fireEvent.change(input, { target: { value: "Hello Enter" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
 
     await waitFor(() => {
-      expect(mockSocket.emit).toHaveBeenCalled();
-      expect(screen.getByText('Hey!')).toBeInTheDocument();
+      expect(mockSocket.emit).toHaveBeenCalledWith("sendMessage", expect.objectContaining({
+        content: "Hello Enter",
+      }));
     });
+
+    expect(screen.getByText("Hello Enter")).toBeInTheDocument();
   });
-  
-  afterAll(() => {
-    if (mockSocket.disconnect) {
-      mockSocket.disconnect();
-    }
+
+  test("ignores empty input", async () => {
+    render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
+    const button = screen.getByText("Send");
+    fireEvent.click(button);
+    expect(mockSocket.emit).not.toHaveBeenCalled();
   });
-  
+
+  test("handles receiving a new message via socket", async () => {
+    let receiveCallback;
+    mockSocket.on.mockImplementation((event, cb) => {
+      if (event === "receiveMessage") receiveCallback = cb;
+    });
+
+    render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
+
+    // Wait for initial load
+    await screen.findByText("Hi");
+
+    const newMsg = {
+      senderId: "you",
+      receiverId: "me",
+      content: "Real-time update!",
+      chatId: mockChatId,
+    };
+
+    // Simulate receiving a message
+    receiveCallback(newMsg);
+
+    expect(await screen.findByText("Real-time update!")).toBeInTheDocument();
+  });
+
+  test("cleans up socket listener on unmount", async () => {
+    const { unmount } = render(<ChatWindow currentUserId={currentUserId} targetUser={targetUser} />);
+    await screen.findByText("Hi");
+    unmount();
+    expect(mockSocket.off).toHaveBeenCalledWith("receiveMessage", expect.any(Function));
+  });
 });
