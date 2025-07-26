@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 const mockCreateUser = jest.fn();
 const mockVerifyIdToken = jest.fn();
 
+jest.mock("../firebase");
 jest.mock('../firebase.js', () => {
   const original = jest.requireActual('../firebase.js');
   return {
