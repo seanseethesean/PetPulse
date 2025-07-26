@@ -1,37 +1,62 @@
 import { useState, useEffect } from "react";
 import SocialService from "../utils/social";
 import '../assets/ChatWindow.css';
+import { io } from "socket.io-client";
+const socket = io("https://petpulse-backend.onrender.com");
 
 const ChatWindow = ({ currentUserId, targetUser }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
   useEffect(() => {
+    const chatId = SocialService.getChatId(currentUserId, targetUser.id);
     const loadMessages = async () => {
-      const chatId = SocialService.getChatId(currentUserId, targetUser.id);
       const res = await SocialService.getMessages(chatId);
-      if (res.success) setMessages(res.messages);
+      if (res.success) {
+        setMessages(res.messages);
+      } else {
+        console.error("Failed to load messages:", res);
+      }
     };
+  
     loadMessages();
-  }, [currentUserId, targetUser]);
+  
+    const handleIncoming = (incomingMessage) => {
+      if (incomingMessage.chatId === chatId) {
+        setMessages((prev) => [...prev, incomingMessage]);
+      }
+      console.log("Received via socket:", incomingMessage);
+    };
+  
+    socket.on("receiveMessage", handleIncoming);
+  
+    return () => {
+      socket.off("receiveMessage", handleIncoming);
+    };
+  }, [currentUserId, targetUser]);  
 
   const handleSend = async () => {
     if (!input.trim()) return;
+  
     const message = {
       senderId: currentUserId,
       receiverId: targetUser.id,
       content: input,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      chatId: SocialService.getChatId(currentUserId, targetUser.id)
     };
-
-    const chatId = SocialService.getChatId(currentUserId, targetUser.id);
-    const res = await SocialService.sendMessage(chatId, message);
-    if (res.success) {
-      setMessages((prev) => [...prev, message]);
-      setInput("");
-    }
+  
+    socket.emit("sendMessage", message); // 🔁 Send through socket only
+  
+    setMessages((prev) => [...prev, message]); // Optimistic UI
+    setInput("");
   };
 
+  useEffect(() => {
+    const el = document.querySelector('.chat-messages');
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
+  
   return (
     <div className="chat-window">
       <h4>Chat with {targetUser.displayName || targetUser.email}</h4>
