@@ -29,10 +29,19 @@ const io = new Server(server, {
 const PORT = process.env.PORT;
 
 // Middleware
+const allowedOrigins = ['http://localhost:3000', 'https://pet-pulse.vercel.app'];
+
 app.use(cors({
-  origin: "https://pet-pulse.vercel.app",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 
 io.on("connection", (socket) => {
