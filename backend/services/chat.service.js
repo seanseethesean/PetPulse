@@ -8,8 +8,6 @@ import {
   orderBy
 } from "firebase/firestore";
 
-jest.mock("../firebase");
-
 export const getMessages = async (chatId) => {
   const messagesRef = collection(db, `chats/${chatId}/messages`);
   const q = query(messagesRef, orderBy("timestamp"));

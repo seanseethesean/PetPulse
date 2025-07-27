@@ -2,7 +2,6 @@ import admin from "../firebase.js";
 import { db } from "../firebase.js";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
-jest.mock("../firebase");
 // Create user document if it doesn't exist
 const createUserDocIfNotExists = async (uid, email) => {
   const userRef = doc(db, "users", uid);

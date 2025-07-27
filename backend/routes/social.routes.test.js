@@ -5,7 +5,7 @@ import * as SocialService from "../services/social.service.js";
 import * as validation from "../request-validation.js";
 import * as firestore from "firebase/firestore";
 
-// Mocks
+jest.mock("../firebase");
 jest.mock("../services/social.service.js");
 jest.mock("../request-validation.js");
 jest.mock("firebase/firestore", () => {
