@@ -11,6 +11,8 @@ import {
   orderBy
 } from 'firebase/firestore';
 
+
+jest.mock("../firebase");
 // Partial mock that keeps getFirestore intact
 jest.mock('firebase/firestore', () => {
   const original = jest.requireActual('firebase/firestore');

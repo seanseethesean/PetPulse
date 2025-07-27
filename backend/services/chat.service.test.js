@@ -1,6 +1,7 @@
 import * as ChatService from '../services/chat.service.js';
 import { collection, doc, getDocs, setDoc, query, orderBy } from 'firebase/firestore';
 
+jest.mock("../firebase");
 jest.mock('firebase/firestore', () => {
   const actual = jest.requireActual('firebase/firestore');
   return {
