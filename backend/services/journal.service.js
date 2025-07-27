@@ -1,8 +1,6 @@
 import { collection, query, where, getDocs, addDoc, doc, updateDoc, deleteDoc, orderBy } from "firebase/firestore";
 import { db } from "../firebase.js";
 
-jest.mock("../firebase");
-
 // Get journal entries by user and pet
 export const getJournalEntries = async (userId, petName) => {
   const journalRef = collection(db, "journal");

@@ -11,6 +11,8 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 
+
+jest.mock("../firebase");
 jest.mock('firebase/firestore', () => {
   const actual = jest.requireActual('firebase/firestore');
   return {

@@ -1,8 +1,6 @@
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase.js";
 
-jest.mock("../firebase");
-
 // Fetch expenses for a user (optionally filtered by petId)
 export const getExpenses = async (userId, petId) => {
   const expensesRef = collection(db, "expenses");
