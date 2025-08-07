@@ -1,5 +1,11 @@
 import React from "react"
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react"
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within
+} from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import TaskChecklist from "./TaskChecklist"
 import { getAuth } from "firebase/auth"
@@ -50,7 +56,9 @@ describe("TaskChecklist", () => {
     )
 
     fireEvent.click(await screen.findByTitle("Open Calendar"))
-    expect(await screen.findByText("July 2025")).toBeInTheDocument()
+    expect(
+      await screen.findByText((text) => /\w+ 2025/.test(text))
+    ).toBeInTheDocument()
 
     const dayBtn = screen
       .getAllByRole("button")
@@ -270,128 +278,135 @@ describe("TaskChecklist", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     })
   })
-  
+
   test("shows recurring task info message when recurring is not 'once'", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     fetch
       .mockResolvedValueOnce({
         json: async () => ({
           success: true,
-          pets: [{ id: "1", petName: "Buddy" }],
-        }),
+          pets: [{ id: "1", petName: "Buddy" }]
+        })
       })
       .mockResolvedValueOnce({
-        json: async () => ({ success: true, tasks: [] }),
-      });
-  
+        json: async () => ({ success: true, tasks: [] })
+      })
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
+    )
+
     // Open the Add Task modal
-    fireEvent.click(await screen.findByText("Add Task"));
-  
+    fireEvent.click(await screen.findByText("Add Task"))
+
     // Select a recurring option other than "once"
-    const recurringSelect = screen.getByLabelText("Recurring");
-    fireEvent.change(recurringSelect, { target: { value: "daily" } });
-  
+    const recurringSelect = screen.getByLabelText("Recurring")
+    fireEvent.change(recurringSelect, { target: { value: "daily" } })
+
     // Check that the recurring info <small> appears
     expect(
       screen.getByText(/this will create tasks for the next 30/i)
-    ).toBeInTheDocument();
-  
+    ).toBeInTheDocument()
+
     // Optionally check it adjusts text accordingly
-    expect(screen.getByTestId("recurring-info")).toHaveTextContent(/30 day/i);
-  
+    expect(screen.getByTestId("recurring-info")).toHaveTextContent(/30 day/i)
+
     // Change to "weekly"
-    fireEvent.change(recurringSelect, { target: { value: "weekly" } });
-    expect(screen.getByText(/weeks/i)).toBeInTheDocument();
-  
+    fireEvent.change(recurringSelect, { target: { value: "weekly" } })
+    expect(screen.getByText(/weeks/i)).toBeInTheDocument()
+
     // Change to "once" to hide message
-    fireEvent.change(recurringSelect, { target: { value: "once" } });
-    expect(screen.queryByText(/this will create tasks for the next 30/i)).not.toBeInTheDocument();
-  });
-  
+    fireEvent.change(recurringSelect, { target: { value: "once" } })
+    expect(
+      screen.queryByText(/this will create tasks for the next 30/i)
+    ).not.toBeInTheDocument()
+  })
+
   test("resets form and closes modal after successful task creation", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     fetch
       .mockResolvedValueOnce({
-        json: async () => ({ success: true, pets: [{ id: "1", petName: "Buddy" }] }),
+        json: async () => ({
+          success: true,
+          pets: [{ id: "1", petName: "Buddy" }]
+        })
       })
       .mockResolvedValueOnce({
-        json: async () => ({ success: true, tasks: [] }),
-      });
-  
+        json: async () => ({ success: true, tasks: [] })
+      })
+
     // Mock TaskService.createTask to succeed
-    jest.spyOn(TaskService, "createTask").mockResolvedValue({});
-  
+    jest.spyOn(TaskService, "createTask").mockResolvedValue({})
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
-    fireEvent.click(await screen.findByText("Add Task"));
-  
+    )
+
+    fireEvent.click(await screen.findByText("Add Task"))
+
     fireEvent.change(screen.getByLabelText("Task Name"), {
-      target: { value: "Feed Buddy" },
-    });
+      target: { value: "Feed Buddy" }
+    })
     fireEvent.change(screen.getByLabelText("Pet"), {
-      target: { value: "1" },
-    });
-  
-    const modal = screen.getByRole("dialog");
-    fireEvent.click(within(modal).getByRole("button", { name: /add task/i }));    
-  
+      target: { value: "1" }
+    })
+
+    const modal = screen.getByRole("dialog")
+    fireEvent.click(within(modal).getByRole("button", { name: /add task/i }))
+
     // Wait for modal to close
     await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  
-    // Error message should be cleared
-    expect(screen.queryByTestId("task-error")).not.toBeInTheDocument();
-  });
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    })
 
+    // Error message should be cleared
+    expect(screen.queryByTestId("task-error")).not.toBeInTheDocument()
+  })
 
   test("addNewTask shows error if title or petId is missing", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     fetch
       .mockResolvedValueOnce({
-        json: async () => ({ success: true, pets: [{ id: "1", petName: "Buddy" }] }),
+        json: async () => ({
+          success: true,
+          pets: [{ id: "1", petName: "Buddy" }]
+        })
       })
       .mockResolvedValueOnce({
-        json: async () => ({ success: true, tasks: [] }),
-      });
-  
+        json: async () => ({ success: true, tasks: [] })
+      })
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
+    )
+
     // Open the modal
-    fireEvent.click(await screen.findByText("Add Task"));
-  
+    fireEvent.click(await screen.findByText("Add Task"))
+
     // Scope to modal
-    const modal = screen.getByRole("dialog");
-  
+    const modal = screen.getByRole("dialog")
+
     // Try submitting with no task name or pet selected
-    fireEvent.click(within(modal).getByRole("button", { name: /add task/i }));
-  
+    fireEvent.click(within(modal).getByRole("button", { name: /add task/i }))
+
     // Check error message
     expect(
       within(modal).getByText(/please fill in task name and select a pet/i)
-    ).toBeInTheDocument();
-  });
-  
+    ).toBeInTheDocument()
+  })
+
   test("filters tasks by selected pet", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     // Provide two pets
     fetch.mockResolvedValueOnce({
       json: async () => ({
@@ -401,8 +416,8 @@ describe("TaskChecklist", () => {
           { id: "2", petName: "Fluffy" }
         ]
       })
-    });
-  
+    })
+
     // Provide two tasks, only one matches petId "2"
     fetch.mockResolvedValueOnce({
       json: async () => ({
@@ -412,25 +427,25 @@ describe("TaskChecklist", () => {
           { id: "t2", title: "Brush Fluffy", petId: "2", completed: false }
         ]
       })
-    });
-  
+    })
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
-    // Wait for dropdown to appear
-    const select = await screen.findByLabelText("Filter by Pet:");
-    fireEvent.change(select, { target: { value: "2" } });
-    screen.debug();
+    )
 
-    expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument();
-  });
-  
+    // Wait for dropdown to appear
+    const select = await screen.findByLabelText("Filter by Pet:")
+    fireEvent.change(select, { target: { value: "2" } })
+    screen.debug()
+
+    expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument()
+  })
+
   test("filters tasks by selected pet ID", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     // Mock pets
     fetch.mockResolvedValueOnce({
       json: async () => ({
@@ -440,65 +455,64 @@ describe("TaskChecklist", () => {
           { id: "2", petName: "Fluffy" }
         ]
       })
-    });
-  
+    })
+
     // Mock tasks for different pets
     jest.spyOn(TaskService, "getTasksByDate").mockResolvedValue([
       { id: "t1", title: "Feed Buddy", petId: "1", completed: false },
       { id: "t2", title: "Brush Fluffy", petId: "2", completed: false }
-    ]);
-  
+    ])
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
+    )
+
     // Wait for dropdown to render
-    const petFilter = await screen.findByLabelText("Filter by Pet:");
-    fireEvent.change(petFilter, { target: { value: "2" } });
-    expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument();
-  });
-  
+    const petFilter = await screen.findByLabelText("Filter by Pet:")
+    fireEvent.change(petFilter, { target: { value: "2" } })
+    expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument()
+  })
+
   test("deletes a task and updates task list", async () => {
-    getAuth.mockReturnValue({ currentUser: { uid: "123" } });
-  
+    getAuth.mockReturnValue({ currentUser: { uid: "123" } })
+
     // Mock pets
     fetch.mockResolvedValueOnce({
       json: async () => ({
         success: true,
         pets: [{ id: "1", petName: "Buddy" }]
       })
-    });
-  
+    })
+
     // Mock tasks (initial state)
     jest.spyOn(TaskService, "getTasksByDate").mockResolvedValue([
       { id: "1", title: "Feed Buddy", petId: "1", completed: false },
       { id: "2", title: "Walk Buddy", petId: "1", completed: false }
-    ]);
-  
+    ])
+
     // Mock deleteTask API
-    jest.spyOn(TaskService, "deleteTask").mockResolvedValue({ success: true });
-  
+    jest.spyOn(TaskService, "deleteTask").mockResolvedValue({ success: true })
+
     render(
       <MemoryRouter>
         <TaskChecklist />
       </MemoryRouter>
-    );
-  
+    )
+
     // Wait for tasks to render
-    expect(await screen.findByText("Feed Buddy")).toBeInTheDocument();
-    expect(screen.getByText("Walk Buddy")).toBeInTheDocument();
-  
+    expect(await screen.findByText("Feed Buddy")).toBeInTheDocument()
+    expect(screen.getByText("Walk Buddy")).toBeInTheDocument()
+
     // Click delete on "Feed Buddy"
-    const deleteButton = await screen.findByTestId("delete-task-1");
-    fireEvent.click(deleteButton);
-  
+    const deleteButton = await screen.findByTestId("delete-task-1")
+    fireEvent.click(deleteButton)
+
     // Only "Walk Buddy" should remain
     await waitFor(() => {
-      expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument();
-      expect(screen.getByText("Walk Buddy")).toBeInTheDocument();
-    });
-  });
-  
+      expect(screen.queryByText("Feed Buddy")).not.toBeInTheDocument()
+      expect(screen.getByText("Walk Buddy")).toBeInTheDocument()
+    })
+  })
 })

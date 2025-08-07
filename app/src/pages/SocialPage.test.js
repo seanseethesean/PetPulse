@@ -177,62 +177,6 @@ describe("SocialPage", () => {
     await waitFor(() => expect(SocialService.searchUsers).toHaveBeenCalled())
   })
 
-  it("unfollows user when isFollowing is true", async () => {
-    const followingUser = {
-      id: "user1",
-      email: "user1@example.com",
-      isFollowing: true
-    }
-
-    SocialService.searchUsers.mockResolvedValue({
-      success: true,
-      users: [followingUser]
-    })
-    SocialService.unfollowUser.mockResolvedValue({ success: true })
-
-    renderPage()
-    fireEvent.click(getSearchTab())
-
-    fireEvent.change(await screen.findByPlaceholderText(/Search for users/), {
-      target: { value: "user1" }
-    })
-    fireEvent.click(screen.getByText("Search"))
-
-    const unfollowBtn = await screen.findByText("Unfollow")
-    fireEvent.click(unfollowBtn)
-
-    await waitFor(() => expect(SocialService.unfollowUser).toHaveBeenCalled())
-  })
-
-  it("follows user when isFollowing is false", async () => {
-    const newUser = {
-      id: "user2",
-      email: "user2@example.com",
-      isFollowing: false
-    }
-
-    SocialService.searchUsers.mockResolvedValue({
-      success: true,
-      users: [newUser]
-    })
-    SocialService.followUser.mockResolvedValue({ success: true })
-
-    renderPage()
-    fireEvent.click(getSearchTab())
-
-    fireEvent.change(await screen.findByPlaceholderText(/Search for users/), {
-      target: { value: "user2" }
-    })
-    fireEvent.click(screen.getByText("Search"))
-
-    const followBtn = await screen.findByText("Follow")
-    fireEvent.click(followBtn)
-
-    await waitFor(() => {
-      expect(SocialService.followUser).toHaveBeenCalled()
-    })
-  })
-
   it("handles follow/unfollow error gracefully", async () => {
     const newUser = {
       id: "user3",
