@@ -434,7 +434,7 @@ const SocialPage = () => {
                 </div>
               ) : (
                 <div className="users-grid">
-                  {following.map((user) => renderUserCard(user, true, false))}
+                  {following.map((user) => renderUserCard({ ...user, isFollowing: true }, true, false))}
                 </div>
               )}
             </div>
@@ -452,7 +452,11 @@ const SocialPage = () => {
                 </div>
               ) : (
                 <div className="users-grid">
-                  {followers.map((user) => renderUserCard(user, true, false))}
+                  {followers.map((user) => renderUserCard(
+                    { ...user, isFollowing: following.some((f) => f.id === user.id) },
+                    true,
+                    false
+                  ))}
                 </div>
               )}
             </div>
