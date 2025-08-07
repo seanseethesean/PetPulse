@@ -96,7 +96,11 @@ const SocialPage = () => {
     try {
       const data = await SocialService.searchUsers(searchQuery, user.uid)
       if (data.success) {
-        setSearchResults(data.users || [])
+        const resultsWithFollowStatus = (data.users || []).map((user) => ({
+          ...user,
+          isFollowing: following.some((f) => f.id === user.id)
+        }));
+        setSearchResults(resultsWithFollowStatus);
       }
     } catch (err) {
       console.error("Error searching users:", err)
