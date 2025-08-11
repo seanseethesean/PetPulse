@@ -9,4 +9,3 @@ export const createForumPostSchema = yup.object().shape({
  content: yup.string().required("Post content is required"),
  createdAt: yup.string().optional()
 });
-

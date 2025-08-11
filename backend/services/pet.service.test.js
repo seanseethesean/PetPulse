@@ -1,14 +1,5 @@
 import * as PetService from '../services/pet.service.js';
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc
-} from 'firebase/firestore';
+import { collection, where, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 jest.mock("../firebase");
 

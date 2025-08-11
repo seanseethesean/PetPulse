@@ -5,7 +5,7 @@ import { createExpenseSchema, updateExpenseSchema } from "../types/expenses.type
 
 const router = express.Router();
 
-// GET /api/expenses - Get all expenses for a user (with optional pet filter)
+// GET /api/expenses - Get all expenses for a user
 router.get("/", async (req, res) => {
   try {
     const { userId, petId } = req.query;

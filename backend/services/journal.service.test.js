@@ -1,16 +1,5 @@
 import * as JournalService from '../services/journal.service.js';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc
-} from 'firebase/firestore';
-
+import { collection, where, orderBy, getDocs, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 jest.mock("../firebase");
 jest.mock('firebase/firestore', () => {

@@ -1,5 +1,5 @@
 import * as AuthService from './auth.service.js';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getDoc, setDoc } from 'firebase/firestore';
 
 jest.mock('firebase/firestore', () => {
   const original = jest.requireActual('firebase/firestore');

@@ -1,15 +1,5 @@
 import * as ExpenseService from '../services/expenses.service.js';
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy
-} from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
 
 
 jest.mock("../firebase");

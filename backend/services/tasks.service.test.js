@@ -1,16 +1,5 @@
 import * as TaskService from '../services/tasks.service.js';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-  writeBatch
-} from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 jest.mock("../firebase");
 jest.mock('firebase/firestore', () => {

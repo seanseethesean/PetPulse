@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, writeBatch } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, writeBatch } from "firebase/firestore";
 import { db } from "../firebase.js";
 
 // Get tasks by date and user

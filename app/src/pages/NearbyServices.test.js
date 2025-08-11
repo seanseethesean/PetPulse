@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { act, render, screen, fireEvent } from "@testing-library/react";
 import NearbyServices from "./NearbyServices";
 import NearbyService from "../utils/nearby";
 import "@testing-library/jest-dom";

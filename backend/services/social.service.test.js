@@ -1,20 +1,5 @@
 import * as SocialService from '../services/social.service.js';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  getDoc,
-  addDoc,
-  doc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  arrayUnion,
-  arrayRemove,
-  increment,
-} from 'firebase/firestore';
+import { collection, getDocs, getDoc, addDoc, doc, setDoc, updateDoc, deleteDoc, } from 'firebase/firestore';
 
 jest.mock("../firebase");
 jest.mock('firebase/firestore', () => {

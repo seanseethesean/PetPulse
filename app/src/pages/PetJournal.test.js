@@ -11,7 +11,6 @@ import "@testing-library/jest-dom"
 import { render, screen, waitFor } from "@testing-library/react"
 import { BrowserRouter } from "react-router-dom"
 import PetJournal from "./PetJournal"
-import { getAuth } from "firebase/auth"
 
 // Mock JournalService
 import JournalService from "../utils/journal"

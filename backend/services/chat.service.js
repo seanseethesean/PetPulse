@@ -1,12 +1,5 @@
 import { db } from "../firebase.js";
-import {
-  collection,
-  doc,
-  getDocs,
-  setDoc,
-  query,
-  orderBy
-} from "firebase/firestore";
+import { collection, doc, getDocs, setDoc, query, orderBy } from "firebase/firestore";
 
 export const getMessages = async (chatId) => {
   const messagesRef = collection(db, `chats/${chatId}/messages`);
