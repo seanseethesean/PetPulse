@@ -92,12 +92,14 @@ To build an intuitive, engaging web app that empowers pet owners to become more 
    cd petpulse
    
 2. **Install dependencies**
+   ```bash
    npm install
 
 3. **Set up Firebase**
-  Create a Firebase project
-  Enable Authentication and Firestore
-  Add your Firebase web config to a .env file as needed by your codebase
+  - Create a Firebase project
+  - Enable Authentication and Firestore
+  - Add your Firebase web config to a .env file as needed by your codebase
 
 4. **Run locally**
+   ```bash
   npm start
