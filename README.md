@@ -102,4 +102,4 @@ To build an intuitive, engaging web app that empowers pet owners to become more 
 
 4. **Run locally**
    ```bash
-  npm start
+   npm start
